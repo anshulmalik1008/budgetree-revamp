@@ -118,7 +118,7 @@ export default function Navbar() {
           className={cn(
             "transition-all duration-300",
             scrolled
-              ? "border-b border-line/10 bg-base/80 backdrop-blur-xl"
+              ? "border-b border-line/10 bg-base/90"
               : "border-b border-transparent bg-transparent"
           )}
         >
@@ -152,7 +152,7 @@ export default function Navbar() {
                           transition={{ duration: 0.22, ease: EASE }}
                           className="absolute left-1/2 top-full w-[380px] -translate-x-1/2 pt-3"
                         >
-                          <div className="overflow-hidden rounded-2xl border border-line/10 bg-raise/95 p-2 shadow-card backdrop-blur-xl">
+                          <div className="overflow-hidden rounded-2xl border border-line/10 bg-raise p-2 shadow-card">
                             {PRODUCTS.map((p, i) => (
                               <motion.a
                                 key={p.name}
@@ -240,9 +240,9 @@ export default function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="noise fixed inset-0 z-40 flex flex-col overflow-y-auto bg-raise/95 px-6 pb-10 pt-28 backdrop-blur-xl lg:hidden"
+            className="noise fixed inset-0 z-40 flex flex-col overflow-y-auto bg-raise px-6 pb-10 pt-28 lg:hidden"
           >
-            <div className="pointer-events-none absolute -right-24 top-1/3 h-72 w-72 rounded-full bg-volt/15 blur-[100px]" />
+            <div className="pointer-events-none absolute -right-24 top-1/3 h-72 w-72 rounded-full glow-volt" />
             <div className="mt-auto space-y-1">
               {[
                 { label: "Home", href: "/" },

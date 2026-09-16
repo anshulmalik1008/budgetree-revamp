@@ -52,7 +52,7 @@ export function CursorGlow() {
   return (
     <motion.div
       style={{ x: sx, y: sy }}
-      className="pointer-events-none fixed left-0 top-0 z-[4] -ml-[260px] -mt-[260px] h-[520px] w-[520px] rounded-full bg-volt/[0.055] blur-[110px] will-change-transform"
+      className="pointer-events-none fixed left-0 top-0 z-[4] -ml-[260px] -mt-[260px] h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle,rgba(205,251,71,0.07),transparent_70%)] will-change-transform"
     />
   );
 }

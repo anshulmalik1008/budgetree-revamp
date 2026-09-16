@@ -127,7 +127,7 @@ export default function Testimonials() {
 
         <Reveal delay={0.08} className="relative">
           <div className="relative min-h-[380px] overflow-hidden rounded-[2rem] bg-coal p-8 text-paper shadow-card sm:min-h-[340px] sm:p-12">
-            <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-volt/15 blur-[100px]" />
+            <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full glow-volt" />
             <Quote className="h-10 w-10 fill-volt text-volt" />
             <div className="relative mt-6 overflow-hidden">
               <AnimatePresence mode="wait" custom={dir}>

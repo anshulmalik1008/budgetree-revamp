@@ -162,7 +162,7 @@ export default function DemoPage() {
     <main className="overflow-hidden">
       <section className="relative pb-20 pt-36 sm:pt-40">
         <div className="dot-grid pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_65%_50%_at_50%_0%,black,transparent)]" />
-        <div className="pointer-events-none absolute -top-24 right-0 h-[380px] w-[380px] rounded-full bg-volt/10 blur-[130px]" />
+        <div className="pointer-events-none absolute -top-24 right-0 h-[380px] w-[380px] rounded-full glow-volt" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
           <AnimatePresence mode="wait">

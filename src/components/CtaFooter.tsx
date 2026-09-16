@@ -10,13 +10,13 @@ export default function CtaFooter() {
       <Reveal>
         <div className="noise relative mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] border border-line/10 bg-gradient-to-b from-sunken to-raise px-6 py-20 text-center sm:px-12 sm:py-28">
           <div className="dot-grid pointer-events-none absolute inset-0 opacity-60 [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,black,transparent)]" />
-          <div className="pointer-events-none absolute left-1/2 top-0 h-72 w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-volt/20 blur-[120px]" />
+          <div className="pointer-events-none absolute left-1/2 top-0 h-72 w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full glow-volt" />
 
           {/* Floating chips */}
           <motion.div
             animate={{ y: [0, -12, 0], rotate: [-6, -3, -6] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute left-6 top-10 hidden items-center gap-2 rounded-2xl border border-line/10 bg-base/70 px-4 py-3 backdrop-blur lg:flex"
+            className="absolute left-6 top-10 hidden items-center gap-2 rounded-2xl border border-line/10 bg-base/70 px-4 py-3 lg:flex"
           >
             <Gift className="h-5 w-5 text-acc" />
             <span className="text-sm font-bold text-fg">₹2,000 gift card</span>
@@ -24,7 +24,7 @@ export default function CtaFooter() {
           <motion.div
             animate={{ y: [0, 12, 0], rotate: [5, 8, 5] }}
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute bottom-12 right-8 hidden items-center gap-2 rounded-2xl border border-line/10 bg-base/70 px-4 py-3 backdrop-blur lg:flex"
+            className="absolute bottom-12 right-8 hidden items-center gap-2 rounded-2xl border border-line/10 bg-base/70 px-4 py-3 lg:flex"
           >
             <Zap className="h-5 w-5 text-honey" />
             <span className="text-sm font-bold text-fg">UPI · settled in 3s</span>

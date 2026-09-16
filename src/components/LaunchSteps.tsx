@@ -31,7 +31,7 @@ const STEPS = [
 export default function LaunchSteps() {
   return (
     <section id="how" className="relative overflow-hidden bg-base py-24 sm:py-32">
-      <div className="pointer-events-none absolute -right-40 top-1/4 h-[420px] w-[420px] rounded-full bg-volt/8 blur-[140px]" />
+      <div className="pointer-events-none absolute -right-40 top-1/4 h-[420px] w-[420px] rounded-full glow-volt" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <SectionTag index="02" label="How it works" />
         <div className="mt-5 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">

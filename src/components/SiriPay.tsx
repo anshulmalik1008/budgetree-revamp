@@ -14,7 +14,7 @@ export default function SiriPay() {
     <section className="relative bg-base px-4 pb-24 sm:px-6 sm:pb-32">
       <Reveal>
         <div className="noise relative mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-volt via-[#D8FF6B] to-mint p-8 text-coal sm:p-12 lg:p-16">
-          <div className="pointer-events-none absolute -left-24 -top-24 h-80 w-80 rounded-full bg-white/40 blur-[100px]" />
+          <div className="pointer-events-none absolute -left-24 -top-24 h-80 w-80 rounded-full glow-white" />
           <Gift className="pointer-events-none absolute -bottom-10 -right-10 h-64 w-64 rotate-12 text-coal/10" />
 
           <div className="relative grid items-center gap-12 lg:grid-cols-2">
@@ -37,7 +37,7 @@ export default function SiriPay() {
                 {PERKS.map((p) => (
                   <div
                     key={p.small}
-                    className="rounded-2xl bg-coal/[0.07] p-3 backdrop-blur-sm transition-transform duration-300 hover:-translate-y-1 sm:p-4"
+                    className="rounded-2xl bg-coal/[0.07] p-3 transition-transform duration-300 hover:-translate-y-1 sm:p-4"
                   >
                     <p.icon className="h-5 w-5" />
                     <p className="mt-2 font-display text-xl font-bold sm:text-2xl">{p.big}</p>

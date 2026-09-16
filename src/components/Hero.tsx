@@ -130,7 +130,7 @@ function LiveFeed() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.4, ease: EASE }}
-              className="flex items-center gap-2.5 rounded-xl border border-line/10 bg-raise/90 px-3 py-2.5 shadow-card backdrop-blur-xl"
+              className="flex items-center gap-2.5 rounded-xl border border-line/10 bg-raise/90 px-3 py-2.5 shadow-card"
             >
               <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-acc/15 text-acc">
                 <Icon className="h-4 w-4" />
@@ -203,13 +203,13 @@ export default function Hero() {
       {/* Backdrop */}
       <div className="pointer-events-none absolute inset-0">
         <div className="dot-grid absolute inset-0 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_35%,black,transparent)]" />
-        <div className="absolute -right-40 -top-40 h-[560px] w-[560px] animate-blob rounded-full bg-volt/15 blur-[140px]" />
+        <div className="absolute -right-40 -top-40 h-[560px] w-[560px] animate-blob rounded-full glow-volt" />
         <div
-          className="absolute -left-48 top-1/3 h-[480px] w-[480px] animate-blob rounded-full bg-mint/10 blur-[140px]"
+          className="absolute -left-48 top-1/3 h-[480px] w-[480px] animate-blob rounded-full glow-mint"
           style={{ animationDelay: "-5s" }}
         />
         <div
-          className="absolute bottom-0 right-1/4 h-[380px] w-[380px] animate-blob rounded-full bg-lilac/10 blur-[140px]"
+          className="absolute bottom-0 right-1/4 h-[380px] w-[380px] animate-blob rounded-full glow-lilac"
           style={{ animationDelay: "-9s" }}
         />
       </div>
@@ -400,7 +400,7 @@ export default function Hero() {
             <div className="aspect-square w-[112%] animate-spin-slow rounded-full border border-dashed border-acc/30" />
           </div>
           <div className="pointer-events-none absolute inset-0 grid place-items-center">
-            <div className="aspect-square w-[86%] rounded-full bg-volt/5 blur-2xl" />
+            <div className="aspect-square w-[86%] rounded-full glow-volt" />
           </div>
 
           {/* Idle bob wrapper */}
@@ -536,7 +536,7 @@ export default function Hero() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="absolute inset-0 z-30 grid place-items-center bg-coal/85 p-6 backdrop-blur-sm"
+                      className="absolute inset-0 z-30 grid place-items-center bg-coal/85 p-6"
                     >
                       {sim === "sending" ? (
                         <div className="text-center">
@@ -580,7 +580,7 @@ export default function Hero() {
             style={{ x: nearX, y: nearY }}
             className="absolute -right-2 -top-4 animate-float sm:right-0"
           >
-            <div className="flex items-center gap-3 rounded-2xl border border-line/10 bg-raise/90 p-3.5 pr-5 shadow-card backdrop-blur-xl">
+            <div className="flex items-center gap-3 rounded-2xl border border-line/10 bg-raise/90 p-3.5 pr-5 shadow-card">
               <span className="grid h-11 w-11 place-items-center rounded-xl bg-volt text-coal">
                 <Gift className="h-6 w-6" />
               </span>
@@ -599,7 +599,7 @@ export default function Hero() {
             style={{ x: farX, y: farY }}
             className="absolute -left-2 top-2 hidden animate-float2 md:block lg:left-2"
           >
-            <div className="flex items-center gap-3 rounded-2xl border border-line/10 bg-raise/90 p-3 pr-5 shadow-card backdrop-blur-xl">
+            <div className="flex items-center gap-3 rounded-2xl border border-line/10 bg-raise/90 p-3 pr-5 shadow-card">
               <span className="relative grid h-12 w-12 place-items-center">
                 <svg viewBox="0 0 40 40" className="absolute inset-0 h-full w-full -rotate-90">
                   <circle cx="20" cy="20" r="15" fill="none" strokeWidth="4" className="stroke-line/15" style={{ stroke: "rgb(var(--c-line) / 0.15)" }} />
@@ -625,7 +625,7 @@ export default function Hero() {
             style={{ x: farX, y: nearY }}
             className="absolute -left-3 bottom-28 hidden animate-float sm:block lg:-left-8"
           >
-            <div className="w-52 rounded-2xl border border-line/10 bg-raise/90 p-3.5 shadow-card backdrop-blur-xl">
+            <div className="w-52 rounded-2xl border border-line/10 bg-raise/90 p-3.5 shadow-card">
               <div className="flex items-center justify-between">
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-fg/45">
                   SPIF · Q3
@@ -656,7 +656,7 @@ export default function Hero() {
             style={{ x: nearX, y: farY }}
             className="absolute -bottom-2 right-0 animate-float2"
           >
-            <div className="flex items-center gap-2.5 rounded-2xl border border-line/10 bg-raise/90 px-4 py-3 shadow-card backdrop-blur-xl">
+            <div className="flex items-center gap-2.5 rounded-2xl border border-line/10 bg-raise/90 px-4 py-3 shadow-card">
               <Trophy className="h-5 w-5 text-honey" />
               <div className="leading-tight">
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-fg/45">

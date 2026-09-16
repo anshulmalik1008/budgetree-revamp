@@ -51,7 +51,7 @@ export default function ProductPage() {
           <div className="dot-grid absolute inset-0 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_30%,black,transparent)]" />
           <div
             className={cn(
-              "absolute -right-32 -top-32 h-[480px] w-[480px] rounded-full blur-[140px]",
+              "absolute -right-32 -top-32 h-[480px] w-[480px] rounded-full ",
               product.glow
             )}
           />
@@ -157,7 +157,7 @@ export default function ProductPage() {
                     className="aspect-[4/3] w-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-coal/50 via-transparent to-transparent" />
-                  <div className="absolute bottom-4 left-4 flex animate-float items-center gap-2 rounded-2xl border border-paper/15 bg-coal/80 px-4 py-2.5 backdrop-blur">
+                  <div className="absolute bottom-4 left-4 flex animate-float items-center gap-2 rounded-2xl border border-paper/15 bg-coal/90 px-4 py-2.5">
                     <span className="relative flex h-2 w-2">
                       <span className="absolute h-full w-full animate-pulse-ring rounded-full bg-volt" />
                       <span className="h-2 w-2 rounded-full bg-volt" />
@@ -281,7 +281,7 @@ export default function ProductPage() {
             >
               <div
                 className={cn(
-                  "pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full blur-[110px]",
+                  "pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full ",
                   product.glow
                 )}
               />

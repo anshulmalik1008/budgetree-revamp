@@ -48,7 +48,7 @@ export const PRODUCTS: Product[] = [
     chip: "bg-volt text-coal",
     soft: "bg-acc/15 text-acc",
     gradient: "from-[#1E3527] via-[#14231B] to-[#0C1512]",
-    glow: "bg-volt/25",
+    glow: "glow-volt",
     icon: Gift,
     features: [
       {
@@ -99,7 +99,7 @@ export const PRODUCTS: Product[] = [
     chip: "bg-lilac text-coal",
     soft: "bg-grape/15 text-grape",
     gradient: "from-[#2A2145] via-[#1C1830] to-[#0C1512]",
-    glow: "bg-lilac/25",
+    glow: "glow-lilac",
     icon: Sparkles,
     features: [
       {
@@ -150,7 +150,7 @@ export const PRODUCTS: Product[] = [
     chip: "bg-gold text-coal",
     soft: "bg-honey/15 text-honey",
     gradient: "from-[#3A2E14] via-[#241D0E] to-[#0C1512]",
-    glow: "bg-gold/25",
+    glow: "glow-gold",
     icon: Zap,
     features: [
       {
@@ -201,7 +201,7 @@ export const PRODUCTS: Product[] = [
     chip: "bg-mint text-coal",
     soft: "bg-jade/15 text-jade",
     gradient: "from-[#123527] via-[#0E231C] to-[#0C1512]",
-    glow: "bg-mint/25",
+    glow: "glow-mint",
     icon: Wallet,
     features: [
       {
@@ -252,7 +252,7 @@ export const PRODUCTS: Product[] = [
     chip: "bg-sky text-coal",
     soft: "bg-azure/15 text-azure",
     gradient: "from-[#173042] via-[#101F2B] to-[#0C1512]",
-    glow: "bg-sky/25",
+    glow: "glow-sky",
     icon: Receipt,
     features: [
       {

@@ -170,7 +170,7 @@ export default function DragRail() {
 
   return (
     <section className="relative overflow-hidden bg-raise py-24 sm:py-32">
-      <div className="pointer-events-none absolute -left-32 top-0 h-96 w-96 rounded-full bg-volt/8 blur-[130px]" />
+      <div className="pointer-events-none absolute -left-32 top-0 h-96 w-96 rounded-full glow-volt" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
@@ -227,12 +227,12 @@ export default function DragRail() {
             {CARDS.map((c) => (
               <article
                 key={c.title}
-                className="group w-[300px] shrink-0 select-none overflow-hidden rounded-3xl border border-line/10 bg-base/60 backdrop-blur transition-all duration-300 hover:-translate-y-1.5 hover:border-acc/40 sm:w-[380px]"
+                className="group w-[300px] shrink-0 select-none overflow-hidden rounded-3xl border border-line/10 bg-base/80 transition-all duration-300 hover:-translate-y-1.5 hover:border-acc/40 sm:w-[380px]"
               >
                 <div className={cn("relative h-44 overflow-hidden bg-gradient-to-br", c.art)}>
                   <div className="dot-grid-dark absolute inset-0 opacity-60" />
                   <c.icon className="absolute -bottom-6 -right-6 h-40 w-40 text-coal/25 transition-transform duration-500 group-hover:rotate-6 group-hover:scale-110" />
-                  <span className="absolute left-4 top-4 rounded-full bg-coal/80 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-paper backdrop-blur">
+                  <span className="absolute left-4 top-4 rounded-full bg-coal/80 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-paper">
                     {c.tag}
                   </span>
                   <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">

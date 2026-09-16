@@ -14,16 +14,16 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
     const t = setInterval(() => {
       setCount((c) => {
         if (c >= 100) return 100;
-        const next = c + Math.floor(Math.random() * 9) + 5;
+        const next = c + Math.floor(Math.random() * 13) + 10;
         return next >= 100 ? 100 : next;
       });
-    }, 95);
+    }, 70);
     return () => clearInterval(t);
   }, []);
 
   useEffect(() => {
     if (count >= 100) {
-      const t = setTimeout(onDone, 500);
+      const t = setTimeout(onDone, 300);
       return () => clearTimeout(t);
     }
   }, [count, onDone]);
@@ -32,11 +32,11 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
     <motion.div
       className="fixed inset-0 z-[100] flex flex-col justify-between overflow-hidden bg-coal px-6 py-8 sm:px-12"
       exit={{ y: "-100%" }}
-      transition={{ duration: 0.9, ease: EASE }}
+      transition={{ duration: 0.7, ease: EASE }}
     >
       <div className="dot-grid pointer-events-none absolute inset-0 opacity-60" />
-      <div className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-volt/15 blur-[120px]" />
-      <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-mint/10 blur-[120px]" />
+      <div className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full glow-volt" />
+      <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full glow-mint" />
 
       <div className="relative flex items-center justify-between">
         <motion.div

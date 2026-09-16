@@ -80,6 +80,27 @@ body {
   color: transparent;
 }
 
+/* Cheap "glow" blobs — radial gradients instead of expensive blur() filters.
+   blur() layers force large GPU paints; gradients composite almost for free. */
+.glow-volt {
+  background: radial-gradient(circle, rgba(205, 251, 71, 0.16) 0%, rgba(205, 251, 71, 0.05) 45%, transparent 72%);
+}
+.glow-mint {
+  background: radial-gradient(circle, rgba(140, 240, 179, 0.13) 0%, transparent 72%);
+}
+.glow-lilac {
+  background: radial-gradient(circle, rgba(201, 184, 255, 0.13) 0%, transparent 72%);
+}
+.glow-gold {
+  background: radial-gradient(circle, rgba(255, 194, 75, 0.13) 0%, transparent 72%);
+}
+.glow-sky {
+  background: radial-gradient(circle, rgba(159, 216, 255, 0.13) 0%, transparent 72%);
+}
+.glow-white {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.35) 0%, transparent 72%);
+}
+
 /* Film-grain noise overlay */
 .noise::after {
   content: "";

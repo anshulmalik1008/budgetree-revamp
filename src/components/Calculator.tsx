@@ -135,7 +135,7 @@ export default function Calculator() {
 
   return (
     <section id="roi" className="relative overflow-hidden bg-base py-24 sm:py-32">
-      <div className="pointer-events-none absolute right-0 top-0 h-[420px] w-[420px] rounded-full bg-volt/8 blur-[140px]" />
+      <div className="pointer-events-none absolute right-0 top-0 h-[420px] w-[420px] rounded-full glow-volt" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <SectionTag index="05" label="ROI you can measure" />
         <div className="mt-5 max-w-2xl">

@@ -21,7 +21,7 @@ import { EASE, Reveal, SectionTag, cn } from "./ui";
 
 export function RewardXVisual() {
   return (
-    <div className="w-full max-w-sm rounded-3xl border border-paper/10 bg-coal/70 p-5 shadow-card backdrop-blur">
+    <div className="w-full max-w-sm rounded-3xl border border-paper/10 bg-coal/70 p-5 shadow-card">
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-paper/50">
         Send a reward
       </p>
@@ -89,7 +89,7 @@ export function LoyaltyVisual() {
         </div>
         <p className="mt-1.5 text-[11px] font-bold">76% to Platinum</p>
       </div>
-      <div className="rounded-2xl border border-paper/10 bg-coal/70 p-4 backdrop-blur">
+      <div className="rounded-2xl border border-paper/10 bg-coal/70 p-4">
         {["Movie voucher unlocked", "2x weekend multiplier"].map((t) => (
           <div key={t} className="flex items-center gap-2 py-1 text-sm text-paper/80">
             <Sparkles className="h-4 w-4 shrink-0 text-lilac" /> {t}
@@ -102,7 +102,7 @@ export function LoyaltyVisual() {
 
 export function UpiVisual() {
   return (
-    <div className="w-full max-w-sm rounded-3xl border border-paper/10 bg-coal/70 p-5 shadow-card backdrop-blur">
+    <div className="w-full max-w-sm rounded-3xl border border-paper/10 bg-coal/70 p-5 shadow-card">
       <div className="flex items-center gap-3">
         <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gold font-display text-lg font-bold text-coal">
           ₹
@@ -146,7 +146,7 @@ export function PayoutVisual() {
     { n: "Rohan D.", a: "₹5,200", s: "Processing" },
   ];
   return (
-    <div className="w-full max-w-sm rounded-3xl border border-paper/10 bg-coal/70 p-5 shadow-card backdrop-blur">
+    <div className="w-full max-w-sm rounded-3xl border border-paper/10 bg-coal/70 p-5 shadow-card">
       <div className="flex items-center justify-between">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-paper/50">
           Bulk payout · Diwali
@@ -199,7 +199,7 @@ export function BillVisual() {
     { n: "Broadband · Airtel", a: "₹999" },
   ];
   return (
-    <div className="w-full max-w-sm rounded-3xl border border-paper/10 bg-coal/70 p-5 shadow-card backdrop-blur">
+    <div className="w-full max-w-sm rounded-3xl border border-paper/10 bg-coal/70 p-5 shadow-card">
       <div className="flex items-center gap-2">
         <Receipt className="h-5 w-5 text-sky" />
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-paper/50">
@@ -241,7 +241,7 @@ const PRODUCTS = [
     desc: "Effortless employee & customer recognition — auto-linked to email or phone, delivered instantly via email or SMS.",
     features: ["Auto-linked rewards", "Split, stack or redeem", "Instant delivery"],
     bg: "bg-gradient-to-br from-[#1E3527] via-[#14231B] to-[#0C1512]",
-    glow: "bg-volt/20",
+    glow: "glow-volt",
     chip: "bg-volt text-coal",
     icon: Gift,
     Visual: RewardXVisual,
@@ -253,7 +253,7 @@ const PRODUCTS = [
     desc: "AI-powered redemption tailored for every customer, every time — fully white-labeled for your brand.",
     features: ["Plug & play integration", "White-labeled experience", "Dynamic rewards catalog"],
     bg: "bg-gradient-to-br from-[#2A2145] via-[#1C1830] to-[#0C1512]",
-    glow: "bg-lilac/20",
+    glow: "glow-lilac",
     chip: "bg-lilac text-coal",
     icon: Sparkles,
     Visual: LoyaltyVisual,
@@ -265,7 +265,7 @@ const PRODUCTS = [
     desc: "Cash rewards via UPI in seconds — one link, no app or sign-up. Straight to any bank account.",
     features: ["Instant UPI transfers", "Frictionless redemption", "Trusted & secure"],
     bg: "bg-gradient-to-br from-[#3A2E14] via-[#241D0E] to-[#0C1512]",
-    glow: "bg-gold/20",
+    glow: "glow-gold",
     chip: "bg-gold text-coal",
     icon: Zap,
     Visual: UpiVisual,
@@ -277,7 +277,7 @@ const PRODUCTS = [
     desc: "Bulk and individual payouts to bank, UPI or wallet — encrypted, compliant and fully transparent.",
     features: ["Lightning-fast disbursal", "UPI · bank · wallet", "Secure & compliant"],
     bg: "bg-gradient-to-br from-[#123527] via-[#0E231C] to-[#0C1512]",
-    glow: "bg-mint/20",
+    glow: "glow-mint",
     chip: "bg-mint text-coal",
     icon: Wallet,
     Visual: PayoutVisual,
@@ -289,7 +289,7 @@ const PRODUCTS = [
     desc: "Utilities, mobile and broadband in a single dashboard — pay your way with UPI, cards or net banking.",
     features: ["One-tap bill pay", "Every payment mode", "Real-time tracking"],
     bg: "bg-gradient-to-br from-[#173042] via-[#101F2B] to-[#0C1512]",
-    glow: "bg-sky/20",
+    glow: "glow-sky",
     chip: "bg-sky text-coal",
     icon: Receipt,
     Visual: BillVisual,
@@ -334,7 +334,7 @@ export default function ProductStack() {
               >
                 <div
                   className={cn(
-                    "pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full blur-[110px]",
+                    "pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full ",
                     p.glow
                   )}
                 />

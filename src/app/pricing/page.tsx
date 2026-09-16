@@ -96,7 +96,7 @@ export default function PricingPage() {
       {/* Hero */}
       <section className="relative overflow-hidden pb-14 pt-36 sm:pt-40">
         <div className="dot-grid pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_65%_55%_at_50%_25%,black,transparent)]" />
-        <div className="pointer-events-none absolute -top-32 left-1/2 h-[420px] w-[620px] -translate-x-1/2 rounded-full bg-volt/10 blur-[140px]" />
+        <div className="pointer-events-none absolute -top-32 left-1/2 h-[420px] w-[620px] -translate-x-1/2 rounded-full glow-volt" />
         <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6">
           <SectionTag index="◆" label="Pricing" />
           <motion.h1
