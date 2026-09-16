@@ -6,6 +6,7 @@ export type Post = {
   read: string;
   excerpt: string;
   accent: string;
+  image: string;
   content: Array<{ h?: string; p: string }>;
 };
 
@@ -15,16 +16,19 @@ export const CATEGORIES = [
   "Loyalty Programs",
   "Corporate Gifting",
   "Rewards & Recognition",
+  "UPI Engage",
+  "Top Loyalty Companies in India",
   "General",
 ];
 
 export const POSTS: Post[] = [
   {
     slug: "why-budgetree-is-one-of-the-best-loyalty-companies-in-india",
+    image: "/images/live/blog-loyalty-best.png",
     title: "Why Budgetree Is One of the Best Loyalty Companies in India",
     category: "Loyalty Programs",
     date: "Sep 7, 2026",
-    read: "4 min read",
+    read: "2 min read",
     excerpt:
       "Loyalty is no longer just about points, cashback or rewards. Brands need a complete ecosystem that can engage, incentivize, retain and grow their entire network.",
     accent: "from-lilac/80 to-[#7C5CFF]/60",
@@ -48,10 +52,11 @@ export const POSTS: Post[] = [
   },
   {
     slug: "upi-mdr-2026-explained-guide-for-businesses",
+    image: "/images/live/blog-mdr.png",
     title: "UPI MDR 2026 Explained: The Complete Guide for Merchants and Businesses",
     category: "UPI & Payouts",
     date: "Sep 16, 2026",
-    read: "5 min read",
+    read: "10 min read",
     excerpt:
       "NPCI's new 0.4% UPI MDR takes effect 15 October 2026 on merchant payments above ₹2,000, capped at ₹300. Consumers and small merchants stay exempt — here's what businesses must know.",
     accent: "from-gold/80 to-[#FF8A3D]/60",
@@ -75,6 +80,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "budgetree-digital-payments-rewards-loyalty",
+    image: "/images/live/blog-digital.png",
     title: "How Budgetree is Connecting Digital Payments, Rewards & Loyalty for Modern Businesses",
     category: "General",
     date: "Sep 4, 2026",
@@ -101,10 +107,11 @@ export const POSTS: Post[] = [
   },
   {
     slug: "best-payout-apis-in-india-budgetree",
+    image: "/images/live/blog-payout-apis.png",
     title: "Best Payout APIs in India: RazorpayX, SiriPay, Cashfree, Bulkpe, Paytm & Decentro",
     category: "UPI & Payouts",
     date: "Sep 4, 2026",
-    read: "6 min read",
+    read: "9 min read",
     excerpt:
       "Indian businesses have moved from manual payments to automated payouts. Here's how the leading payout APIs compare for NBFCs, marketplaces, logistics and e-commerce.",
     accent: "from-sky/80 to-[#3D7BFF]/60",
@@ -127,10 +134,11 @@ export const POSTS: Post[] = [
   },
   {
     slug: "what-is-upi-how-unified-payments-interface-works-in-india",
+    image: "/images/live/blog-upi.png",
     title: "What Is UPI? How Unified Payments Interface Works in India",
     category: "UPI & Payouts",
     date: "Sep 4, 2026",
-    read: "4 min read",
+    read: "6 min read",
     excerpt:
       "UPI changed how India sends and receives money — from kirana stores to enterprise payouts. A plain-English explainer on how it works under the hood.",
     accent: "from-volt/80 to-mint/60",
@@ -153,10 +161,11 @@ export const POSTS: Post[] = [
   },
   {
     slug: "planning-janmashtami-gifts-for-your-team-supergift-card",
+    image: "/images/live/super.jpeg",
     title: "Planning Janmashtami Gifts for Your Team? Here's Why SuperGift Card Wins",
     category: "Corporate Gifting",
     date: "Sep 3, 2026",
-    read: "3 min read",
+    read: "7 min read",
     excerpt:
       "SuperGift Card makes festive corporate gifting simple and personalized — recipients choose what they want, across digital or physical options.",
     accent: "from-[#FF8AB2]/80 to-[#B44DFF]/60",
@@ -179,10 +188,11 @@ export const POSTS: Post[] = [
   },
   {
     slug: "upi-engage",
+    image: "/images/live/blog-engage.png",
     title: "UPI Engage: Turning Every UPI Transaction into an Opportunity",
-    category: "UPI & Payouts",
+    category: "UPI Engage",
     date: "Sep 2, 2026",
-    read: "4 min read",
+    read: "5 min read",
     excerpt:
       "Payments are becoming instant. Rewards should be too. UPI Engage turns everyday transactions into loyalty moments that bring customers back.",
     accent: "from-gold/80 to-[#FF8A3D]/60",
@@ -205,6 +215,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "how-to-design-a-rewards-program-that-actually-works",
+    image: "/images/live/blog-rewards.png",
     title: "How to Design a Rewards Program That Actually Works",
     category: "Rewards & Recognition",
     date: "Aug 18, 2026",
@@ -232,10 +243,11 @@ export const POSTS: Post[] = [
   },
   {
     slug: "the-future-of-consumer-retailer-loyalty-in-india-is-instant",
+    image: "/images/live/blog-future.png",
     title: "The Future of Consumer & Retailer Loyalty in India Is Instant",
-    category: "Loyalty Programs",
+    category: "Top Loyalty Companies in India",
     date: "Aug 19, 2026",
-    read: "4 min read",
+    read: "2 min read",
     excerpt:
       "With UPI as the preferred way to pay, brands can make loyalty more immediate, simpler and far more effective than points-on-a-card.",
     accent: "from-mint/80 to-[#0EA472]/60",

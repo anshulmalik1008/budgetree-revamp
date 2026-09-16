@@ -221,6 +221,15 @@ export default function AboutPage() {
               instant, personal and measurable.
             </p>
           </Reveal>
+          <Reveal delay={0.2}>
+            <div className="relative mt-12 overflow-hidden rounded-[2rem] border border-line/10 bg-raise shadow-card">
+              <img
+                src="/images/live/about.svg"
+                alt="The Budgetree rewards ecosystem"
+                className="h-auto w-full"
+              />
+            </div>
+          </Reveal>
         </div>
       </section>
 

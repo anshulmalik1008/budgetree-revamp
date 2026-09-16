@@ -90,10 +90,12 @@ export default function BlogPostPage() {
               post.accent
             )}
           >
-            <div className="dot-grid-dark absolute inset-0 opacity-60" />
-            <span className="absolute -bottom-8 -right-4 select-none font-display text-[10rem] font-bold leading-none text-coal/15">
-              ✦
-            </span>
+            <img
+              src={post.image}
+              alt={post.title}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-coal/50 to-transparent" />
           </motion.div>
 
           {/* Body */}
@@ -138,8 +140,12 @@ export default function BlogPostPage() {
                   href={`/blog/${r.slug}`}
                   className="group flex h-full flex-col overflow-hidden rounded-3xl border border-line/10 bg-base transition-all duration-300 hover:-translate-y-1.5 hover:border-acc/40"
                 >
-                  <div className={cn("relative h-28 bg-gradient-to-br", r.accent)}>
-                    <div className="dot-grid-dark absolute inset-0 opacity-50" />
+                  <div className={cn("relative h-28 overflow-hidden bg-gradient-to-br", r.accent)}>
+                    <img
+                      src={r.image}
+                      alt={r.title}
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
                   </div>
                   <div className="flex flex-1 flex-col p-6">
                     <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-acc">

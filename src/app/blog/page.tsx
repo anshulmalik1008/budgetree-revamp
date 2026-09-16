@@ -97,11 +97,13 @@ export default function BlogPage() {
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </span>
                 </div>
-                <div className={cn("relative min-h-[220px] bg-gradient-to-br", featured.accent)}>
-                  <div className="dot-grid-dark absolute inset-0 opacity-50" />
-                  <span className="absolute bottom-6 right-6 font-display text-7xl font-bold text-coal/20">
-                    ✦
-                  </span>
+                <div className={cn("relative min-h-[220px] overflow-hidden bg-gradient-to-br", featured.accent)}>
+                  <img
+                    src={featured.image}
+                    alt={featured.title}
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-coal/40 to-transparent" />
                 </div>
               </a>
             </Reveal>
@@ -119,8 +121,12 @@ export default function BlogPage() {
                   href={`/blog/${p.slug}`}
                   className="group flex h-full flex-col overflow-hidden rounded-3xl border border-line/10 bg-raise transition-all duration-300 hover:-translate-y-1.5 hover:border-acc/40"
                 >
-                  <div className={cn("relative h-36 bg-gradient-to-br", p.accent)}>
-                    <div className="dot-grid-dark absolute inset-0 opacity-50" />
+                  <div className={cn("relative h-36 overflow-hidden bg-gradient-to-br", p.accent)}>
+                    <img
+                      src={p.image}
+                      alt={p.title}
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
                     <span className="absolute left-4 top-4 rounded-full bg-coal/80 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-paper">
                       {p.category}
                     </span>

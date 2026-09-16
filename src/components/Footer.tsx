@@ -22,6 +22,7 @@ const COLS: Array<{
       { label: "About us", href: "/about" },
       { label: "Solutions", href: "/solutions" },
       { label: "Blog", href: "/blog" },
+      { label: "News", href: "/news-page" },
       { label: "Contact", href: "/contact" },
       { label: "Book a demo", href: "/demo" },
     ],
