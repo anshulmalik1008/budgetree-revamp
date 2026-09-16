@@ -149,6 +149,15 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(0.8);
 }
 
+/* Drag rail: scrollable but with the scrollbar hidden (drag instead) */
+.drag-rail {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.drag-rail::-webkit-scrollbar {
+  display: none;
+}
+
 /* Anchored sections must not hide under the fixed navbar */
 section[id],
 div[id] {

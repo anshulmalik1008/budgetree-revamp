@@ -10,7 +10,7 @@ import {
   PartyPopper,
   ClipboardCheck,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type PointerEvent as RPointerEvent } from "react";
 import { Reveal, SectionTag, cn } from "./ui";
 
 const CARDS = [
@@ -70,38 +70,103 @@ const CARDS = [
   },
 ];
 
+/* Horizontal rail built on native scrolling:
+   - touch / trackpad / shift+wheel scroll natively (with real inertia)
+   - mouse users get grab-and-drag via pointer capture
+   This is far more robust than transform-based drag libraries. */
 export default function DragRail() {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [range, setRange] = useState({ left: 0, right: 0 });
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{
+    id: number;
+    startX: number;
+    startScroll: number;
+    moved: boolean;
+    captured: boolean;
+  } | null>(null);
+  const [canLeft, setCanLeft] = useState(false);
+  const [canRight, setCanRight] = useState(false);
+
+  function updateEdges() {
+    const el = scrollerRef.current;
+    if (!el) return;
+    setCanLeft(el.scrollLeft > 4);
+    setCanRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+  }
 
   useEffect(() => {
-    function measure() {
-      const track = trackRef.current;
-      const wrap = wrapRef.current;
-      if (!track || !wrap) return;
-      // The track is w-max, so its own clientWidth always equals its
-      // scrollWidth (overflow was computed as 0 → drag was locked).
-      // Compare the track's full content width against the *visible*
-      // wrapper width instead.
-      const overflow = track.scrollWidth - wrap.clientWidth;
-      setRange({ left: -Math.max(overflow, 0), right: 0 });
-    }
-    measure();
+    updateEdges();
+    const el = scrollerRef.current;
+    if (!el) return;
     let ro: ResizeObserver | null = null;
     if (typeof ResizeObserver !== "undefined") {
-      ro = new ResizeObserver(measure);
-      if (wrapRef.current) ro.observe(wrapRef.current);
-      if (trackRef.current) ro.observe(trackRef.current);
+      ro = new ResizeObserver(updateEdges);
+      ro.observe(el);
     }
-    window.addEventListener("resize", measure);
-    // Re-measure once webfonts finish loading (card text widths settle)
-    document.fonts?.ready?.then(measure).catch(() => {});
+    window.addEventListener("resize", updateEdges);
+    document.fonts?.ready?.then(updateEdges).catch(() => {});
     return () => {
       ro?.disconnect();
-      window.removeEventListener("resize", measure);
+      window.removeEventListener("resize", updateEdges);
     };
   }, []);
+
+  function onPointerDown(e: RPointerEvent<HTMLDivElement>) {
+    // Touch & pen already scroll natively; only hijack the mouse.
+    if (e.pointerType !== "mouse" || e.button !== 0) return;
+    const el = scrollerRef.current;
+    if (!el) return;
+    dragRef.current = {
+      id: e.pointerId,
+      startX: e.clientX,
+      startScroll: el.scrollLeft,
+      moved: false,
+      captured: false,
+    };
+  }
+
+  function onPointerMove(e: RPointerEvent<HTMLDivElement>) {
+    const st = dragRef.current;
+    const el = scrollerRef.current;
+    if (!st || !el || e.pointerId !== st.id) return;
+    const dx = e.clientX - st.startX;
+    if (!st.moved && Math.abs(dx) > 6) {
+      st.moved = true;
+      // Capture only once it's a drag, so plain clicks still reach links.
+      try {
+        el.setPointerCapture(e.pointerId);
+        st.captured = true;
+      } catch {
+        /* ignore */
+      }
+    }
+    if (st.moved) el.scrollLeft = st.startScroll - dx;
+  }
+
+  function onPointerUp(e: RPointerEvent<HTMLDivElement>) {
+    const st = dragRef.current;
+    const el = scrollerRef.current;
+    dragRef.current = null;
+    if (!st || !el) return;
+    if (st.captured) {
+      try {
+        el.releasePointerCapture(e.pointerId);
+      } catch {
+        /* ignore */
+      }
+      if (st.moved) {
+        // Swallow the click that follows a drag so links never misfire.
+        const swallow = (ev: Event) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+        };
+        el.addEventListener("click", swallow, { capture: true, once: true });
+        window.setTimeout(
+          () => el.removeEventListener("click", swallow, true),
+          80
+        );
+      }
+    }
+  }
 
   return (
     <section className="relative overflow-hidden bg-raise py-24 sm:py-32">
@@ -133,18 +198,32 @@ export default function DragRail() {
         </div>
       </div>
 
-      <Reveal delay={0.1} className="mt-12">
-        <div ref={wrapRef} className="cursor-grab overflow-hidden active:cursor-grabbing">
-          <motion.div
-            ref={trackRef}
-            drag="x"
-            dragConstraints={range}
-            dragElastic={0.08}
-            dragTransition={{ bounceStiffness: 380, bounceDamping: 32 }}
-            whileTap={{ cursor: "grabbing" }}
-            style={{ touchAction: "pan-y" }}
-            className="flex w-max gap-4 px-4 sm:gap-5 sm:px-6 lg:px-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))]"
-          >
+      <Reveal delay={0.1} className="relative mt-12">
+        {/* Edge fades */}
+        <div
+          className={cn(
+            "pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-raise to-transparent transition-opacity duration-300 sm:w-24",
+            canLeft ? "opacity-100" : "opacity-0"
+          )}
+        />
+        <div
+          className={cn(
+            "pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-raise to-transparent transition-opacity duration-300 sm:w-24",
+            canRight ? "opacity-100" : "opacity-0"
+          )}
+        />
+
+        <div
+          ref={scrollerRef}
+          onScroll={updateEdges}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+          onDragStart={(e) => e.preventDefault()}
+          className="drag-rail cursor-grab overflow-x-auto overscroll-x-contain active:cursor-grabbing"
+        >
+          <div className="flex w-max gap-4 px-4 sm:gap-5 sm:px-6 lg:px-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))]">
             {CARDS.map((c) => (
               <article
                 key={c.title}
@@ -191,7 +270,7 @@ export default function DragRail() {
                 <span className="mt-1 block text-sm text-fg/55">in under 24 hours</span>
               </span>
             </a>
-          </motion.div>
+          </div>
         </div>
       </Reveal>
     </section>
