@@ -5,3 +5,4 @@ data/*.json
 .env*.local
 *.log
 .DS_Store
+tsconfig.tsbuildinfo

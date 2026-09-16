@@ -3,6 +3,7 @@
 import {
   AnimatePresence,
   motion,
+  useMotionValue,
   useScroll,
   useSpring,
 } from "framer-motion";
@@ -19,40 +20,39 @@ export function ScrollProgress() {
   });
   return (
     <motion.div
-      className="fixed inset-x-0 top-0 z-[70] h-[3px] origin-left bg-gradient-to-r from-mint via-volt to-gold"
+      className="fixed inset-x-0 top-0 z-[70] h-[3px] origin-left bg-gradient-to-r from-mint via-volt to-gold will-change-transform"
       style={{ scaleX }}
     />
   );
 }
 
-/* Soft glow that follows the cursor (desktop only) */
+/* Soft glow that follows the cursor (desktop only).
+   Driven purely by motion values + springs so mouse movement never
+   triggers React re-renders — keeps scrolling & hovering buttery. */
 export function CursorGlow() {
-  const [pos, setPos] = useState({ x: -600, y: -600 });
   const [fine, setFine] = useState(false);
+  const x = useMotionValue(-600);
+  const y = useMotionValue(-600);
+  const sx = useSpring(x, { stiffness: 90, damping: 22, mass: 0.5 });
+  const sy = useSpring(y, { stiffness: 90, damping: 22, mass: 0.5 });
 
   useEffect(() => {
     const mq = window.matchMedia("(pointer: fine)");
-    setFine(mq.matches);
     if (!mq.matches) return;
-    let raf = 0;
+    setFine(true);
     const onMove = (e: globalThis.MouseEvent) => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() =>
-        setPos({ x: e.clientX, y: e.clientY })
-      );
+      x.set(e.clientX);
+      y.set(e.clientY);
     };
-    window.addEventListener("mousemove", onMove);
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      cancelAnimationFrame(raf);
-    };
-  }, []);
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => window.removeEventListener("mousemove", onMove);
+  }, [x, y]);
 
   if (!fine) return null;
   return (
-    <div
-      className="pointer-events-none fixed z-[4] h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-volt/[0.055] blur-[110px]"
-      style={{ left: pos.x, top: pos.y }}
+    <motion.div
+      style={{ x: sx, y: sy }}
+      className="pointer-events-none fixed left-0 top-0 z-[4] -ml-[260px] -mt-[260px] h-[520px] w-[520px] rounded-full bg-volt/[0.055] blur-[110px] will-change-transform"
     />
   );
 }

@@ -148,3 +148,33 @@ input[type="range"]::-moz-range-thumb {
 input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(0.8);
 }
+
+/* Anchored sections must not hide under the fixed navbar */
+section[id],
+div[id] {
+  scroll-margin-top: 92px;
+}
+
+/* Reserve scrollbar space so the layout never shifts horizontally while scrolling */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Respect users (and low-end devices) that prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-marquee,
+  .animate-marquee-fast,
+  .animate-marquee-slow,
+  .animate-marquee-rev,
+  .animate-float,
+  .animate-float2,
+  .animate-blob,
+  .animate-spin-slow,
+  .animate-pulse-ring,
+  .animate-shimmer {
+    animation: none !important;
+  }
+}

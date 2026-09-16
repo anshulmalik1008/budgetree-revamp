@@ -145,6 +145,7 @@ export default function Testimonials() {
                     if (info.offset.x < -70) go(index + 1, 1);
                     else if (info.offset.x > 70) go(index - 1, -1);
                   }}
+                  style={{ touchAction: "pan-y" }}
                   className="cursor-grab active:cursor-grabbing"
                 >
                   <blockquote className="font-serifit text-2xl italic leading-snug sm:text-[1.75rem]">

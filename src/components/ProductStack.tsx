@@ -303,7 +303,7 @@ export default function ProductStack() {
         <SectionTag index="03" label="Product suite" />
         <div className="mt-5 max-w-3xl">
           <Reveal delay={0.05}>
-            <h2 className="font-display text-4xl font-bold leading-[1.02] tracking-tight text-paper sm:text-5xl lg:text-6xl">
+            <h2 className="font-display text-4xl font-bold leading-[1.02] tracking-tight text-fg sm:text-5xl lg:text-6xl">
               One complete stack for{" "}
               <span className="font-serifit font-normal italic text-acc">
                 all things rewards.
@@ -311,7 +311,7 @@ export default function ProductStack() {
             </h2>
           </Reveal>
           <Reveal delay={0.12}>
-            <p className="mt-5 text-base leading-relaxed text-paper/60 sm:text-lg">
+            <p className="mt-5 text-base leading-relaxed text-fg/60 sm:text-lg">
               Scroll through the suite — every product shares one dashboard,
               one API and one catalog. Keep scrolling, they stack.
             </p>
@@ -338,7 +338,7 @@ export default function ProductStack() {
                     p.glow
                   )}
                 />
-                <span className="text-stroke-paper pointer-events-none absolute -top-4 right-6 select-none font-display text-[7rem] font-bold leading-none opacity-40 sm:text-[9rem]">
+                <span className="text-stroke-paper pointer-events-none absolute -top-2 right-4 select-none font-display text-[4.5rem] font-bold leading-none opacity-25 sm:-top-4 sm:right-6 sm:text-[9rem] sm:opacity-40">
                   0{i + 1}
                 </span>
                 <div className="relative grid items-center gap-8 p-7 sm:p-10 lg:grid-cols-2 lg:gap-6 lg:p-12">

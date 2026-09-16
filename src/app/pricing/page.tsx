@@ -203,7 +203,7 @@ export default function PricingPage() {
               >
                 {p.desc}
               </p>
-              <div className="mt-5 flex h-[72px] items-end">
+              <div className="mt-5 flex min-h-[72px] items-end">
                 <AnimatePresence mode="wait">
                   {p.monthly === null ? (
                     <motion.span

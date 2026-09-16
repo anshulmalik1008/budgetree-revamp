@@ -37,7 +37,7 @@ function BrandRow({
     <div className="marquee-paused overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
       <div
         className={cn(
-          "flex w-max gap-4 py-2",
+          "flex w-max gap-4 py-2 will-change-transform",
           reverse ? "animate-marquee-rev" : "animate-marquee-slow"
         )}
       >
@@ -99,7 +99,7 @@ export function Strip({
     >
       <div
         className={cn(
-          "flex w-max items-center gap-6 pr-6 sm:gap-10 sm:pr-10",
+          "flex w-max items-center gap-6 pr-6 will-change-transform sm:gap-10 sm:pr-10",
           reverse
             ? "animate-marquee-rev"
             : fast

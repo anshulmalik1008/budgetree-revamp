@@ -71,19 +71,36 @@ const CARDS = [
 ];
 
 export default function DragRail() {
+  const wrapRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [range, setRange] = useState({ left: 0, right: 0 });
 
   useEffect(() => {
     function measure() {
-      const el = trackRef.current;
-      if (!el) return;
-      const overflow = el.scrollWidth - el.clientWidth;
+      const track = trackRef.current;
+      const wrap = wrapRef.current;
+      if (!track || !wrap) return;
+      // The track is w-max, so its own clientWidth always equals its
+      // scrollWidth (overflow was computed as 0 → drag was locked).
+      // Compare the track's full content width against the *visible*
+      // wrapper width instead.
+      const overflow = track.scrollWidth - wrap.clientWidth;
       setRange({ left: -Math.max(overflow, 0), right: 0 });
     }
     measure();
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(measure);
+      if (wrapRef.current) ro.observe(wrapRef.current);
+      if (trackRef.current) ro.observe(trackRef.current);
+    }
     window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    // Re-measure once webfonts finish loading (card text widths settle)
+    document.fonts?.ready?.then(measure).catch(() => {});
+    return () => {
+      ro?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
   }, []);
 
   return (
@@ -117,14 +134,16 @@ export default function DragRail() {
       </div>
 
       <Reveal delay={0.1} className="mt-12">
-        <div className="cursor-grab overflow-hidden active:cursor-grabbing">
+        <div ref={wrapRef} className="cursor-grab overflow-hidden active:cursor-grabbing">
           <motion.div
             ref={trackRef}
             drag="x"
             dragConstraints={range}
             dragElastic={0.08}
+            dragTransition={{ bounceStiffness: 380, bounceDamping: 32 }}
             whileTap={{ cursor: "grabbing" }}
-            className="flex w-max gap-5 px-4 sm:px-6 lg:px-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))]"
+            style={{ touchAction: "pan-y" }}
+            className="flex w-max gap-4 px-4 sm:gap-5 sm:px-6 lg:px-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))]"
           >
             {CARDS.map((c) => (
               <article
@@ -137,11 +156,11 @@ export default function DragRail() {
                   <span className="absolute left-4 top-4 rounded-full bg-coal/80 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-paper backdrop-blur">
                     {c.tag}
                   </span>
-                  <div className="absolute bottom-4 left-4 flex items-baseline gap-2">
-                    <span className="font-display text-5xl font-bold text-coal drop-shadow-sm">
+                  <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                    <span className="font-display text-4xl font-bold text-coal drop-shadow-sm sm:text-5xl">
                       {c.metric}
                     </span>
-                    <span className="text-xs font-bold uppercase tracking-widest text-coal/70">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-coal/70 sm:text-xs">
                       {c.metricLabel}
                     </span>
                   </div>
@@ -159,6 +178,7 @@ export default function DragRail() {
             {/* End card */}
             <a
               href="/demo"
+              draggable={false}
               className="grid w-[240px] shrink-0 select-none place-items-center rounded-3xl border border-dashed border-acc/40 bg-acc/5 text-center transition hover:bg-acc/10"
             >
               <span>

@@ -60,25 +60,39 @@ const STATS = [
 
 const RING = 2 * Math.PI * 15;
 
-export default function Hero() {
+/* Isolated so its 2.3s interval re-renders only this tiny span, not the hero */
+function WordRotator() {
   const [word, setWord] = useState(0);
-  const [items, setItems] = useState<FeedItem[]>([
-    { ...POOL[0], id: 0 },
-    { ...POOL[1], id: 1 },
-  ]);
-  const [sim, setSim] = useState<"idle" | "sending" | "done">("idle");
-  const idRef = useRef(2);
-
   useEffect(() => {
     const t = setInterval(() => setWord((w) => (w + 1) % WORDS.length), 2300);
     return () => clearInterval(t);
   }, []);
+  return (
+    <span className="inline-block overflow-hidden pb-2 pr-3">
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={word}
+          initial={{ y: "105%", opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: "-105%", opacity: 0 }}
+          transition={{ duration: 0.5, ease: EASE }}
+          className="inline-block font-serifit font-normal italic text-acc"
+        >
+          {WORDS[word]}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
 
-  function pushFeed(item: Omit<FeedItem, "id">) {
-    idRef.current += 1;
-    const id = idRef.current;
-    setItems((prev) => [...prev.slice(-1), { ...item, id }]);
-  }
+/* Isolated so the 2.8s feed tick re-renders only the feed, not the hero.
+   Listens for "bt-feed" so the "send ₹1,000" simulator can push items in. */
+function LiveFeed() {
+  const idRef = useRef(2);
+  const [items, setItems] = useState<FeedItem[]>([
+    { ...POOL[0], id: 0 },
+    { ...POOL[1], id: 1 },
+  ]);
 
   useEffect(() => {
     let n = 2;
@@ -92,16 +106,64 @@ export default function Hero() {
     return () => clearInterval(t);
   }, []);
 
+  useEffect(() => {
+    const onPush = (e: Event) => {
+      const detail = (e as CustomEvent<Omit<FeedItem, "id">>).detail;
+      idRef.current += 1;
+      const id = idRef.current;
+      setItems((prev) => [...prev.slice(-1), { ...detail, id }]);
+    };
+    window.addEventListener("bt-feed", onPush);
+    return () => window.removeEventListener("bt-feed", onPush);
+  }, []);
+
+  return (
+    <div className="absolute -bottom-10 left-0 w-60 space-y-2 sm:left-2 sm:w-64">
+      <AnimatePresence mode="popLayout">
+        {items.map((item) => {
+          const Icon = FEED_ICONS[item.icon];
+          return (
+            <motion.div
+              key={item.id}
+              layout
+              initial={{ opacity: 0, y: 18, scale: 0.94 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.4, ease: EASE }}
+              className="flex items-center gap-2.5 rounded-xl border border-line/10 bg-raise/90 px-3 py-2.5 shadow-card backdrop-blur-xl"
+            >
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-acc/15 text-acc">
+                <Icon className="h-4 w-4" />
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-xs font-bold text-fg">{item.title}</p>
+                <p className="truncate text-[11px] text-fg/55">{item.sub}</p>
+              </div>
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+export default function Hero() {
+  const [sim, setSim] = useState<"idle" | "sending" | "done">("idle");
+
   function simulate() {
     if (sim !== "idle") return;
     setSim("sending");
     window.setTimeout(() => {
       setSim("done");
-      pushFeed({
-        icon: "gift",
-        title: "You sent ₹1,000",
-        sub: "Test reward · delivered in 3s",
-      });
+      window.dispatchEvent(
+        new CustomEvent("bt-feed", {
+          detail: {
+            icon: "gift",
+            title: "You sent ₹1,000",
+            sub: "Test reward · delivered in 3s",
+          },
+        })
+      );
       window.setTimeout(() => setSim("idle"), 2800);
     }, 1500);
   }
@@ -195,20 +257,7 @@ export default function Hero() {
               </span>
             ))}
             <br />
-            <span className="inline-block overflow-hidden pb-2">
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={word}
-                  initial={{ y: "105%", opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: "-105%", opacity: 0 }}
-                  transition={{ duration: 0.5, ease: EASE }}
-                  className="inline-block font-serifit font-normal italic text-acc"
-                >
-                  {WORDS[word]}
-                </motion.span>
-              </AnimatePresence>
-            </span>
+            <WordRotator />
           </h1>
 
           <motion.p
@@ -618,33 +667,8 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          {/* Live activity feed */}
-          <div className="absolute -bottom-10 left-0 w-60 space-y-2 sm:left-2 sm:w-64">
-            <AnimatePresence mode="popLayout">
-              {items.map((item) => {
-                const Icon = FEED_ICONS[item.icon];
-                return (
-                  <motion.div
-                    key={item.id}
-                    layout
-                    initial={{ opacity: 0, y: 18, scale: 0.94 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.4, ease: EASE }}
-                    className="flex items-center gap-2.5 rounded-xl border border-line/10 bg-raise/90 px-3 py-2.5 shadow-card backdrop-blur-xl"
-                  >
-                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-acc/15 text-acc">
-                      <Icon className="h-4 w-4" />
-                    </span>
-                    <div className="min-w-0">
-                      <p className="truncate text-xs font-bold text-fg">{item.title}</p>
-                      <p className="truncate text-[11px] text-fg/55">{item.sub}</p>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
-          </div>
+          {/* Live activity feed (self-contained component) */}
+          <LiveFeed />
         </motion.div>
       </div>
 

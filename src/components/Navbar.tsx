@@ -240,10 +240,10 @@ export default function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="noise fixed inset-0 z-40 flex flex-col justify-end bg-raise/95 px-6 pb-10 pt-28 backdrop-blur-xl lg:hidden"
+            className="noise fixed inset-0 z-40 flex flex-col overflow-y-auto bg-raise/95 px-6 pb-10 pt-28 backdrop-blur-xl lg:hidden"
           >
             <div className="pointer-events-none absolute -right-24 top-1/3 h-72 w-72 rounded-full bg-volt/15 blur-[100px]" />
-            <div className="space-y-1">
+            <div className="mt-auto space-y-1">
               {[
                 { label: "Home", href: "/" },
                 ...LINKS,
