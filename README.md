@@ -88,3 +88,4 @@ src/
 public/images/      # official logo + AI-generated product visuals
 data/               # lead + newsletter storage (JSON lines, git-ignored in real use)
 ```
+# budgetree-revamp
