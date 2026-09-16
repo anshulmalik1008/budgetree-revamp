@@ -63,9 +63,9 @@ const PRODUCTS = [
 const LINKS = [
   { label: "Why BudgeTree", href: "/#why" },
   { label: "Products", href: "/#products", dropdown: true },
-  { label: "ROI", href: "/#roi" },
-  { label: "Customers", href: "/#customers" },
-  { label: "Integrations", href: "/#integrations" },
+  { label: "Solutions", href: "/solutions" },
+  { label: "Blog", href: "/blog" },
+  { label: "About", href: "/about" },
 ];
 
 export default function Navbar() {
@@ -128,7 +128,7 @@ export default function Navbar() {
             </a>
 
             {/* Desktop links */}
-            <div className="hidden items-center gap-1 lg:flex">
+            <div className="hidden items-center gap-0.5 lg:flex">
               {LINKS.map((l) =>
                 l.dropdown ? (
                   <div
@@ -139,7 +139,7 @@ export default function Navbar() {
                   >
                     <a
                       href={l.href}
-                      className="rounded-full px-4 py-2 text-sm font-medium text-fg/75 transition hover:bg-line/10 hover:text-fg"
+                      className="rounded-full px-3 py-2 text-sm font-medium text-fg/75 transition hover:bg-line/10 hover:text-fg xl:px-4"
                     >
                       {l.label}
                     </a>
@@ -191,7 +191,7 @@ export default function Navbar() {
                   <a
                     key={l.label}
                     href={l.href}
-                    className="rounded-full px-4 py-2 text-sm font-medium text-fg/75 transition hover:bg-line/10 hover:text-fg"
+                    className="rounded-full px-3 py-2 text-sm font-medium text-fg/75 transition hover:bg-line/10 hover:text-fg xl:px-4"
                   >
                     {l.label}
                   </a>
@@ -203,9 +203,15 @@ export default function Navbar() {
               <ThemeToggle />
               <a
                 href="/pricing"
-                className="rounded-full px-4 py-2 text-sm font-medium text-fg/75 transition hover:text-fg"
+                className="rounded-full px-3 py-2 text-sm font-medium text-fg/75 transition hover:text-fg xl:px-4"
               >
                 Pricing
+              </a>
+              <a
+                href="/contact"
+                className="rounded-full px-3 py-2 text-sm font-medium text-fg/75 transition hover:text-fg xl:px-4"
+              >
+                Contact
               </a>
               <Magnetic strength={0.25}>
                 <a
@@ -248,6 +254,7 @@ export default function Navbar() {
                 { label: "Home", href: "/" },
                 ...LINKS,
                 { label: "Pricing", href: "/pricing" },
+                { label: "Contact", href: "/contact" },
               ].map((l, i) => (
                 <motion.a
                   key={l.label}

@@ -19,19 +19,31 @@ const COLS: Array<{
   {
     head: "Company",
     links: [
-      { label: "Why BudgeTree", href: "/#why" },
-      { label: "Customers", href: "/#customers" },
-      { label: "ROI calculator", href: "/#roi" },
-      { label: "Integrations", href: "/#integrations" },
-      { label: "FAQ", href: "/#faq" },
+      { label: "About us", href: "/about" },
+      { label: "Solutions", href: "/solutions" },
+      { label: "Blog", href: "/blog" },
+      { label: "Contact", href: "/contact" },
+      { label: "Book a demo", href: "/demo" },
     ],
   },
   {
-    head: "Get started",
+    head: "Services",
     links: [
-      { label: "Pricing", href: "/pricing" },
-      { label: "Book a demo", href: "/demo" },
-      { label: "Talk to sales", href: "/demo" },
+      { label: "SuperGift Card", href: "/services/supergift" },
+      { label: "Corporate Gifts", href: "/services/corporate-gifts" },
+      { label: "Digital QR", href: "/services/digital-qr" },
+      { label: "Gift Card API", href: "/services/gift-card-api" },
+      { label: "Digital Marketing", href: "/services/digital-marketing" },
+      { label: "Software Services", href: "/services/software-services" },
+    ],
+  },
+  {
+    head: "Legal",
+    links: [
+      { label: "Privacy Policy", href: "/legal/privacy-policy" },
+      { label: "Terms & Conditions", href: "/legal/terms-conditions" },
+      { label: "Refund Policy", href: "/legal/refund-policy" },
+      { label: "Disclaimer", href: "/legal/disclaimer" },
     ],
   },
 ];
@@ -66,7 +78,7 @@ export default function Footer() {
               ))}
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
             {COLS.map((c) => (
               <div key={c.head}>
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-fg/40">
