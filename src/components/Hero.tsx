@@ -55,7 +55,7 @@ const STATS = [
   { end: 10, suffix: "M+", label: "Rewards marketplace" },
   { end: 99.99, decimals: 2, suffix: "%", label: "Enterprise uptime" },
   { end: 24, prefix: "<", suffix: "h", label: "Campaign go-live" },
-  { end: 175, suffix: "+", label: "Countries served" },
+  
 ];
 
 const RING = 2 * Math.PI * 15;
