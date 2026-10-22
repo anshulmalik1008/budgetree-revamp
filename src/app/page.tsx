@@ -60,7 +60,7 @@ export default function Home() {
               "Go live in 24h",
               "10M+ rewards",
               "99.99% uptime",
-              "175+ countries",
+              "India",
             ]}
           />
           <Calculator />
