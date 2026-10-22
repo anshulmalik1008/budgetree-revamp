@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { EASE } from "./ui";
 import Logo from "./Logo";
 
-const LETTERS = "BUDGETREE".split("");
+const LETTERS = "budgetree".split("");
 
 export default function Preloader({ onDone }: { onDone: () => void }) {
   const [count, setCount] = useState(0);
