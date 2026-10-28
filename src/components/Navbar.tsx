@@ -10,6 +10,15 @@ import {
   ArrowRight,
   ArrowUpRight,
   Gift,
+  Boxes,
+  Truck,
+  ClipboardList,
+  Database,
+  PackageCheck,
+  Target,
+  Tags,
+  BadgeIndianRupee,
+  Trophy,
   Menu,
   Receipt,
   Sparkles,
@@ -60,6 +69,18 @@ const PRODUCTS = [
   },
 ];
 
+const SUITE_PRODUCTS = [
+  { icon: Truck, name: "Warehouse Management", slug: "warehouse-management", desc: "Manage warehouse operations", color: "bg-azure/15 text-azure" },
+  { icon: Boxes, name: "Sales Force Automation", slug: "sales-force-automation", desc: "Empower your sales teams", color: "bg-jade/15 text-jade" },
+  { icon: ClipboardList, name: "Order Management System", slug: "order-management", desc: "Track orders from start to finish", color: "bg-honey/15 text-honey" },
+  { icon: Database, name: "Product Information Management", slug: "product-information-management", desc: "Keep product data organized", color: "bg-grape/15 text-grape" },
+  { icon: PackageCheck, name: "Inventory Management", slug: "inventory-management", desc: "Control stock across locations", color: "bg-acc/15 text-acc" },
+  { icon: Target, name: "Target Management", slug: "target-management", desc: "Set and monitor team targets", color: "bg-azure/15 text-azure" },
+  { icon: Tags, name: "Scheme & Offers", slug: "scheme-and-offers", desc: "Manage promotions and schemes", color: "bg-jade/15 text-jade" },
+  { icon: BadgeIndianRupee, name: "Pricing Management", slug: "pricing-management", desc: "Manage pricing with confidence", color: "bg-honey/15 text-honey" },
+  { icon: Trophy, name: "Incentive Management", slug: "incentive-management", desc: "Reward sales performance", color: "bg-grape/15 text-grape" },
+];
+
 const LINKS = [
   { label: "Why BudgeTree", href: "/#why" },
   { label: "Products", href: "/#products", dropdown: true },
@@ -73,6 +94,7 @@ export default function Navbar() {
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
   const [drop, setDrop] = useState(false);
+  const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (y) => {
@@ -152,37 +174,36 @@ export default function Navbar() {
                           transition={{ duration: 0.22, ease: EASE }}
                           className="absolute left-1/2 top-full w-[380px] -translate-x-1/2 pt-3"
                         >
-                          <div className="overflow-hidden rounded-2xl border border-line/10 bg-raise p-2 shadow-card">
-                            {PRODUCTS.map((p, i) => (
-                              <motion.a
-                                key={p.name}
-                                href={`/products/${p.slug}`}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: i * 0.04 }}
-                                onClick={() => setDrop(false)}
-                                className="group flex items-center gap-3 rounded-xl p-3 transition hover:bg-line/5"
-                              >
-                                <span
-                                  className={cn(
-                                    "grid h-10 w-10 shrink-0 place-items-center rounded-xl",
-                                    p.color
-                                  )}
-                                >
-                                  <p.icon className="h-5 w-5" />
-                                </span>
-                                <span>
-                                  <span className="flex items-center gap-1.5 text-sm font-semibold text-fg">
-                                    {p.name}
-                                    <ArrowUpRight className="h-3.5 w-3.5 opacity-0 transition group-hover:opacity-100" />
-                                  </span>
-                                  <span className="block text-xs text-fg/55">
-                                    {p.desc}
-                                  </span>
-                                </span>
-                              </motion.a>
-                            ))}
-                          </div>
+                                                     <div className="max-h-[min(75vh,640px)] overflow-y-auto rounded-2xl border border-line/10 bg-raise p-2 shadow-card">
+                             <p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-widest text-fg/45">Rewards & Payments</p>
+                             {PRODUCTS.map((p, i) => (
+                               <motion.a
+                                 key={p.slug}
+                                 href={`/products/${p.slug}`}
+                                 initial={{ opacity: 0, x: -10 }}
+                                 animate={{ opacity: 1, x: 0 }}
+                                 transition={{ delay: i * 0.025 }}
+                                 onClick={() => setDrop(false)}
+                                 className="group flex items-center gap-3 rounded-xl p-2.5 transition hover:bg-line/5"
+                               >
+                                 <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-xl", p.color)}><p.icon className="h-4 w-4" /></span>
+                                 <span><span className="flex items-center gap-1.5 text-sm font-semibold text-fg">{p.name}<ArrowUpRight className="h-3.5 w-3.5 opacity-0 transition group-hover:opacity-100" /></span><span className="block text-xs text-fg/55">{p.desc}</span></span>
+                               </motion.a>
+                             ))}
+                             <div className="my-2 border-t border-line/10" />
+                             <p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-widest text-fg/45">Management Suite</p>
+                             {SUITE_PRODUCTS.map((p) => (
+                               <a
+                                 key={p.slug}
+                                 href={`/products/suite/${p.slug}`}
+                                 onClick={() => setDrop(false)}
+                                 className="group flex items-center gap-3 rounded-xl p-2.5 transition hover:bg-line/5"
+                               >
+                                 <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-xl", p.color)}><p.icon className="h-4 w-4" /></span>
+                                 <span><span className="flex items-center gap-1.5 text-sm font-semibold text-fg">{p.name}<ArrowUpRight className="h-3.5 w-3.5 opacity-0 transition group-hover:opacity-100" /></span><span className="block text-xs text-fg/55">{p.desc}</span></span>
+                               </a>
+                             ))}
+                           </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -252,7 +273,7 @@ export default function Navbar() {
             <div className="mt-auto space-y-1">
               {[
                 { label: "Home", href: "/" },
-                ...LINKS,
+                ...LINKS.filter((l) => !l.dropdown),
                 { label: "Pricing", href: "/pricing" },
                 { label: "Contact", href: "/contact" },
               ].map((l, i) => (
@@ -265,12 +286,34 @@ export default function Navbar() {
                   transition={{ delay: 0.06 * i, duration: 0.45, ease: EASE }}
                   className="group flex items-center justify-between border-b border-line/10 py-4"
                 >
-                  <span className="font-display text-3xl font-bold text-fg">
-                    {l.label}
-                  </span>
-                  <ArrowUpRight className="h-6 w-6 text-acc transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  <span className="font-display text-3xl font-bold text-fg">{l.label}</span>
+                  <ArrowUpRight className="h-6 w-6 text-acc" />
                 </motion.a>
               ))}
+              <button
+                type="button"
+                onClick={() => setMobileProductsOpen((v) => !v)}
+                aria-expanded={mobileProductsOpen}
+                className="flex w-full items-center justify-between border-b border-line/10 py-4 text-left font-display text-3xl font-bold text-fg"
+              >
+                Products <span className="text-xl text-acc">{mobileProductsOpen ? "−" : "+"}</span>
+              </button>
+              {mobileProductsOpen && (
+                <div className="space-y-1 py-3">
+                  <p className="px-2 py-2 text-xs font-bold uppercase tracking-widest text-fg/50">Rewards & Payments</p>
+                  {PRODUCTS.map((p) => (
+                    <a key={p.slug} href={`/products/${p.slug}`} onClick={() => setOpen(false)} className="flex items-center gap-3 rounded-xl px-2 py-3 text-sm text-fg/85 hover:bg-line/5">
+                      <p.icon className="h-5 w-5 text-acc" /> {p.name}
+                    </a>
+                  ))}
+                  <p className="px-2 pb-2 pt-4 text-xs font-bold uppercase tracking-widest text-fg/50">Management Suite</p>
+                  {SUITE_PRODUCTS.map((p) => (
+                    <a key={p.slug} href={`/products/suite/${p.slug}`} onClick={() => setOpen(false)} className="flex items-center gap-3 rounded-xl px-2 py-3 text-sm text-fg/85 hover:bg-line/5">
+                      <p.icon className="h-5 w-5 text-acc" /> {p.name}
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
             <motion.a
               href="/demo"
