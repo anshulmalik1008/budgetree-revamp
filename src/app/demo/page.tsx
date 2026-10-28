@@ -267,19 +267,24 @@ export default function DemoPage() {
                     </h1>
                   </Reveal>
                   <Reveal delay={0.1}>
-                    <ul className="mt-7 space-y-3">
-                      {[
-                        "Live walkthrough of RewardX, LoyaltyX & payouts",
-                        "ROI estimate built from your team size",
-                        "Answers on compliance, TDS & security",
-                        "Zero pressure — no 47-email follow-up sequence",
-                      ].map((t) => (
-                        <li key={t} className="flex items-start gap-2.5 text-sm text-fg/75 sm:text-base">
-                          <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-jade" />
-                          {t}
-                        </li>
-                      ))}
-                    </ul>
+                    
+<ul className="mt-7 space-y-3">
+  {[
+    "Live walkthrough of RewardX, LoyaltyX & payouts",
+    "ROI estimate built from your team size",
+    "Answers on compliance, TDS & security",
+    "Zero pressure — no 47-email follow-up sequence",
+  ].map((t) => (
+    <li
+      key={t}
+      className="flex items-start gap-2.5 text-sm text-slate-900 dark:text-white sm:text-base"
+    >
+      <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" />
+      <span>{t}</span>
+    </li>
+  ))}
+</ul>
+
                   </Reveal>
                   <Reveal delay={0.15}>
                     <div className="relative mt-8 overflow-hidden rounded-3xl border border-line/10">
