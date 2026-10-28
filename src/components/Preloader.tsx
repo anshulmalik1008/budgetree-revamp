@@ -23,7 +23,7 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
 
   useEffect(() => {
     if (count >= 100) {
-      const t = setTimeout(onDone, 2000);
+      const t = setTimeout(onDone, 900);
       return () => clearTimeout(t);
     }
   }, [count, onDone]);
