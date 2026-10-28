@@ -5,10 +5,9 @@ import { useRef, useState } from "react";
 import { AnimatePresence, motion, useInView, useScroll } from "framer-motion";
 import { ArrowRight, ArrowUpRight, Check, Plus } from "lucide-react";
 import { products, type Product } from "@/data/suiteProducts";
-import Icon from "@/components/ui/Icon";
-import Reveal from "@/components/ui/Reveal";
-import CountUp from "@/components/ui/CountUp";
-import Spot from "@/components/ui/Spot";
+import { Reveal, CountUp } from "@/components/ui";
+import Icon from "@/components/Icon";
+import Spot from "@/components/Spot";
 import ProductVisual from "./ProductVisual";
 
 function StepItem({ i, title, text, accent }: { i: number; title: string; text: string; accent: string }) {
@@ -222,7 +221,7 @@ export default function ProductPage({ product }: { product: Product }) {
               <Reveal key={s.label} delay={i * 0.08}>
                 <div className="border-l-2 pl-5" style={{ borderColor: A }}>
                   <p className="font-display text-4xl font-bold tracking-tight sm:text-5xl">
-                    <CountUp value={s.value} decimals={s.decimals} prefix={s.prefix} suffix={s.suffix} />
+                    <CountUp end={s.value} decimals={s.decimals} prefix={s.prefix} suffix={s.suffix} />
                   </p>
                   <p className="mt-2 text-sm leading-snug text-fg/60">{s.label}</p>
                 </div>
