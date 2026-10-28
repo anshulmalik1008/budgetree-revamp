@@ -81,6 +81,31 @@ const COLS: Array<{
     ],
   },
   {
+    head: "Connecting Banking",
+    links: [
+      {
+        label: "Open Current Account",
+        href: "/banking/current-account",
+      },
+      {
+        label: "Premium Application Form",
+        href: "/banking/current-account#apply",
+      },
+      {
+        label: "Current Partners",
+        href: "/banking/partners",
+      },
+      {
+        label: "IDFC FIRST Bank",
+        href: "/banking/partners#idfc",
+      },
+      {
+        label: "Razorpay",
+        href: "/banking/partners#razorpay",
+      },
+    ],
+  },
+  {
     head: "Legal",
     links: [
       { label: "Privacy Policy", href: "/legal/privacy-policy" },
@@ -95,7 +120,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-line/10 bg-raise">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
-        <div className="grid gap-10 lg:grid-cols-[1.1fr_2.5fr]">
+        <div className="grid gap-10 lg:grid-cols-[1fr_3fr]">
           <div>
             <a href="/" aria-label="BudgeTree home">
               <Logo />
@@ -126,9 +151,9 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 xl:grid-cols-5">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3">
             {COLS.map((c) => (
-              <div key={c.head}>
+              <div key={c.head} className="min-w-0">
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-fg/40">
                   {c.head}
                 </p>
