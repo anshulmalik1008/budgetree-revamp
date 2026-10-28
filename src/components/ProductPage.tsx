@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { AnimatePresence, motion, useInView, useScroll } from "framer-motion";
 import { ArrowRight, ArrowUpRight, Check, Plus } from "lucide-react";
-import { products, type Product } from "@/data/products";
+import { products, type Product } from "@/data/suiteProducts";
 import Icon from "@/components/ui/Icon";
 import Reveal from "@/components/ui/Reveal";
 import CountUp from "@/components/ui/CountUp";
@@ -355,7 +355,7 @@ export default function ProductPage({ product }: { product: Product }) {
           <div className="mt-12 grid gap-4 md:grid-cols-3">
             {related.map((p, i) => (
               <Reveal key={p.slug} delay={i * 0.08} className="h-full">
-                <Link href={`/products/${p.slug}`} className="block h-full">
+               <Link href={`/products/suite/${p.slug}`} className="block h-full">
                   <Spot accent={p.accent} className="p-6">
                     <div className="flex items-start justify-between">
                       <span
