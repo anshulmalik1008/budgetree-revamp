@@ -1,3 +1,4 @@
+
 import { Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
 import Logo from "./Logo";
 import NewsletterForm from "./NewsletterForm";
@@ -14,6 +15,47 @@ const COLS: Array<{
       { label: "UPI Rewards", href: "/products/upi-rewards" },
       { label: "Payouts", href: "/products/payouts" },
       { label: "Bill Payments", href: "/products/bill-payments" },
+    ],
+  },
+  {
+    head: "Management Suite",
+    links: [
+      {
+        label: "Warehouse Management",
+        href: "/products/suite/warehouse-management",
+      },
+      {
+        label: "Sales Force Automation",
+        href: "/products/suite/sales-force-automation",
+      },
+      {
+        label: "Order Management System",
+        href: "/products/suite/order-management",
+      },
+      {
+        label: "Product Information Management",
+        href: "/products/suite/product-information-management",
+      },
+      {
+        label: "Inventory Management",
+        href: "/products/suite/inventory-management",
+      },
+      {
+        label: "Target Management",
+        href: "/products/suite/target-management",
+      },
+      {
+        label: "Scheme & Offers",
+        href: "/products/suite/scheme-and-offers",
+      },
+      {
+        label: "Pricing Management",
+        href: "/products/suite/pricing-management",
+      },
+      {
+        label: "Incentive Management",
+        href: "/products/suite/incentive-management",
+      },
     ],
   },
   {
@@ -53,19 +95,23 @@ export default function Footer() {
   return (
     <footer className="border-t border-line/10 bg-raise">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
-        <div className="grid gap-10 lg:grid-cols-[1.3fr_2fr]">
+        <div className="grid gap-10 lg:grid-cols-[1.1fr_2.5fr]">
           <div>
             <a href="/" aria-label="BudgeTree home">
               <Logo />
             </a>
+
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-fg/55">
               Intelligent rewards, loyalty & payout automation for modern
               enterprises. Grow engagement like never before.
             </p>
+
             <p className="mt-6 text-xs font-bold uppercase tracking-[0.2em] text-fg/40">
               Get growth tactics monthly
             </p>
+
             <NewsletterForm />
+
             <div className="mt-6 flex gap-2.5">
               {[Linkedin, Twitter, Instagram, Youtube].map((Icon, i) => (
                 <a
@@ -79,18 +125,20 @@ export default function Footer() {
               ))}
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+
+          <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 xl:grid-cols-5">
             {COLS.map((c) => (
               <div key={c.head}>
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-fg/40">
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-fg/40">
                   {c.head}
                 </p>
+
                 <ul className="mt-4 space-y-2.5">
                   {c.links.map((l) => (
                     <li key={l.label}>
                       <a
                         href={l.href}
-                        className="text-sm text-fg/65 transition hover:text-acc"
+                        className="text-sm leading-relaxed text-fg/65 transition hover:text-acc"
                       >
                         {l.label}
                       </a>
@@ -101,8 +149,10 @@ export default function Footer() {
             ))}
           </div>
         </div>
+
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-line/10 pt-6 text-xs text-fg/40 sm:flex-row">
           <p>© 2026 BudgeTree. All rights reserved.</p>
+
           <p className="flex items-center gap-2">
             Crafted in India
             <span className="h-1.5 w-1.5 rounded-full bg-volt" />
