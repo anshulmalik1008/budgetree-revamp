@@ -1,7 +1,7 @@
 
 "use client";
 
-import type { VisualKey } from "@/data/products";
+import type { VisualKey } from "@/data/suiteProducts";
 
 import WmsVisual from "./WmsVisual";
 import SfaVisual from "./SfaVisual";
