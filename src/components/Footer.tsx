@@ -81,27 +81,36 @@ const COLS: Array<{
     ],
   },
   {
-    head: "Connecting Banking",
+    head: "Neo Plus",
     links: [
       {
-        label: "Open Current Account",
-        href: "/banking/current-account",
+        label: "Current Account",
+        href: "/neo-plus/current-account",
       },
       {
-        label: "Premium Application Form",
-        href: "/banking/current-account#apply",
+        label: "Payouts",
+        href: "/neo-plus/payouts",
       },
       {
-        label: "Current Partners",
-        href: "/banking/partners",
+        label: "Payout Links",
+        href: "/neo-plus/payout-links",
+      },
+    ],
+  },
+  {
+    head: "Developers",
+    links: [
+      {
+        label: "Docs",
+        href: "/developers/docs",
       },
       {
-        label: "IDFC FIRST Bank",
-        href: "/banking/partners#idfc",
+        label: "Integration",
+        href: "/developers/integration",
       },
       {
-        label: "Razorpay",
-        href: "/banking/partners#razorpay",
+        label: "API Reference",
+        href: "/developers/api-reference",
       },
     ],
   },
