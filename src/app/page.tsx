@@ -9,6 +9,7 @@ import { LogoMarquee, Strip } from "@/components/Marquee";
 import WhyUs from "@/components/WhyUs";
 import LaunchSteps from "@/components/LaunchSteps";
 import ProductStack from "@/components/ProductStack";
+import ManagementSuite from "@/components/ManagementSuite";
 import DragRail from "@/components/DragRail";
 import Calculator from "@/components/Calculator";
 import Testimonials from "@/components/Testimonials";
@@ -53,6 +54,7 @@ export default function Home() {
           <WhyUs />
           <LaunchSteps />
           <ProductStack />
+          <ManagementSuite />
           <DragRail />
           <Strip
             outline
