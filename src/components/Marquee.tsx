@@ -6,100 +6,78 @@ import { Reveal, cn } from "./ui";
 
 type Brand = {
   name: string;
-  domain?: string;
-  svg?: string;
-  color?: string;
+  mark: string;
+  color: string;
+  icon?: string;
 };
 
 const ROW_1: Brand[] = [
-  { name: "Pine Labs", domain: "pinelabs.com" },
-  { name: "IDFC FIRST", domain: "idfcfirstbank.com" },
-  { name: "DBS Bank", domain: "dbs.com" },
-  { name: "Razorpay", domain: "razorpay.com", svg: "razorpay", color: "#0B72E7" },
-  { name: "Amazon", domain: "amazon.in", svg: "amazon", color: "#FF9900" },
-  { name: "Flipkart", domain: "flipkart.com", svg: "flipkart", color: "#2874F0" },
-  { name: "Google Wallet", domain: "wallet.google", svg: "googlewallet", color: "#4285F4" },
-  { name: "Myntra", domain: "myntra.com", svg: "myntra", color: "#FF3E6C" },
-  { name: "Canara Bank", domain: "canarabank.com" },
-  { name: "Slice", domain: "sliceit.com" },
-  { name: "Lava", domain: "lavamobiles.com" },
-  { name: "Lifestyle", domain: "lifestylestores.com" },
+  { name: "Pine Labs", mark: "P", color: "#00764E" },
+  { name: "IDFC FIRST", mark: "F", color: "#A71930" },
+  { name: "DBS Bank", mark: "DBS", color: "#E42535" },
+  { name: "Razorpay", mark: "R", color: "#1468C9", icon: "razorpay" },
+  { name: "Amazon", mark: "a", color: "#E18B00", icon: "amazon" },
+  { name: "Flipkart", mark: "f", color: "#2874F0", icon: "flipkart" },
+  { name: "Google Wallet", mark: "G", color: "#4285F4", icon: "googlewallet" },
+  { name: "Myntra", mark: "M", color: "#E63C83", icon: "myntra" },
+  { name: "Canara Bank", mark: "C", color: "#078BB7" },
+  { name: "Slice", mark: "s", color: "#782BEA" },
+  { name: "Lava", mark: "L", color: "#DE2C2C" },
+  { name: "Lifestyle", mark: "L", color: "#C32C60" },
 ];
 
 const ROW_2: Brand[] = [
-  { name: "RED FM", domain: "redfmindia.in" },
-  { name: "Cipla", domain: "cipla.com" },
-  { name: "JSW Paints", domain: "jswpaints.in" },
-  { name: "Astral Pipes", domain: "astralpipes.com" },
-  { name: "Welspun", domain: "welspun.com" },
-  { name: "Sky Decor", domain: "skydecor.in" },
-  { name: "Ground Truth", domain: "groundtruth.com" },
-  { name: "Aranca", domain: "aranca.com" },
-  { name: "Omnism" },
+  { name: "RED FM", mark: "RED", color: "#E02828" },
+  { name: "Cipla", mark: "C", color: "#1476B9" },
+  { name: "JSW Paints", mark: "JSW", color: "#14559C" },
+  { name: "Astral Pipes", mark: "A", color: "#E23F35" },
+  { name: "Welspun", mark: "W", color: "#0068A0" },
+  { name: "Sky Decor", mark: "S", color: "#3A91C9" },
+  { name: "Ground Truth", mark: "GT", color: "#305D65" },
+  { name: "Aranca", mark: "A", color: "#D23C35" },
+  { name: "Omnism", mark: "O", color: "#584ACB" },
 ];
 
-/* SVGs stay sharp at any screen resolution; other brands use their site's icon.
-   For logos without a reliable public vector, text branding is kept as fallback. */
 function PartnerLogo({ brand }: { brand: Brand }) {
-  const [fallback, setFallback] = useState(false);
-  const [failed, setFailed] = useState(false);
-  const primary = brand.svg
-    ? `https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/${brand.svg}.svg`
-    : brand.domain
-      ? `https://www.google.com/s2/favicons?domain=${brand.domain}&sz=256`
-      : null;
-  const secondary = brand.svg && brand.domain
-    ? `https://www.google.com/s2/favicons?domain=${brand.domain}&sz=256`
-    : null;
-  const source = fallback ? secondary : primary;
-
+  const [broken, setBroken] = useState(false);
   return (
-    <div className="flex h-full items-center justify-center gap-3">
-      {source && !failed && (
-        <img
-          src={source}
-          alt=""
-          aria-hidden="true"
-          loading="lazy"
-          width={62}
-          height={62}
-          onError={() => {
-            if (!fallback && secondary) setFallback(true);
-            else setFailed(true);
-          }}
-          className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14"
-          style={brand.svg && !fallback && brand.color
-            ? { filter: "none" }
-            : undefined}
-        />
-      )}
-      <span className="max-w-[155px] text-center font-display text-base font-extrabold leading-tight text-[#20262A] sm:text-lg">
+    <div className="flex w-full items-center justify-center gap-4">
+      <span
+        className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-black/[0.06] bg-[#F7F8FA] font-display text-xl font-black sm:h-16 sm:w-16"
+        style={{ color: brand.color }}
+      >
+        {brand.icon && !broken ? (
+          <img
+            src={`https://cdn.simpleicons.org/${brand.icon}/${brand.color.replace("#", "")}`}
+            alt=""
+            aria-hidden="true"
+            width={48}
+            height={48}
+            loading="lazy"
+            onError={() => setBroken(true)}
+            className="h-10 w-10 object-contain sm:h-12 sm:w-12"
+          />
+        ) : (
+          <span className={brand.mark.length > 1 ? "text-sm font-black" : "text-3xl font-black"}>
+            {brand.mark}
+          </span>
+        )}
+      </span>
+      <span className="min-w-0 max-w-[165px] font-display text-lg font-extrabold leading-tight sm:text-xl" style={{ color: brand.color }}>
         {brand.name}
       </span>
     </div>
   );
 }
 
-function BrandRow({
-  brands,
-  reverse = false,
-}: {
-  brands: Brand[];
-  reverse?: boolean;
-}) {
-  const list = [...brands, ...brands];
+function BrandRow({ brands, reverse = false }: { brands: Brand[]; reverse?: boolean }) {
   return (
-    <div className="marquee-paused overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
-      <div
-        className={cn(
-          "flex w-max gap-4 py-2 will-change-transform",
-          reverse ? "animate-marquee-rev" : "animate-marquee-slow"
-        )}
-      >
-        {list.map((brand, i) => (
+    <div className="marquee-paused overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent)]">
+      <div className={cn("flex w-max gap-4 py-2 will-change-transform", reverse ? "animate-marquee-rev" : "animate-marquee-slow")}>
+        {[...brands, ...brands].map((brand, i) => (
           <div
             key={`${brand.name}-${i}`}
-            className="group flex h-[100px] w-[250px] shrink-0 items-center justify-center rounded-[22px] border border-black/10 bg-white px-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-acc/40 hover:shadow-lg sm:h-[114px] sm:w-[270px]"
+            className="group flex h-[108px] w-[278px] shrink-0 items-center justify-center rounded-[22px] border border-[#E1E5E9] bg-white px-5 shadow-[0_5px_18px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-1 hover:border-[#BDD64D] hover:shadow-lg sm:h-[120px] sm:w-[300px]"
           >
             <PartnerLogo brand={brand} />
           </div>
@@ -114,9 +92,7 @@ export function LogoMarquee() {
     <section className="relative border-y border-line/8 bg-raise/40 py-14">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <Reveal className="mb-8 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fg/50">
-            Trusted by partners across India
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fg/60">Trusted by partners across India</p>
           <p className="mt-2 font-display text-2xl font-bold text-fg sm:text-3xl">
             250+ enterprises run rewards on BudgeTree
           </p>
