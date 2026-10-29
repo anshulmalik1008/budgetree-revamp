@@ -33,6 +33,96 @@ import { CountUp, EASE, Magnetic } from "./ui";
 
 const WORDS = ["Engagement.", "Loyalty.", "Payouts.", "Growth."];
 
+// Real portal screenshots supplied for the homepage phone preview.
+// Place these files in public/images/portals/ (included in the assets ZIP).
+const PORTAL_SCREENS = [
+  { label: "SiriPay", image: "/images/portals/siripay.webp", color: "#E750AF" },
+  { label: "Omnism", image: "/images/portals/omnism.webp", color: "#4DD3AD" },
+  { label: "IntelliCore AI", image: "/images/portals/intellicore.webp", color: "#5BA0FF" },
+  { label: "VyapaarX", image: "/images/portals/vyapaarx.webp", color: "#8D5AFF" },
+  { label: "Business Portal", image: "/images/portals/business-portal.webp", color: "#B479FF" },
+];
+
+function PortalScreenCarousel() {
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  useEffect(() => {
+    if (paused) return;
+    const timer = window.setInterval(() => {
+      setActive((current) => (current + 1) % PORTAL_SCREENS.length);
+    }, 4000);
+    return () => window.clearInterval(timer);
+  }, [paused]);
+
+  return (
+    <div
+      className="absolute inset-0 overflow-hidden bg-[#101415]"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <AnimatePresence initial={false} mode="wait">
+        <motion.div
+          key={active}
+          initial={{ opacity: 0, x: 38, filter: "blur(8px)", scale: 1.04 }}
+          animate={{ opacity: 1, x: 0, filter: "blur(0px)", scale: 1 }}
+          exit={{ opacity: 0, x: -38, filter: "blur(8px)", scale: 0.96 }}
+          transition={{ duration: 0.75, ease: "easeInOut" }}
+          className="absolute inset-0"
+        >
+          <img
+            src={PORTAL_SCREENS[active].image}
+            alt={`${PORTAL_SCREENS[active].label} portal screenshot`}
+            className="h-full w-full object-contain"
+          />
+        </motion.div>
+      </AnimatePresence>
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-12 bg-gradient-to-b from-black/30 to-transparent" />
+      <div className="pointer-events-none absolute left-1/2 top-3 z-20 h-6 w-24 -translate-x-1/2 rounded-full bg-black" />
+      <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-4 pb-5 pt-14 text-white">
+        <motion.div
+          key={`label-${active}`}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-between gap-2"
+        >
+          <span className="truncate text-[12px] font-extrabold tracking-wide">
+            {PORTAL_SCREENS[active].label}
+          </span>
+          <span className="rounded-full bg-white/20 px-2 py-1 text-[9px] font-bold backdrop-blur">
+            {active + 1} / {PORTAL_SCREENS.length}
+          </span>
+        </motion.div>
+        <div className="mt-3 flex items-center justify-between gap-2">
+          <button
+            type="button"
+            onClick={() => { setPaused(true); setActive((i) => (i + PORTAL_SCREENS.length - 1) % PORTAL_SCREENS.length); }}
+            aria-label="Previous portal screenshot"
+            className="rounded-full bg-white/20 px-3 py-1 text-sm font-bold hover:bg-white/35"
+          >‹</button>
+          <div className="flex items-center gap-1.5">
+            {PORTAL_SCREENS.map((screen, i) => (
+              <button
+                key={screen.label}
+                type="button"
+                aria-label={`Show ${screen.label}`}
+                onClick={() => { setActive(i); setPaused(true); }}
+                className={`h-1.5 rounded-full transition-all duration-500 ${i === active ? "w-6 bg-volt" : "w-1.5 bg-white/50"}`}
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => { setPaused(true); setActive((i) => (i + 1) % PORTAL_SCREENS.length); }}
+            aria-label="Next portal screenshot"
+            className="rounded-full bg-white/20 px-3 py-1 text-sm font-bold hover:bg-white/35"
+          >›</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 type FeedIcon = "payout" | "gift" | "points";
 type FeedItem = { id: number; icon: FeedIcon; title: string; sub: string };
 
@@ -419,154 +509,29 @@ export default function Hero() {
               <div className="absolute -left-[2px] top-40 h-14 w-[3px] rounded-full bg-line/30" />
               <div className="absolute -right-[2px] top-32 h-16 w-[3px] rounded-full bg-line/30" />
 
-              {/* Screen */}
-              <div className="relative flex aspect-[9/19] flex-col overflow-hidden rounded-[2.5rem] bg-[#0C1512] px-4 pb-3 pt-3">
-                {/* Dynamic island */}
-                <div className="absolute left-1/2 top-3 z-20 h-6 w-24 -translate-x-1/2 rounded-full bg-black" />
-                {/* Status bar */}
-                <div className="flex items-center justify-between px-2 text-[11px] font-semibold text-paper/90">
-                  <span>9:41</span>
-                  <span className="flex items-center gap-1.5">
-                    <Signal className="h-3 w-3" />
-                    <Wifi className="h-3 w-3" />
-                    <BatteryMedium className="h-3.5 w-3.5" />
-                  </span>
-                </div>
-
-                {/* App header */}
-                <div className="mt-3 flex items-center gap-2.5">
-                  <span className="grid h-9 w-9 place-items-center rounded-full bg-volt text-xs font-bold text-coal">
-                    A
-                  </span>
-                  <div className="leading-tight">
-                    <p className="text-[10px] text-paper/50">Good morning</p>
-                    <p className="text-[13px] font-bold text-paper">Aarav Kapoor</p>
-                  </div>
-                  <span className="relative ml-auto grid h-8 w-8 place-items-center rounded-full bg-paper/10">
-                    <Bell className="h-4 w-4 text-paper" />
-                    <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-volt" />
-                  </span>
-                </div>
-
-                {/* Balance card */}
-                <div className="relative mt-3 overflow-hidden rounded-3xl bg-gradient-to-br from-volt to-mint p-4 text-coal">
-                  <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/30 blur-xl" />
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-70">
-                    Reward balance
-                  </p>
-                  <p className="mt-0.5 font-display text-[26px] font-bold leading-none">
-                    ₹24,800
-                  </p>
-                  <div className="mt-2.5 flex items-center justify-between">
-                    <span className="rounded-full bg-coal/10 px-2.5 py-1 text-[10px] font-bold">
-                      +2,400 this month
-                    </span>
-                    <span className="flex items-center gap-1 rounded-full bg-coal px-3 py-1.5 text-[11px] font-bold text-volt">
-                      <Send className="h-3 w-3" /> Send
-                    </span>
-                  </div>
-                </div>
-
-                {/* Quick actions */}
-                <div className="mt-3 grid grid-cols-4 gap-2">
-                  {[
-                    { icon: Send, l: "Send" },
-                    { icon: Zap, l: "UPI" },
-                    { icon: Receipt, l: "Bills" },
-                    { icon: MoreHorizontal, l: "More" },
-                  ].map((a) => (
-                    <div key={a.l} className="flex flex-col items-center gap-1">
-                      <span className="grid h-10 w-10 place-items-center rounded-2xl bg-paper/10">
-                        <a.icon className="h-4 w-4 text-volt" />
-                      </span>
-                      <span className="text-[10px] font-semibold text-paper/60">{a.l}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Recent activity */}
-                <p className="mb-1.5 mt-3.5 px-1 text-[11px] font-bold uppercase tracking-[0.16em] text-paper/40">
-                  Recent
-                </p>
-                <div className="space-y-1.5">
-                  {[
-                    { icon: Zap, c: "bg-mint/15 text-mint", t: "UPI Cash received", s: "2m ago", a: "+₹1,000", pos: true },
-                    { icon: Gift, c: "bg-gold/15 text-gold", t: "Amazon gift sent", s: "1h ago", a: "−₹2,000", pos: false },
-                    { icon: Star, c: "bg-lilac/15 text-lilac", t: "Loyalty points", s: "3h ago", a: "+2,400", pos: true },
-                  ].map((r, i) => (
-                    <motion.div
-                      key={r.t}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 1.2 + i * 0.18, duration: 0.5, ease: EASE }}
-                      className="flex items-center gap-2.5 rounded-2xl bg-paper/[0.06] p-2"
-                    >
-                      <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-xl ${r.c}`}>
-                        <r.icon className="h-4 w-4" />
-                      </span>
-                      <span className="min-w-0 flex-1 leading-tight">
-                        <span className="block truncate text-[11px] font-bold text-paper">{r.t}</span>
-                        <span className="block text-[10px] text-paper/45">{r.s}</span>
-                      </span>
-                      <span className={`text-[11px] font-bold tabular-nums ${r.pos ? "text-mint" : "text-paper/70"}`}>
-                        {r.a}
-                      </span>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* Bottom nav */}
-                <div className="mt-auto flex items-center justify-around rounded-2xl bg-paper/[0.06] py-2.5">
-                  {[
-                    { icon: Home, on: true },
-                    { icon: Gift, on: false },
-                    { icon: Wallet, on: false },
-                    { icon: User, on: false },
-                  ].map((t, i) => (
-                    <span key={i} className={t.on ? "text-volt" : "text-paper/35"}>
-                      <t.icon className="h-[18px] w-[18px]" />
-                    </span>
-                  ))}
-                </div>
-
-                {/* Simulate overlay */}
+              {/* Real Budgetree portal screenshots rotate inside the existing 3D phone */}
+              <div className="relative aspect-[9/19] overflow-hidden rounded-[2.5rem] bg-[#0C1512]">
+                <PortalScreenCarousel />
                 <AnimatePresence>
                   {sim !== "idle" && (
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="absolute inset-0 z-30 grid place-items-center bg-coal/85 p-6"
+                      className="absolute inset-0 z-40 grid place-items-center bg-coal/85 p-6"
                     >
                       {sim === "sending" ? (
                         <div className="text-center">
                           <Loader2 className="mx-auto h-10 w-10 animate-spin text-volt" />
-                          <p className="mt-4 text-sm font-bold text-paper">Sending ₹1,000…</p>
-                          <p className="mt-1 text-xs text-paper/50">Riya Sharma · UPI</p>
-                          <div className="mt-4 h-1.5 w-40 overflow-hidden rounded-full bg-paper/15">
-                            <motion.div
-                              className="h-full rounded-full bg-volt"
-                              initial={{ width: "5%" }}
-                              animate={{ width: "100%" }}
-                              transition={{ duration: 1.4, ease: "easeInOut" }}
-                            />
-                          </div>
+                          <p className="mt-4 text-sm font-bold text-paper">Sending demo reward…</p>
                         </div>
                       ) : (
-                        <motion.div
-                          initial={{ scale: 0.7, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ type: "spring", stiffness: 300, damping: 16 }}
-                          className="text-center"
-                        >
+                        <div className="text-center">
                           <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-volt shadow-glow">
-                            <Check className="h-8 w-8 text-coal" strokeWidth={3} />
+                            <Check className="h-8 w-8 text-coal" />
                           </span>
-                          <p className="mt-4 font-display text-lg font-bold text-paper">
-                            Reward delivered!
-                          </p>
-                          <p className="mt-1 text-xs text-paper/55">Settled via UPI in 3s</p>
-                        </motion.div>
+                          <p className="mt-4 font-display text-lg font-bold text-paper">Demo reward delivered!</p>
+                        </div>
                       )}
                     </motion.div>
                   )}
