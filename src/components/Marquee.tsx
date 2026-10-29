@@ -72,17 +72,39 @@ function BrandRow({ brands, reverse = false }: { brands: Brand[]; reverse?: bool
 
 export function LogoMarquee() {
   return (
-    <section className="relative border-y border-line/8 bg-raise/40 py-14">
+    <section className="relative overflow-hidden border-y border-line/10 bg-raise/40 py-14 sm:py-20">
+      {/* Partners heading and row */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <Reveal className="mb-8 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fg/60">Trusted by partners across India</p>
-          <p className="mt-2 font-display text-2xl font-bold text-fg sm:text-3xl">250+ enterprises run rewards on BudgeTree</p>
+        <Reveal className="mb-9 text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.24em] text-acc">
+            Our trusted network
+          </p>
+          <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-fg sm:text-4xl lg:text-5xl">
+            Trusted by Partners Across India
+          </h2>
+          <p className="mx-auto mt-4 max-w-3xl text-sm leading-relaxed text-fg/65 sm:text-base">
+            Growing together with partners powering digital rewards, loyalty and payouts.
+          </p>
         </Reveal>
       </div>
-      <div className="space-y-4">
-        <BrandRow brands={ROW_1} />
-        <BrandRow brands={ROW_2} reverse />
+      <BrandRow brands={ROW_1} />
+
+      {/* Clear visual separation for the enterprise logo row */}
+      <div className="mx-auto mt-12 max-w-7xl px-4 sm:mt-16 sm:px-6">
+        <div className="h-px w-full bg-line/15" />
+        <Reveal className="mb-9 mt-12 text-center sm:mt-14">
+          <p className="text-xs font-bold uppercase tracking-[0.24em] text-acc">
+            Trusted by 250+ enterprises
+          </p>
+          <h3 className="mt-3 font-display text-2xl font-extrabold tracking-tight text-fg sm:text-3xl lg:text-4xl">
+            Leading Enterprises Choose BudgeTree
+          </h3>
+          <p className="mx-auto mt-4 max-w-3xl text-sm leading-relaxed text-fg/65 sm:text-base">
+            Leading brands across BFSI, retail and technology run rewards on BudgeTree.
+          </p>
+        </Reveal>
       </div>
+      <BrandRow brands={ROW_2} reverse />
     </section>
   );
 }
