@@ -36,21 +36,63 @@ const WORDS = ["Engagement.", "Loyalty.", "Payouts.", "Growth."];
 // Real portal screenshots supplied for the homepage phone preview.
 // Place these files in public/images/portals/ (included in the assets ZIP).
 const PORTAL_SCREENS = [
-  { label: "SiriPay", image: "/images/portals/siripay.webp", color: "#E750AF" },
-  { label: "Omnism", image: "/images/portals/omnism.webp", color: "#4DD3AD" },
-  { label: "IntelliCore AI", image: "/images/portals/intellicore.webp", color: "#5BA0FF" },
-  { label: "VyapaarX", image: "/images/portals/vyapaarx.webp", color: "#8D5AFF" },
-  { label: "Business Portal", image: "/images/portals/business-portal.webp", color: "#B479FF" },
+  {
+    label: "SiriPay",
+    image: "/images/portals/siripay.webp",
+    color: "#F052AD",
+    kicker: "Digital gifting marketplace",
+    headline: "Gift cards, gold & experiences",
+    details: ["Popular brands", "Travel & offers"],
+    badge: "Gifting",
+  },
+  {
+    label: "Omnism",
+    image: "/images/portals/omnism.webp",
+    color: "#39CE95",
+    kicker: "Distributor loyalty platform",
+    headline: "Points, rewards & sales",
+    details: ["Points dashboard", "Retailer rewards"],
+    badge: "Loyalty",
+  },
+  {
+    label: "IntelliCore AI",
+    image: "/images/portals/intellicore.webp",
+    color: "#57A6FF",
+    kicker: "AI-powered assistance",
+    headline: "Smarter engagement with AI",
+    details: ["Ask Assistant", "Brand offers"],
+    badge: "AI",
+  },
+  {
+    label: "VyapaarX",
+    image: "/images/portals/vyapaarx.webp",
+    color: "#9670FF",
+    kicker: "Business rewards platform",
+    headline: "Track business. Earn more.",
+    details: ["Sales tracking", "Reward points"],
+    badge: "Rewards",
+  },
+  {
+    label: "Business Portal",
+    image: "/images/portals/business-portal.webp",
+    color: "#9D72FF",
+    kicker: "Role-based business access",
+    headline: "One portal. Multiple roles.",
+    details: ["Retailer & distributor", "Company admin"],
+    badge: "Business",
+  },
 ];
 
 function PortalScreenCarousel() {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+  const selected = PORTAL_SCREENS[active];
+
   useEffect(() => {
     if (paused) return;
     const timer = window.setInterval(() => {
       setActive((current) => (current + 1) % PORTAL_SCREENS.length);
-    }, 4000);
+    }, 4800);
     return () => window.clearInterval(timer);
   }, [paused]);
 
@@ -62,42 +104,87 @@ function PortalScreenCarousel() {
     >
       <AnimatePresence initial={false} mode="wait">
         <motion.div
-          key={active}
-          initial={{ opacity: 0, x: 38, filter: "blur(8px)", scale: 1.04 }}
+          key={selected.image}
+          initial={{ opacity: 0, x: 48, filter: "blur(9px)", scale: 1.065 }}
           animate={{ opacity: 1, x: 0, filter: "blur(0px)", scale: 1 }}
-          exit={{ opacity: 0, x: -38, filter: "blur(8px)", scale: 0.96 }}
+          exit={{ opacity: 0, x: -46, filter: "blur(9px)", scale: 0.97 }}
           transition={{ duration: 0.75, ease: "easeInOut" }}
           className="absolute inset-0"
         >
           <img
-            src={PORTAL_SCREENS[active].image}
-            alt={`${PORTAL_SCREENS[active].label} portal screenshot`}
+            src={selected.image}
+            alt={`${selected.label} portal screenshot`}
             className="h-full w-full object-contain"
           />
         </motion.div>
       </AnimatePresence>
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-12 bg-gradient-to-b from-black/30 to-transparent" />
-      <div className="pointer-events-none absolute left-1/2 top-3 z-20 h-6 w-24 -translate-x-1/2 rounded-full bg-black" />
-      <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-4 pb-5 pt-14 text-white">
+
+      {/* Top glass badge and iPhone island */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-16 bg-gradient-to-b from-black/35 to-transparent" />
+      <div className="pointer-events-none absolute left-1/2 top-3 z-30 h-6 w-24 -translate-x-1/2 rounded-full bg-black" />
+      <AnimatePresence mode="wait">
         <motion.div
-          key={`label-${active}`}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between gap-2"
+          key={`badge-${active}`}
+          initial={{ opacity: 0, y: -14, scale: 0.85 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ type: "spring", stiffness: 260, damping: 23 }}
+          className="pointer-events-none absolute right-3 top-11 z-20 flex items-center gap-1.5 rounded-full border border-white/30 bg-[#121B19]/80 px-3 py-1.5 text-[10px] font-extrabold text-white shadow-xl backdrop-blur-xl"
         >
-          <span className="truncate text-[12px] font-extrabold tracking-wide">
-            {PORTAL_SCREENS[active].label}
-          </span>
-          <span className="rounded-full bg-white/20 px-2 py-1 text-[9px] font-bold backdrop-blur">
-            {active + 1} / {PORTAL_SCREENS.length}
-          </span>
+          <motion.span
+            animate={{ scale: [1, 1.4, 1] }}
+            transition={{ duration: 1.4, repeat: Infinity }}
+            className="h-2 w-2 rounded-full"
+            style={{ background: selected.color }}
+          />
+          {selected.badge}
         </motion.div>
+      </AnimatePresence>
+
+      {/* Dynamic portal details with staggered transitions */}
+      <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-[#070D0D] via-[#070D0D]/95 to-transparent px-4 pb-5 pt-16 text-white">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`details-${active}`}
+            initial={{ opacity: 0, y: 24, filter: "blur(5px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -18, filter: "blur(5px)" }}
+            transition={{ duration: 0.55, ease: "easeOut" }}
+          >
+            <div className="mb-1 flex items-center justify-between gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: selected.color }}>
+                {selected.kicker}
+              </span>
+              <span className="rounded-full border border-white/20 bg-white/10 px-2 py-1 text-[9px] font-semibold">
+                {active + 1} / {PORTAL_SCREENS.length}
+              </span>
+            </div>
+            <h3 className="font-display text-[18px] font-extrabold leading-snug">{selected.label}</h3>
+            <p className="mt-0.5 text-[11px] font-medium leading-snug text-white/85">
+              {selected.headline}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {selected.details.map((detail, index) => (
+                <motion.span
+                  key={detail}
+                  initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: 0.15 + index * 0.15, duration: 0.4 }}
+                  className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[9px] font-bold text-white/90 backdrop-blur-sm"
+                >
+                  {detail}
+                </motion.span>
+              ))}
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
         <div className="mt-3 flex items-center justify-between gap-2">
           <button
             type="button"
             onClick={() => { setPaused(true); setActive((i) => (i + PORTAL_SCREENS.length - 1) % PORTAL_SCREENS.length); }}
             aria-label="Previous portal screenshot"
-            className="rounded-full bg-white/20 px-3 py-1 text-sm font-bold hover:bg-white/35"
+            className="grid h-7 w-7 place-items-center rounded-full bg-white/20 text-sm font-bold transition hover:bg-white/40"
           >‹</button>
           <div className="flex items-center gap-1.5">
             {PORTAL_SCREENS.map((screen, i) => (
@@ -114,9 +201,19 @@ function PortalScreenCarousel() {
             type="button"
             onClick={() => { setPaused(true); setActive((i) => (i + 1) % PORTAL_SCREENS.length); }}
             aria-label="Next portal screenshot"
-            className="rounded-full bg-white/20 px-3 py-1 text-sm font-bold hover:bg-white/35"
+            className="grid h-7 w-7 place-items-center rounded-full bg-white/20 text-sm font-bold transition hover:bg-white/40"
           >›</button>
         </div>
+        {!paused && (
+          <motion.div
+            key={`progress-${active}`}
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 4.8, ease: "linear" }}
+            className="mt-3 h-[2px] w-full origin-left rounded-full"
+            style={{ background: selected.color }}
+          />
+        )}
       </div>
     </div>
   );
