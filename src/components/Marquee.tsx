@@ -4,55 +4,53 @@ import { Sparkle } from "lucide-react";
 import { useState } from "react";
 import { Reveal, cn } from "./ui";
 
-type Brand = { name: string; domain?: string; local: string };
+type Brand = { name: string; logo?: string; domain?: string; color?: string };
 
 const ROW_1: Brand[] = [
-  { name: "Pine Labs", domain: "pinelabs.com", local: "pine-labs" },
-  { name: "IDFC FIRST", domain: "idfcfirstbank.com", local: "idfc-first" },
-  { name: "DBS Bank", domain: "dbs.com", local: "dbs" },
-  { name: "Razorpay", domain: "razorpay.com", local: "razorpay" },
-  { name: "Amazon", domain: "amazon.in", local: "amazon" },
-  { name: "Flipkart", domain: "flipkart.com", local: "flipkart" },
-  { name: "Google Wallet", domain: "wallet.google", local: "google-wallet" },
-  { name: "Myntra", domain: "myntra.com", local: "myntra" },
-  { name: "Canara Bank", domain: "canarabank.com", local: "canara-bank" },
-  { name: "Slice", domain: "sliceit.com", local: "slice" },
-  { name: "Lava", domain: "lavamobiles.com", local: "lava" },
-  { name: "Lifestyle", domain: "lifestylestores.com", local: "lifestyle" },
+  { name: "Lifestyle", domain: "lifestylestores.com", color: "#CC1756" },
+  { name: "Pine Labs", domain: "pinelabs.com", color: "#075B43" },
+  { name: "IDFC FIRST", domain: "idfcfirstbank.com", color: "#B21F32" },
+  { name: "DBS Bank", domain: "dbs.com", color: "#E52330" },
+  { name: "Razorpay", domain: "razorpay.com", color: "#175BB5" },
+  { name: "Amazon", domain: "amazon.in", color: "#171E28" },
+  { name: "Flipkart", domain: "flipkart.com", color: "#1B54B1" },
+  { name: "Google Wallet", domain: "wallet.google", color: "#4285F4" },
+  { name: "Myntra", domain: "myntra.com", color: "#F03C77" },
+  { name: "Canara Bank", domain: "canarabank.com", color: "#178DB8" },
+  { name: "Slice", domain: "sliceit.com", color: "#6B2CCF" },
+  { name: "Lava", domain: "lavamobiles.com", color: "#D32B32" },
 ];
 
 const ROW_2: Brand[] = [
-  { name: "RED FM", domain: "redfmindia.in", local: "red-fm" },
-  { name: "Cipla", domain: "cipla.com", local: "cipla" },
-  { name: "JSW Paints", domain: "jswpaints.in", local: "jsw-paints" },
-  { name: "Astral Pipes", domain: "astralpipes.com", local: "astral-pipes" },
-  { name: "Welspun", domain: "welspun.com", local: "welspun" },
-  { name: "Sky Decor", domain: "skydecor.in", local: "sky-decor" },
-  { name: "Ground Truth", domain: "groundtruth.com", local: "ground-truth" },
-  { name: "Aranca", domain: "aranca.com", local: "aranca" },
-  { name: "Omnism", local: "omnism" },
+  { name: "Aranca", logo: "https://nps.aranca.com/static/img/aranca_logo.jpg", color: "#204A7E" },
+  { name: "Sky Decor", logo: "https://www.skydecor.in/public/site/skydecor-logo.png", color: "#1B6A97" },
+  { name: "Welspun", color: "#2256A5" },
+  { name: "RED FM", color: "#DB2328" },
+  { name: "Cipla", color: "#117DB1" },
+  { name: "JSW Paints", color: "#1B4D9A" },
+  { name: "Astral Pipes", color: "#E33C3C" },
+  { name: "Ground Truth", color: "#1C8D69" },
+  { name: "Omnism", color: "#403798" },
 ];
 
 function PartnerLogo({ brand }: { brand: Brand }) {
-  const [sourceIndex, setSourceIndex] = useState(0);
-  const sources = [
-    `/images/partners/${brand.local}.svg`,
-    `/images/partners/${brand.local}.png`,
-    ...(brand.domain ? [`https://cdn.brandfetch.io/${brand.domain}/logo.svg`] : []),
-  ];
-  const src = sources[sourceIndex];
+  const [failed, setFailed] = useState(false);
+  const src = brand.logo || (brand.domain ? `https://cdn.brandfetch.io/${brand.domain}/logo.svg` : undefined);
   return (
-    <div className="flex h-full w-full items-center justify-center px-4">
-      {src ? (
+    <div className="flex h-full w-full items-center justify-center px-5">
+      {src && !failed ? (
         <img
           src={src}
           alt={brand.name}
           loading="lazy"
-          className="h-[62px] w-full max-w-[205px] object-contain sm:h-[74px]"
-          onError={() => setSourceIndex((n) => n + 1)}
+          className="block h-[70px] w-full max-w-[230px] object-contain"
+          onError={() => setFailed(true)}
         />
       ) : (
-        <span className="text-center font-display text-xl font-extrabold tracking-tight text-[#17212B] sm:text-2xl">
+        <span
+          className="text-center font-display text-2xl font-extrabold tracking-tight sm:text-[27px]"
+          style={{ color: brand.color || "#222" }}
+        >
           {brand.name}
         </span>
       )}
@@ -65,7 +63,7 @@ function BrandRow({ brands, reverse = false }: { brands: Brand[]; reverse?: bool
     <div className="marquee-paused overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent)]">
       <div className={cn("flex w-max gap-4 py-2 will-change-transform", reverse ? "animate-marquee-rev" : "animate-marquee-slow")}>
         {[...brands, ...brands].map((brand, i) => (
-          <div key={`${brand.name}-${i}`} className="group flex h-[110px] w-[275px] shrink-0 items-center justify-center rounded-[22px] border border-[#DFE4E9] bg-white shadow-[0_4px_15px_rgba(0,0,0,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:h-[122px] sm:w-[290px]">
+          <div key={`${brand.name}-${i}`} className="group flex h-[112px] w-[280px] shrink-0 items-center justify-center rounded-[22px] border border-[#E1E5E9] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:h-[128px] sm:w-[310px]">
             <PartnerLogo brand={brand} />
           </div>
         ))}
