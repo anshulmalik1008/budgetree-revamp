@@ -1,23 +1,32 @@
 "use client";
 
 import { Sparkle } from "lucide-react";
+import { useState } from "react";
 import { Reveal, cn } from "./ui";
 
-type Brand = { name: string; domain: string };
+type Brand = {
+  name: string;
+  domain?: string;
+  svg?: string;
+  color?: string;
+};
 
 const ROW_1: Brand[] = [
   { name: "Pine Labs", domain: "pinelabs.com" },
   { name: "IDFC FIRST", domain: "idfcfirstbank.com" },
   { name: "DBS Bank", domain: "dbs.com" },
-  { name: "Razorpay", domain: "razorpay.com" },
-  { name: "Amazon", domain: "amazon.in" },
-  { name: "Flipkart", domain: "flipkart.com" },
-  { name: "Google Wallet", domain: "wallet.google" },
-  { name: "Myntra", domain: "myntra.com" },
+  { name: "Razorpay", domain: "razorpay.com", svg: "razorpay", color: "#0B72E7" },
+  { name: "Amazon", domain: "amazon.in", svg: "amazon", color: "#FF9900" },
+  { name: "Flipkart", domain: "flipkart.com", svg: "flipkart", color: "#2874F0" },
+  { name: "Google Wallet", domain: "wallet.google", svg: "googlewallet", color: "#4285F4" },
+  { name: "Myntra", domain: "myntra.com", svg: "myntra", color: "#FF3E6C" },
+  { name: "Canara Bank", domain: "canarabank.com" },
+  { name: "Slice", domain: "sliceit.com" },
+  { name: "Lava", domain: "lavamobiles.com" },
+  { name: "Lifestyle", domain: "lifestylestores.com" },
 ];
 
 const ROW_2: Brand[] = [
-  { name: "Mahindra", domain: "mahindra.com" },
   { name: "RED FM", domain: "redfmindia.in" },
   { name: "Cipla", domain: "cipla.com" },
   { name: "JSW Paints", domain: "jswpaints.in" },
@@ -25,7 +34,51 @@ const ROW_2: Brand[] = [
   { name: "Welspun", domain: "welspun.com" },
   { name: "Sky Decor", domain: "skydecor.in" },
   { name: "Ground Truth", domain: "groundtruth.com" },
+  { name: "Aranca", domain: "aranca.com" },
+  { name: "Omnism" },
 ];
+
+/* SVGs stay sharp at any screen resolution; other brands use their site's icon.
+   For logos without a reliable public vector, text branding is kept as fallback. */
+function PartnerLogo({ brand }: { brand: Brand }) {
+  const [fallback, setFallback] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const primary = brand.svg
+    ? `https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/${brand.svg}.svg`
+    : brand.domain
+      ? `https://www.google.com/s2/favicons?domain=${brand.domain}&sz=256`
+      : null;
+  const secondary = brand.svg && brand.domain
+    ? `https://www.google.com/s2/favicons?domain=${brand.domain}&sz=256`
+    : null;
+  const source = fallback ? secondary : primary;
+
+  return (
+    <div className="flex h-full items-center justify-center gap-3">
+      {source && !failed && (
+        <img
+          src={source}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          width={62}
+          height={62}
+          onError={() => {
+            if (!fallback && secondary) setFallback(true);
+            else setFailed(true);
+          }}
+          className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14"
+          style={brand.svg && !fallback && brand.color
+            ? { filter: "none" }
+            : undefined}
+        />
+      )}
+      <span className="max-w-[155px] text-center font-display text-base font-extrabold leading-tight text-[#20262A] sm:text-lg">
+        {brand.name}
+      </span>
+    </div>
+  );
+}
 
 function BrandRow({
   brands,
@@ -45,21 +98,10 @@ function BrandRow({
       >
         {list.map((brand, i) => (
           <div
-            key={i}
-            className="group flex h-[88px] w-[210px] shrink-0 items-center justify-center gap-3 rounded-2xl border border-line/10 bg-paper px-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-acc/40 hover:shadow-lg sm:h-[100px] sm:w-[235px]"
+            key={`${brand.name}-${i}`}
+            className="group flex h-[100px] w-[250px] shrink-0 items-center justify-center rounded-[22px] border border-black/10 bg-white px-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-acc/40 hover:shadow-lg sm:h-[114px] sm:w-[270px]"
           >
-            <img
-              src={`https://www.google.com/s2/favicons?domain=${brand.domain}&sz=128`}
-              alt=""
-              aria-hidden="true"
-              width={48}
-              height={48}
-              loading="lazy"
-              className="h-11 w-11 shrink-0 object-contain sm:h-12 sm:w-12"
-            />
-            <span className="text-center font-display text-base font-bold leading-tight text-coal sm:text-lg">
-              {brand.name}
-            </span>
+            <PartnerLogo brand={brand} />
           </div>
         ))}
       </div>
