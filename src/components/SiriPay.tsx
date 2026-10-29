@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { ArrowUpRight, Gift, Sparkles, ShieldCheck, ShoppingBag, Plane, UtensilsCrossed, Shirt } from "lucide-react";
 import { Magnetic, Reveal } from "./ui";
 
@@ -14,32 +13,34 @@ const VOUCHERS = [
 ];
 
 function WebsitePreview() {
-  const [failed, setFailed] = useState(false);
-
   return (
     <a
       href={SITE}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Open the real SiriPay marketplace"
-      className="group relative block overflow-hidden rounded-[22px] border-[5px] border-[#14201A] bg-[#F8F6FB] shadow-[0_30px_80px_rgba(0,0,0,0.3)] transition-all duration-700 hover:-translate-y-2 hover:rotate-[0.3deg] hover:shadow-[0_36px_90px_rgba(0,0,0,0.37)]"
+      className="group relative mx-auto block w-full max-w-[390px] overflow-hidden rounded-[28px] border-[5px] border-[#14201A] bg-[#F8F6FB] shadow-[0_25px_70px_rgba(0,0,0,0.24)] transition-transform duration-500 hover:-translate-y-2 sm:max-w-[420px] lg:max-w-[410px]"
     >
-      <div className="flex h-9 items-center gap-2 border-b border-black/10 bg-[#101715] px-4 text-white">
+      <div className="flex h-9 items-center gap-2 border-b border-black/10 bg-[#101715] px-3 text-white">
         <span className="h-2.5 w-2.5 rounded-full bg-[#FF625A]" />
         <span className="h-2.5 w-2.5 rounded-full bg-[#F8C34A]" />
         <span className="h-2.5 w-2.5 rounded-full bg-[#58C879]" />
-        <div className="ml-3 flex h-5 flex-1 items-center justify-center rounded-md bg-white/10 px-3 text-[10px] text-white/70">siripay.co</div>
+        <div className="ml-2 flex h-5 flex-1 items-center justify-center rounded-md bg-white/10 px-3 text-[10px] text-white/70">siripay.co</div>
         <ArrowUpRight className="h-3.5 w-3.5 text-white/80" />
       </div>
-      <div className="relative aspect-[1.6/1] overflow-hidden">
+      {/* Preserve the entire uploaded portal screenshot: never crop it using object-cover. */}
+      <div className="relative flex w-full items-center justify-center overflow-hidden bg-[#F8F6FB]">
         <img
-          src={failed ? "/images/portals/siripay.webp" : "/images/siripay-desktop.webp"}
-          onError={() => setFailed(true)}
-          alt="Screenshot of the real SiriPay website showing gift cards and featured offers"
-          className="h-full w-full object-cover object-top transition-transform duration-[900ms] group-hover:scale-[1.055]"
+          src="/images/portals/siripay.webp"
+          alt="Complete SiriPay mobile portal screenshot"
+          loading="lazy"
+          className="block h-auto max-h-[650px] w-full object-contain object-center sm:max-h-[690px]"
         />
-        <span className="absolute bottom-4 right-4 inline-flex items-center gap-1.5 rounded-full bg-[#0E1816]/90 px-3 py-2 text-[11px] font-bold text-white shadow-lg backdrop-blur-lg">
-          Visit website <ArrowUpRight className="h-3.5 w-3.5" />
+      </div>
+      <div className="flex items-center justify-between gap-2 border-t border-black/10 bg-white px-4 py-3 text-[#15201A]">
+        <span className="text-xs font-bold sm:text-sm">Explore the real SiriPay experience</span>
+        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#17211A] px-3 py-2 text-[11px] font-bold text-white transition-colors group-hover:bg-[#285342]">
+          Open <ArrowUpRight className="h-3.5 w-3.5" />
         </span>
       </div>
     </a>
@@ -101,7 +102,7 @@ export default function SiriPay() {
         <div className="noise relative mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-volt via-[#D8FF6B] to-mint py-11 text-coal sm:py-16">
           <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-white/30 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-24 right-10 h-72 w-72 rounded-full bg-white/25 blur-3xl" />
-          <div className="relative z-10 grid items-center gap-12 px-7 sm:px-12 lg:grid-cols-[0.87fr_1.13fr] lg:px-14">
+          <div className="relative z-10 grid items-center gap-12 px-7 sm:px-12 lg:grid-cols-[1fr_1fr] lg:gap-10 lg:px-14">
             <div>
               <span className="inline-flex items-center gap-2 rounded-full bg-coal px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-volt">
                 <Gift className="h-4 w-4" /> SiriPay · by Budgetree
@@ -132,8 +133,8 @@ export default function SiriPay() {
                 </span>
               </div>
             </div>
-            <div className="relative min-w-0">
-              <div className="absolute -right-2 -top-5 z-20 flex items-center gap-2 rounded-2xl border border-white/50 bg-white/90 px-4 py-3 text-xs font-bold text-coal shadow-xl backdrop-blur-lg">
+            <div className="relative min-w-0 w-full">
+              <div className="absolute -right-1 -top-4 z-20 flex items-center gap-2 rounded-2xl border border-white/50 bg-white/90 px-4 py-3 text-xs font-bold text-coal shadow-xl backdrop-blur-lg">
                 <Sparkles className="h-4 w-4 text-[#E74692]" /> Actual SiriPay portal
               </div>
               <WebsitePreview />
