@@ -3,33 +3,35 @@
 import { Sparkle } from "lucide-react";
 import { Reveal, cn } from "./ui";
 
-const ROW_1 = [
-  "Pine Labs",
-  "IDFC FIRST",
-  "DBS Bank",
-  "Razorpay",
-  "amazon",
-  "Flipkart",
-  "Google Wallet",
-  "Myntra",
+type Brand = { name: string; domain: string };
+
+const ROW_1: Brand[] = [
+  { name: "Pine Labs", domain: "pinelabs.com" },
+  { name: "IDFC FIRST", domain: "idfcfirstbank.com" },
+  { name: "DBS Bank", domain: "dbs.com" },
+  { name: "Razorpay", domain: "razorpay.com" },
+  { name: "Amazon", domain: "amazon.in" },
+  { name: "Flipkart", domain: "flipkart.com" },
+  { name: "Google Wallet", domain: "wallet.google" },
+  { name: "Myntra", domain: "myntra.com" },
 ];
 
-const ROW_2 = [
-  "Mahindra",
-  "RED FM",
-  "Cipla",
-  "JSW Paints",
-  "Astral Pipes",
-  "Welspun",
-  "Sky Decor",
-  "Ground Truth",
+const ROW_2: Brand[] = [
+  { name: "Mahindra", domain: "mahindra.com" },
+  { name: "RED FM", domain: "redfmindia.in" },
+  { name: "Cipla", domain: "cipla.com" },
+  { name: "JSW Paints", domain: "jswpaints.in" },
+  { name: "Astral Pipes", domain: "astralpipes.com" },
+  { name: "Welspun", domain: "welspun.com" },
+  { name: "Sky Decor", domain: "skydecor.in" },
+  { name: "Ground Truth", domain: "groundtruth.com" },
 ];
 
 function BrandRow({
   brands,
   reverse = false,
 }: {
-  brands: string[];
+  brands: Brand[];
   reverse?: boolean;
 }) {
   const list = [...brands, ...brands];
@@ -41,13 +43,24 @@ function BrandRow({
           reverse ? "animate-marquee-rev" : "animate-marquee-slow"
         )}
       >
-        {list.map((b, i) => (
-          <span
+        {list.map((brand, i) => (
+          <div
             key={i}
-            className="whitespace-nowrap rounded-2xl border border-line/10 bg-line/[0.04] px-7 py-3.5 font-display text-lg font-semibold text-fg/60 transition-colors duration-300 hover:border-acc/50 hover:text-fg"
+            className="group flex h-[88px] w-[210px] shrink-0 items-center justify-center gap-3 rounded-2xl border border-line/10 bg-paper px-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-acc/40 hover:shadow-lg sm:h-[100px] sm:w-[235px]"
           >
-            {b}
-          </span>
+            <img
+              src={`https://www.google.com/s2/favicons?domain=${brand.domain}&sz=128`}
+              alt=""
+              aria-hidden="true"
+              width={48}
+              height={48}
+              loading="lazy"
+              className="h-11 w-11 shrink-0 object-contain sm:h-12 sm:w-12"
+            />
+            <span className="text-center font-display text-base font-bold leading-tight text-coal sm:text-lg">
+              {brand.name}
+            </span>
+          </div>
         ))}
       </div>
     </div>
@@ -75,7 +88,7 @@ export function LogoMarquee() {
   );
 }
 
-/* Full-bleed marquee ribbon, Sanyam-portfolio style */
+/* Existing ribbon animations preserved */
 export function Strip({
   items,
   dark = false,
