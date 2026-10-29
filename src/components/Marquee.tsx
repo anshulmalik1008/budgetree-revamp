@@ -22,8 +22,8 @@ const ROW_1: Brand[] = [
 ];
 
 const ROW_2: Brand[] = [
-  { name: "Aranca", logo: "https://nps.aranca.com/static/img/aranca_logo.jpg", color: "#204A7E" },
-  { name: "Sky Decor", logo: "https://www.skydecor.in/public/site/skydecor-logo.png", color: "#1B6A97" },
+  { name: "Aranca", color: "#204A7E" },
+  { name: "Sky Decor", color: "#1B6A97" },
   { name: "Welspun", color: "#2256A5" },
   { name: "RED FM", color: "#DB2328" },
   { name: "Cipla", color: "#117DB1" },
