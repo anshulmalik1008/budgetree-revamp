@@ -4,68 +4,58 @@ import { Sparkle } from "lucide-react";
 import { useState } from "react";
 import { Reveal, cn } from "./ui";
 
-type Brand = {
-  name: string;
-  mark: string;
-  color: string;
-  icon?: string;
-};
+type Brand = { name: string; domain?: string; local: string };
 
 const ROW_1: Brand[] = [
-  { name: "Pine Labs", mark: "P", color: "#00764E" },
-  { name: "IDFC FIRST", mark: "F", color: "#A71930" },
-  { name: "DBS Bank", mark: "DBS", color: "#E42535" },
-  { name: "Razorpay", mark: "R", color: "#1468C9", icon: "razorpay" },
-  { name: "Amazon", mark: "a", color: "#E18B00", icon: "amazon" },
-  { name: "Flipkart", mark: "f", color: "#2874F0", icon: "flipkart" },
-  { name: "Google Wallet", mark: "G", color: "#4285F4", icon: "googlewallet" },
-  { name: "Myntra", mark: "M", color: "#E63C83", icon: "myntra" },
-  { name: "Canara Bank", mark: "C", color: "#078BB7" },
-  { name: "Slice", mark: "s", color: "#782BEA" },
-  { name: "Lava", mark: "L", color: "#DE2C2C" },
-  { name: "Lifestyle", mark: "L", color: "#C32C60" },
+  { name: "Pine Labs", domain: "pinelabs.com", local: "pine-labs" },
+  { name: "IDFC FIRST", domain: "idfcfirstbank.com", local: "idfc-first" },
+  { name: "DBS Bank", domain: "dbs.com", local: "dbs" },
+  { name: "Razorpay", domain: "razorpay.com", local: "razorpay" },
+  { name: "Amazon", domain: "amazon.in", local: "amazon" },
+  { name: "Flipkart", domain: "flipkart.com", local: "flipkart" },
+  { name: "Google Wallet", domain: "wallet.google", local: "google-wallet" },
+  { name: "Myntra", domain: "myntra.com", local: "myntra" },
+  { name: "Canara Bank", domain: "canarabank.com", local: "canara-bank" },
+  { name: "Slice", domain: "sliceit.com", local: "slice" },
+  { name: "Lava", domain: "lavamobiles.com", local: "lava" },
+  { name: "Lifestyle", domain: "lifestylestores.com", local: "lifestyle" },
 ];
 
 const ROW_2: Brand[] = [
-  { name: "RED FM", mark: "RED", color: "#E02828" },
-  { name: "Cipla", mark: "C", color: "#1476B9" },
-  { name: "JSW Paints", mark: "JSW", color: "#14559C" },
-  { name: "Astral Pipes", mark: "A", color: "#E23F35" },
-  { name: "Welspun", mark: "W", color: "#0068A0" },
-  { name: "Sky Decor", mark: "S", color: "#3A91C9" },
-  { name: "Ground Truth", mark: "GT", color: "#305D65" },
-  { name: "Aranca", mark: "A", color: "#D23C35" },
-  { name: "Omnism", mark: "O", color: "#584ACB" },
+  { name: "RED FM", domain: "redfmindia.in", local: "red-fm" },
+  { name: "Cipla", domain: "cipla.com", local: "cipla" },
+  { name: "JSW Paints", domain: "jswpaints.in", local: "jsw-paints" },
+  { name: "Astral Pipes", domain: "astralpipes.com", local: "astral-pipes" },
+  { name: "Welspun", domain: "welspun.com", local: "welspun" },
+  { name: "Sky Decor", domain: "skydecor.in", local: "sky-decor" },
+  { name: "Ground Truth", domain: "groundtruth.com", local: "ground-truth" },
+  { name: "Aranca", domain: "aranca.com", local: "aranca" },
+  { name: "Omnism", local: "omnism" },
 ];
 
 function PartnerLogo({ brand }: { brand: Brand }) {
-  const [broken, setBroken] = useState(false);
+  const [sourceIndex, setSourceIndex] = useState(0);
+  const sources = [
+    `/images/partners/${brand.local}.svg`,
+    `/images/partners/${brand.local}.png`,
+    ...(brand.domain ? [`https://cdn.brandfetch.io/${brand.domain}/logo.svg`] : []),
+  ];
+  const src = sources[sourceIndex];
   return (
-    <div className="flex w-full items-center justify-center gap-4">
-      <span
-        className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-black/[0.06] bg-[#F7F8FA] font-display text-xl font-black sm:h-16 sm:w-16"
-        style={{ color: brand.color }}
-      >
-        {brand.icon && !broken ? (
-          <img
-            src={`https://cdn.simpleicons.org/${brand.icon}/${brand.color.replace("#", "")}`}
-            alt=""
-            aria-hidden="true"
-            width={48}
-            height={48}
-            loading="lazy"
-            onError={() => setBroken(true)}
-            className="h-10 w-10 object-contain sm:h-12 sm:w-12"
-          />
-        ) : (
-          <span className={brand.mark.length > 1 ? "text-sm font-black" : "text-3xl font-black"}>
-            {brand.mark}
-          </span>
-        )}
-      </span>
-      <span className="min-w-0 max-w-[165px] font-display text-lg font-extrabold leading-tight sm:text-xl" style={{ color: brand.color }}>
-        {brand.name}
-      </span>
+    <div className="flex h-full w-full items-center justify-center px-4">
+      {src ? (
+        <img
+          src={src}
+          alt={brand.name}
+          loading="lazy"
+          className="h-[62px] w-full max-w-[205px] object-contain sm:h-[74px]"
+          onError={() => setSourceIndex((n) => n + 1)}
+        />
+      ) : (
+        <span className="text-center font-display text-xl font-extrabold tracking-tight text-[#17212B] sm:text-2xl">
+          {brand.name}
+        </span>
+      )}
     </div>
   );
 }
@@ -75,10 +65,7 @@ function BrandRow({ brands, reverse = false }: { brands: Brand[]; reverse?: bool
     <div className="marquee-paused overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent)]">
       <div className={cn("flex w-max gap-4 py-2 will-change-transform", reverse ? "animate-marquee-rev" : "animate-marquee-slow")}>
         {[...brands, ...brands].map((brand, i) => (
-          <div
-            key={`${brand.name}-${i}`}
-            className="group flex h-[108px] w-[278px] shrink-0 items-center justify-center rounded-[22px] border border-[#E1E5E9] bg-white px-5 shadow-[0_5px_18px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-1 hover:border-[#BDD64D] hover:shadow-lg sm:h-[120px] sm:w-[300px]"
-          >
+          <div key={`${brand.name}-${i}`} className="group flex h-[110px] w-[275px] shrink-0 items-center justify-center rounded-[22px] border border-[#DFE4E9] bg-white shadow-[0_4px_15px_rgba(0,0,0,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:h-[122px] sm:w-[290px]">
             <PartnerLogo brand={brand} />
           </div>
         ))}
@@ -93,9 +80,7 @@ export function LogoMarquee() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <Reveal className="mb-8 text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-fg/60">Trusted by partners across India</p>
-          <p className="mt-2 font-display text-2xl font-bold text-fg sm:text-3xl">
-            250+ enterprises run rewards on BudgeTree
-          </p>
+          <p className="mt-2 font-display text-2xl font-bold text-fg sm:text-3xl">250+ enterprises run rewards on BudgeTree</p>
         </Reveal>
       </div>
       <div className="space-y-4">
