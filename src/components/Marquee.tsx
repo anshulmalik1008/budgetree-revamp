@@ -22,15 +22,15 @@ const ROW_1: Brand[] = [
 ];
 
 const ROW_2: Brand[] = [
-  { name: "Aranca", color: "#204A7E" },
-  { name: "Sky Decor", color: "#1B6A97" },
-  { name: "Welspun", color: "#2256A5" },
-  { name: "RED FM", color: "#DB2328" },
-  { name: "Cipla", color: "#117DB1" },
-  { name: "JSW Paints", color: "#1B4D9A" },
-  { name: "Astral Pipes", color: "#E33C3C" },
-  { name: "Ground Truth", color: "#1C8D69" },
-  { name: "Omnism", color: "#403798" },
+  { name: "Aranca", logo: "https://img.sdcexec.com/files/base/acbm/sdce/image/2021/10/aranca_logo_0203.615f01fdc3736.png?fit=max&w=800", color: "#204A7E" },
+  { name: "Sky Decor", logo: "https://www.skydecor.in/public/site/skydecor-logo.png", color: "#1B6A97" },
+  { name: "Welspun", logo: "https://commons.wikimedia.org/wiki/Special:Redirect/file/Welspun-word-logo.png", color: "#2256A5" },
+  { name: "RED FM", logo: "https://cdn-radiotime-logos.tunein.com/p923503g.png", color: "#DB2328" },
+  { name: "Cipla", logo: "https://invoicing.cipla.com/images/cipla-logo.png", color: "#117DB1" },
+  { name: "JSW Paints", logo: "https://images.indianexpress.com/2025/06/JSW-Paints.jpg", color: "#1B4D9A" },
+  { name: "Astral Pipes", logo: "https://media.assettype.com/freepressjournal/2026-05-18/hapu09ih/astral-ltd.jpg", color: "#E33C3C" },
+  { name: "Ground Truth", logo: "https://mma.prnewswire.com/media/2714195/GroundTruth_Logo.jpg", color: "#1C8D69" },
+  { name: "Omnism", logo: "https://avatarsapi.com/google-play/com.budgetree.omnism?size=800", color: "#403798" },
 ];
 
 function PartnerLogo({ brand }: { brand: Brand }) {
@@ -43,14 +43,12 @@ function PartnerLogo({ brand }: { brand: Brand }) {
           src={src}
           alt={brand.name}
           loading="lazy"
-          className="block h-[70px] w-full max-w-[230px] object-contain"
+          referrerPolicy="no-referrer"
+          className="block h-[75px] w-full max-w-[235px] object-contain"
           onError={() => setFailed(true)}
         />
       ) : (
-        <span
-          className="text-center font-display text-2xl font-extrabold tracking-tight sm:text-[27px]"
-          style={{ color: brand.color || "#222" }}
-        >
+        <span className="text-center font-display text-2xl font-extrabold tracking-tight sm:text-[27px]" style={{ color: brand.color || "#222" }}>
           {brand.name}
         </span>
       )}
