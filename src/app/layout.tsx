@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SiteSearchAssistant from "@/components/SiteSearchAssistant";
 import { BackToTop, CursorGlow, ScrollProgress } from "@/components/Extras";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
@@ -48,6 +49,7 @@ export default function RootLayout({
         {children}
         <Footer />
         <BackToTop />
+        <SiteSearchAssistant />
       </body>
     </html>
   );
