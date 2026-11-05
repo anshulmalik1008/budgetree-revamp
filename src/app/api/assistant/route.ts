@@ -153,9 +153,9 @@ const buckets = new Map<string, { windowStart: number; count: number }>();
 function rateLimited(ip: string) {
   const now = Date.now();
   if (buckets.size > 500) {
-    for (const [key, value] of buckets) {
+    buckets.forEach((value, key) => {
       if (now - value.windowStart > 60_000) buckets.delete(key);
-    }
+    });
   }
   const record = buckets.get(ip);
   if (!record || now - record.windowStart > 60_000) {
