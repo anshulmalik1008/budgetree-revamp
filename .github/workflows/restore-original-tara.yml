@@ -1,0 +1,71 @@
+name: Restore original Tara ZIP widget
+
+on:
+  push:
+    paths:
+      - "scripts/tara-widget/**"
+      - ".github/workflows/restore-original-tara.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - name: Restore original Tara from verified source chunks
+        run: |
+          node <<'JS'
+          const fs = require("fs");
+          const zlib = require("zlib");
+          const encoded = [1,2,3,4].map(n =>
+            fs.readFileSync("scripts/tara-widget/part" + n + ".txt", "utf8").trim()).join("");
+          if (encoded.length !== 23444) throw Error("Tara source payload incomplete: " + encoded.length);
+          const widget = zlib.brotliDecompressSync(Buffer.from(encoded, "base64")).toString("utf8");
+          if (!widget.includes("window.BudgetreeAssistant = {") ||
+              !widget.includes("function Speaker(onState)") || widget.length < 65000)
+            throw Error("Unexpected original Tara widget contents");
+          fs.mkdirSync("public", { recursive: true });
+          fs.writeFileSync("public/budgetree-assistant.js", widget);
+          const layoutFile = "src/app/layout.tsx";
+          let layout = fs.readFileSync(layoutFile, "utf8");
+          layout = layout.replace(/^import SiteSearchAssistant from .*;\r?\n/m, "");
+          if (!layout.includes('import Script from "next/script";')) {
+            layout = 'import Script from "next/script";\n' + layout;
+          }
+          layout = layout.replace(/\s*<SiteSearchAssistant \/>/, "");
+          if (!layout.includes('<Script src="/budgetree-assistant.js"')) {
+            if (!layout.includes("      </body>")) throw Error("Unexpected layout structure");
+            layout = layout.replace("      </body>",
+              '        <Script src="/budgetree-assistant.js" strategy="afterInteractive" />\n      </body>');
+          }
+          fs.writeFileSync(layoutFile, layout);
+          const old = "src/components/SiteSearchAssistant.tsx";
+          if (fs.existsSync(old)) fs.unlinkSync(old);
+          console.log("Restored exact Tara ZIP widget (" + widget.length + " chars), replaced old assistant in layout.");
+          JS
+      - name: JavaScript syntax validation
+        run: node --check public/budgetree-assistant.js
+      - name: Install dependencies
+        run: npm ci
+      - name: TypeScript verification
+        run: npx tsc --noEmit
+      - name: Next.js production build
+        run: npm run build
+      - name: Commit authentic Tara installation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A public/budgetree-assistant.js src/app/layout.tsx src/components/SiteSearchAssistant.tsx
+          if ! git diff --cached --quiet; then
+            git commit -m "Install authentic Tara ZIP widget, replacing previous assistant"
+            git push origin HEAD:main
+          fi
