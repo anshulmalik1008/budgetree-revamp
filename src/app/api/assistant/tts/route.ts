@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
   const { text: rawText, language: rawLanguage } = input as Record<string, unknown>;
   if (typeof rawText !== "string" || !rawText.trim()) return NextResponse.json({ error: "Text required" }, { status: 400 });
   const text = rawText.trim().slice(0, 1200);
-  const hindi = rawLanguage === "hi" || (rawLanguage !== "en" && /[\u0900-\u097F]/u.test(text));
+  const hindi = rawLanguage === "hi" || (rawLanguage !== "en" && /[\u0900-\u097F]/.test(text));
   const voice = hindi ? "hi-IN-SwaraNeural" : "en-IN-NeerjaNeural";
   const locale = hindi ? "hi-IN" : "en-IN";
   const ssml = '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="' + locale +
