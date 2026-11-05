@@ -166,6 +166,33 @@ const LANGUAGES: { code: Language; label: string }[] = [
 ];
 const languageToRecognition = (language: Language) => language === "hi" ? "hi-IN" : "en-IN";
 const languageToSpeech = (language: Language) => language === "hi" ? "hi-IN" : "en-IN";
+const VOICE_NAME_KEY = "bt-assistant-female-voice-v1";
+// Browser APIs do not report gender. Use known Indian female voice names only.
+// Do not let the browser silently substitute its default (often male) voice.
+const FEMALE_HINDI_NAMES = ["swara", "lekha", "kalpana", "heera", "aditi", "kajal", "priya", "sangeeta", "neerja"];
+const FEMALE_INDIAN_ENGLISH_NAMES = ["neerja", "raveena", "veena", "heera", "aditi", "kajal", "priya", "sangeeta", "lekha"];
+const FEMALE_BLOCKLIST = ["prabhat", "hemant", "ravi", "rahul", "madhur", "amit", "male", "arjun"];
+function availableFemaleVoices(voices: SpeechSynthesisVoice[], language: Language) {
+  const hints = language === "hi" ? FEMALE_HINDI_NAMES : FEMALE_INDIAN_ENGLISH_NAMES;
+  const preferredLocale = languageToSpeech(language).toLowerCase();
+  return voices
+    .filter((voice) => {
+      const name = voice.name.toLowerCase();
+      const locale = voice.lang.toLowerCase();
+      return locale.startsWith(preferredLocale.slice(0, 2)) &&
+        !FEMALE_BLOCKLIST.some((blocked) => name.includes(blocked)) &&
+        hints.some((hint) => name.includes(hint));
+    })
+    .sort((a, b) => {
+      const rank = (voice: SpeechSynthesisVoice) => {
+        const locale = voice.lang.toLowerCase();
+        const position = hints.findIndex((hint) => voice.name.toLowerCase().includes(hint));
+        return (locale === preferredLocale ? 0 : 100) + (position < 0 ? 90 : position);
+      };
+      return rank(a) - rank(b);
+    });
+}
+
 
 type Message = { role: "user" | "assistant"; text: string; links?: Entry[] };
 const suggested = ["What is RewardX?", "Current Account", "Warehouse Management", "Book a demo"];
@@ -203,6 +230,8 @@ export default function SiteSearchAssistant() {
   const [answering, setAnswering] = useState(false);
   const [answerMode, setAnswerMode] = useState<"ai" | "knowledge">("knowledge");
   const [speechAvailable, setSpeechAvailable] = useState(false);
+  const [installedVoices, setInstalledVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [chosenVoice, setChosenVoice] = useState("");
   const recognitionRef = useRef<BrowserRecognition | null>(null);
   const voiceEnabledRef = useRef(false);
   const languageRef = useRef<Language>("hinglish");
@@ -241,9 +270,15 @@ export default function SiteSearchAssistant() {
     }
     const w = window as SpeechWindow;
     setSpeechAvailable(Boolean(w.SpeechRecognition || w.webkitSpeechRecognition));
+    try { setChosenVoice(window.localStorage.getItem(VOICE_NAME_KEY) || ""); } catch {}
+    const speech = window.speechSynthesis;
+    const refresh = () => setInstalledVoices(speech ? speech.getVoices() : []);
+    refresh();
+    speech?.addEventListener?.("voiceschanged", refresh);
     return () => {
+      speech?.removeEventListener?.("voiceschanged", refresh);
       recognitionRef.current?.abort();
-      window.speechSynthesis?.cancel();
+      speech?.cancel();
     };
   }, []);
 
@@ -277,32 +312,28 @@ export default function SiteSearchAssistant() {
       setSpeechError("Voice playback is unavailable in this browser.");
       return;
     }
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text.slice(0, 700));
-    utterance.lang = languageToSpeech(code);
-    utterance.rate = code === "hi" ? 0.92 : 0.98;
-    utterance.pitch = 1;
-    const voices = window.speechSynthesis.getVoices();
-    // SpeechSynthesisVoice does not expose a gender property. Prefer known
-    // feminine-sounding installed voices, then fall back to a locale match.
-    const preferredNames = code === "hi"
-      ? ["swara", "heera", "neerja", "kalpana", "veena", "raveena", "female"]
-      : ["neerja", "raveena", "samantha", "zira", "ava", "victoria", "karen", "hazel", "female", "swara"];
-    const preferred = voices
-      .filter((v) => v.lang.toLowerCase().startsWith(code === "hi" ? "hi" : "en"))
-      .sort((a, b) => {
-        const rank = (name: string) => {
-          const found = preferredNames.findIndex((hint) => name.toLowerCase().includes(hint));
-          return found < 0 ? 999 : found;
-        };
-        return rank(a.name) - rank(b.name);
-      });
-    utterance.voice = preferred[0] || voices.find((v) =>
-      v.lang.toLowerCase().startsWith(code === "hi" ? "hi" : "en")) || null;
+    const speech = window.speechSynthesis;
+    speech.cancel();
+    // Voices may load after page hydration. Query them again at speak time.
+    const femaleVoices = availableFemaleVoices(speech.getVoices(), code);
+    const selected = femaleVoices.find((v) => v.name === chosenVoice) || femaleVoices[0];
+    if (!selected) {
+      setSpeechError(code === "hi"
+        ? "Indian female Hindi voice is not installed in this browser. Install a Hindi female system voice or switch browser. Showing the answer as text instead."
+        : "Indian female voice is not available in this browser. Install an Indian English female system voice (Neerja, Raveena or Veena). Showing the answer as text instead.");
+      setSpeaking(false);
+      return;
+    }
+    setSpeechError("");
+    const utterance = new SpeechSynthesisUtterance(text.slice(0, 1250));
+    utterance.voice = selected;
+    utterance.lang = selected.lang;
+    utterance.rate = code === "hi" ? 0.94 : 0.98;
+    utterance.pitch = 1.06;
     utterance.onstart = () => setSpeaking(true);
     utterance.onend = () => setSpeaking(false);
     utterance.onerror = () => setSpeaking(false);
-    window.speechSynthesis.speak(utterance);
+    speech.speak(utterance);
   }
 
   function stopSpeech() {
@@ -522,6 +553,39 @@ export default function SiteSearchAssistant() {
                   ><Trash2 className="h-4 w-4" /></button>
                 </div>
               </div>
+              {voiceEnabled && (
+                <div className="border-b border-line/10 bg-raise px-3 py-2">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-fg/75">
+                    Indian female voice
+                    <select
+                      aria-label="Select Indian female voice"
+                      value={availableFemaleVoices(installedVoices, language).some((v) => v.name === chosenVoice) ? chosenVoice : ""}
+                      onChange={(event) => {
+                        const name = event.target.value;
+                        setChosenVoice(name);
+                        stopSpeech();
+                        try { window.localStorage.setItem(VOICE_NAME_KEY, name); } catch {}
+                      }}
+                      className="min-w-0 flex-1 rounded-lg border border-line/20 bg-base px-2 py-2 text-xs text-fg"
+                    >
+                      <option value="">Automatic female</option>
+                      {availableFemaleVoices(installedVoices, language).map((voice) => (
+                        <option key={voice.voiceURI} value={voice.name}>{voice.name}</option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => speak(language === "hi" ? "नमस्ते, मैं बजट्री की आपकी वॉयस असिस्टेंट हूँ।" : "Namaste! I'm your Budgetree voice assistant.", language)}
+                      className="shrink-0 rounded-lg border border-acc/40 px-2.5 py-2 text-[11px] font-bold text-acc hover:bg-acc/10"
+                    >
+                      Test
+                    </button>
+                  </label>
+                  {availableFemaleVoices(installedVoices, language).length === 0 && (
+                    <p className="mt-2 text-[11px] text-amber-500">No verified Indian female voice detected on this device. Text answers will continue; male fallback is disabled.</p>
+                  )}
+                </div>
+              )}
               <div className="flex-1 space-y-3 overflow-y-auto px-4 py-5">
                 {messages.map((m, i) => (
                   <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
@@ -568,7 +632,7 @@ export default function SiteSearchAssistant() {
                 {speechError && <p role="alert" className="mt-2 text-xs text-red-400">{speechError}</p>}
                 {listening && <p role="status" className="mt-2 text-center text-xs font-bold text-acc">Listening... speak now</p>}
                 <p className="mt-2 text-center text-[10px] text-fg/45">Chat history saved in this browser · Clear with trash icon</p>
-                <p className="mt-1 text-center text-[10px] text-fg/45">Voice uses your browser · Female voice preferred when available · {answerMode === "ai" ? "AI-powered answers" : "Grounded website answers"}</p>
+                <p className="mt-1 text-center text-[10px] text-fg/45">Voice uses installed Indian female voices only · {answerMode === "ai" ? "AI-powered answers" : "Grounded website answers"}</p>
               </div>
             </motion.section>
           )}
