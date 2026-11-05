@@ -4,6 +4,7 @@ import { products as suiteProducts } from "@/data/suiteProducts";
 import { SERVICES } from "@/data/services";
 import { POSTS } from "@/data/blog";
 import { LEGAL } from "@/data/legal";
+import { PRODUCTS } from "@/data/products";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,6 +17,16 @@ const docs: Document[] = [
   ...LIVE_KNOWLEDGE.map((k) => ({
     name: k.name, aliases: k.aliases, description: k.summary,
     details: k.details, keywords: k.keywords, source: k.source, href: k.page,
+  })),
+  ...PRODUCTS.map((p) => ({
+    name: p.name,
+    aliases: [p.slug, p.name.replace(/x$/i, " x")],
+    description: p.desc,
+    details: [p.tagline, ...p.long, ...p.features.map((x) => x.title + ": " + x.desc),
+      ...p.steps.map((x) => x.title + ": " + x.desc)],
+    keywords: [p.slug, "product", "features", "use cases"],
+    href: "/products/" + p.slug,
+    source: "/products/" + p.slug,
   })),
   ...suiteProducts.map((p) => ({
     name: p.name, aliases: [p.short, p.slug.replace(/-/g, " ")],
@@ -51,6 +62,80 @@ const docs: Document[] = [
   })),
 ];
 
+const additionalDocs: Document[] = [
+  {
+    name: "Budgetree products and solutions",
+    aliases: ["budgetree", "budgetree services", "all products", "products", "what is budgetree", "what does budgetree do", "budgetree kya hai", "budgetree kya karta hai", "b2b", "b2c"],
+    description: "Budgetree helps businesses run digital rewards, loyalty programs, cashback, payouts and gifting from a connected platform.",
+    details: [
+      "RewardX handles digital gifts, reward points, reward links, reward codes and recognition campaigns.",
+      "LoyaltyX supports dealer, distributor, retailer, customer and employee engagement, points, incentives and redemption.",
+      "UPI Rewards runs cashback and cash-token campaigns with automated rewards and tracking.",
+      "Payouts handles vendors, salaries, incentives, referrals, bulk disbursements and reconciliation.",
+      "Bill Payments covers supported utilities and bill-payment workflows.",
+      "The new Management Suite includes Warehouse, Sales Force, Order, Product Information, Inventory, Target, Scheme & Offers, Pricing and Incentive Management.",
+      "Other solutions include gift-card APIs, corporate gifting, digital QR, developer integrations, Neo Plus banking-product enquiry pages and SiriPay gift cards.",
+      "For pricing, onboarding requirements and live product eligibility, book a demo with the Budgetree team."
+    ],
+    keywords: ["overview", "what", "why", "works", "company", "product", "solution", "platform", "service", "sab", "sare", "all", "list", "detail"],
+    source: "https://budgetree.in/", href: "/"
+  },
+  {
+    name: "Neo Plus and Banking",
+    aliases: ["neo plus", "neoplus", "current account", "bank account", "payout links", "banking", "gst pan verification"],
+    description: "Neo Plus is the Budgetree redesign's banking-related section with Current Account, Payouts and Payout Links pages.",
+    details: [
+      "Current Account is an account enquiry and onboarding page; actual account-opening eligibility and bank conditions must be confirmed with the provider.",
+      "Payouts helps businesses explore disbursement-related solutions.",
+      "Payout Links provides information about link-based payout workflows.",
+      "Do not submit PAN, GST documents, OTPs or banking information to this assistant; use official secure onboarding forms."
+    ],
+    keywords: ["neo", "bank", "account", "idfc", "razorpay", "payout", "link", "gst", "pan"],
+    source: "/neo-plus/current-account", href: "/neo-plus/current-account"
+  },
+  {
+    name: "Developer Integration",
+    aliases: ["developers", "api docs", "api", "sdk", "documentation", "integration", "integrate", "api reference"],
+    description: "Budgetree offers developer documentation, integration guidance and API reference pages for technical teams.",
+    details: [
+      "Read the Docs page for the developer overview.",
+      "Use Integration for connection and implementation guidance.",
+      "Use API Reference to review technical documentation.",
+      "Exact endpoints, credentials, authentication and production access must be verified through the official developer documentation.",
+      "Do not paste secret keys, OTPs, tokens or customer details into this chat."
+    ],
+    keywords: ["api", "sdk", "code", "docs", "authentication", "webhook", "developer", "integration", "reference"],
+    source: "/developers/docs", href: "/developers/docs"
+  },
+  {
+    name: "Pricing and Commercial Enquiries",
+    aliases: ["pricing", "charges", "cost", "fees", "price", "kitna", "rate", "commercial", "quotation"],
+    description: "Commercial pricing depends on the product, volume, integration scope and business requirements.",
+    details: [
+      "For a quotation select a product and request a demo or contact the sales team.",
+      "Do not assume that a setup is free or that discount, payout fees or pricing are fixed.",
+      "Specific fee schedules and commercial commitments are not confirmed by the information in this assistant."
+    ],
+    keywords: ["cost", "price", "free", "charge", "fee", "discount", "budget", "subscription", "quote", "commercial"],
+    source: "/pricing", href: "/pricing"
+  },
+  {
+    name: "Industries and Business Use Cases",
+    aliases: ["industry", "industries", "use case", "who uses", "which businesses", "sector"],
+    description: "Budgetree positions reward, incentive and loyalty workflows for BFSI, retail, e-commerce, FMCG, automotive, travel, healthcare and other industries.",
+    details: [
+      "BFSI and fintech: incentive distribution, digital engagement and compliance-aware payout operations.",
+      "Retail and e-commerce: customer cashback, loyalty, referral rewards and gift cards.",
+      "FMCG, building materials and automotive: dealer and distributor engagement, targets, sales incentives and QR-based rewards.",
+      "Travel, hospitality and lifestyle: digital gifting, experiences and loyalty.",
+      "Healthcare, pharmaceuticals, education and SaaS: employee, partner or customer engagement."
+    ],
+    keywords: ["retail", "fintech", "bank", "fmcg", "automotive", "business", "b2b", "consumer", "sector"],
+    source: "https://budgetree.in/solutions", href: "/solutions"
+  }
+];
+docs.push(...additionalDocs);
+
 const synonymMap: Array<[RegExp, string]> = [
   [/रिवॉर्ड|रिवार्ड|इनाम/g, " reward "],
   [/लॉयल्टी/g, " loyalty "], [/यूपीआई/g, " upi "],
@@ -64,6 +149,9 @@ const synonymMap: Array<[RegExp, string]> = [
   [/कीमत|प्राइस/g, " pricing "], [/बैंक/g, " bank "],
   [/कंपनी|बजट्री|बजेट्री/g, " budgetree "],
   [/कैसे|किस तरह/g, " how "], [/क्या|बताओ|समझाओ/g, " what "],
+  [/प्रोडक्ट|प्रोडक्ट्स/g, " products "], [/सर्विस|सर्विसेस/g, " services "],
+  [/कितना|कितने|रेट|चार्ज/g, " pricing "], [/हेल्प|मदद/g, " support "],
+  [/टारगेट/g, " target "], [/मैनेजमेंट/g, " management "],
   [/\breward\s*x\b/gi, " rewardx "], [/\bloyalty\s*x\b/gi, " loyaltyx "],
   [/\bsiri\s*pay\b/gi, " siripay "],
 ];
@@ -103,19 +191,28 @@ function score(doc: Document, query: string) {
   return rank;
 }
 function findMatches(query: string, history: HistoryItem[]) {
-  const matches = docs.map((doc) => ({ doc, score: score(doc, query) }))
-    .filter((item) => item.score >= 4)
+  const queryTerms = tokens(query);
+  let matches = docs.map((doc) => ({ doc, score: score(doc, query) }))
+    .filter((entry) => entry.score >= 4)
     .sort((a, b) => b.score - a.score);
-  // A short follow-up should carry the topic from the previous question.
-  const shortFollowup = tokens(query).length <= 4 && /^(and |also |what about |how |why |can |iska |iske |uska |uske |aur |is |ye |detail|features|benefit|pricing|process|steps|explain|tell)/i.test(query.trim());
-  if (shortFollowup && history.length) {
-    const previous = [...history].reverse().find((item) => item.role === "user");
-    if (previous) {
-      const contextMatches = docs.map((doc) => ({ doc, score: score(doc, previous.text) }))
-        .filter((item) => item.score >= 10).sort((a, b) => b.score - a.score).slice(0, 2);
-      for (const context of contextMatches) {
-        if (!matches.some((m) => m.doc.href === context.doc.href)) {
-          matches.unshift({ doc: context.doc, score: context.score });
+
+  // Explicit broad questions should yield the website overview, not a random blog entry.
+  const broad = /^(what (is|does) (budgetree|the company)|budgetree (kya|kaise|kese)|tell me about budgetree|about budgetree|all products|all services|products list|services list|sab products|all features|what do you do)/i.test(query.trim());
+  if (broad) {
+    const overview = additionalDocs[0];
+    matches = [{doc: overview, score: 100}, ...matches.filter((x) => x.doc !== overview)];
+  }
+
+  const followUp = queryTerms.length <= 5 && /^(and|also|what about|how|why|can|iska|iske|uska|uske|aur|is|ye|detail|features|benefit|pricing|process|steps|explain|tell|more|isko|usko)/i.test(query.trim());
+  if (followUp && history.length) {
+    const recent = [...history].reverse().find((item) => item.role === "user");
+    if (recent) {
+      const previous = docs.map((doc) => ({ doc, score: score(doc, recent.text) }))
+        .filter((x) => x.score >= 10).sort((a, b) => b.score - a.score)[0];
+      if (previous) {
+        const currentBest = matches[0]?.score ?? 0;
+        if (currentBest < 25 || queryTerms.every((t) => !normalize(previous.doc.name).includes(t))) {
+          matches = [{doc: previous.doc, score: 50}, ...matches.filter((x) => x.doc !== previous.doc)];
         }
       }
     }
@@ -124,26 +221,31 @@ function findMatches(query: string, history: HistoryItem[]) {
 }
 function fallbackAnswer(query: string, matches: Document[], language: Language) {
   if (!matches.length) {
-    if (language === "hi") return "इस विषय पर मेरे पास Budgetree की प्रकाशित वेबसाइट में पर्याप्त जानकारी नहीं है। आप प्रोडक्ट का नाम बता सकते हैं, या सही जानकारी के लिए हमारी टीम से संपर्क कर सकते हैं।";
-    if (language === "hinglish") return "Is topic par Budgetree ki published website mein sufficient information nahi mili. Aap specific product ka naam bata sakte hain, ya accurate details ke liye team se contact kar sakte hain.";
-    return "I couldn't find enough verified information about that on Budgetree's published pages. Please ask about a specific product or contact the Budgetree team for accurate details.";
+    if (language === "hi") return "इस सवाल के लिए प्रकाशित वेबसाइट में पर्याप्त जानकारी नहीं मिली। कृपया किसी उत्पाद या सेवा का नाम बताइए। सही जानकारी के लिए Budgetree की टीम से संपर्क भी कर सकते हैं।";
+    if (language === "hinglish") return "Is sawaal ki complete information published website mein nahi mili. Aap product ya service ka naam batayein. Accurate details ke liye Budgetree team se bhi baat kar sakte hain.";
+    return "I couldn't find enough information in the website knowledge base. Ask about a product or service, or contact Budgetree for verified details.";
   }
-  const compare = /compare|difference|versus|\bvs\b|antar|farak|compare karo|अंतर|फर्क/i.test(query);
-  const many = /all|everything|sab|sare|poora|detail|complete|end to end|explain|feature|steps|process|how|कौन|कैसे|पूरी|सब/i.test(query);
-  const selected = compare ? matches.slice(0, 2) : matches.slice(0, many ? 2 : 1);
-  const intro = language === "hi" ? "Budgetree की वेबसाइट पर उपलब्ध जानकारी के अनुसार:" :
-    language === "hinglish" ? "Budgetree website par available details ke hisaab se:" :
-      "Based on information published on Budgetree's website:";
-  const lines = selected.map((doc) => {
-    const details = doc.details.slice(0, many ? 7 : 5);
-    return doc.name + ": " + doc.description + "\n" + details.map((detail, index) => (index + 1) + ". " + detail).join("\n");
+  const compare = /compare|difference|versus|\\bvs\\b|antar|farak|अंतर|फर्क/i.test(query);
+  const many = /all|everything|sab|sare|poora|detail|complete|end to end|explain|feature|steps|process|how|क्या|कैसे|पूरी|सब/i.test(query);
+  const selected = compare ? matches.slice(0, 2) : matches.slice(0, 1);
+  const intro = language === "hi" ? "Budgetree के उपलब्ध वेबसाइट डेटा के अनुसार:" :
+    language === "hinglish" ? "Budgetree ke website data ke hisaab se:" :
+    "Based on the available Budgetree website information:";
+  const blocks = selected.map((doc) => {
+    const isSteps = /how|steps|process|kaise|kese|कैसे|शुरू|onboarding/i.test(query);
+    const filtered = isSteps
+      ? doc.details.filter((d) => /step|start|setup|onboard|kyc|track|launch|dashboard|wallet|send|configure|implement|process/i.test(d))
+      : doc.details;
+    const details = (filtered.length ? filtered : doc.details).slice(0, many ? 9 : 5);
+    return doc.name + "\n" + doc.description + (details.length
+      ? "\n\n" + details.map((d, i) => (i + 1) + ". " + d).join("\n")
+      : "");
   });
-  const ending = language === "hi" ? "अधिक जानकारी के लिए नीचे संबंधित पेज खोलें।" :
-    language === "hinglish" ? "Aur details ke liye neeche related page open kar sakte hain." :
-      "You can open the relevant page below to learn more.";
-  return intro + "\n\n" + lines.join("\n\n") + "\n\n" + ending;
+  const ending = language === "hi" ? "ज़्यादा जानकारी के लिए नीचे दिए गए संबंधित पेज को खोलें।" :
+    language === "hinglish" ? "Full details ke liye neeche relevant page open kar sakte hain." :
+      "Open a linked page below for the full details.";
+  return intro + "\n\n" + blocks.join("\n\n") + "\n\n" + ending;
 }
-
 function safeLinks(matches: Document[]) {
   return matches.slice(0, 4).map((doc) => ({ title: doc.name, href: doc.href, category: "Website" }));
 }
