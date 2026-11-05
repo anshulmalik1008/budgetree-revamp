@@ -81,7 +81,30 @@ const INDEX: Entry[] = [
   })),
 ];
 
-const normalize = (text: string) => text.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, " ").trim();
+// Map common Hindi and Hinglish product terms to searchable website vocabulary.
+const SEARCH_SYNONYMS: Array<[string, string]> = [
+  ["रिवार्ड एक्स", "rewardx"], ["रिवॉर्ड एक्स", "rewardx"], ["रिवॉर्ड्स", "rewards"],
+  ["रिवॉर्ड", "reward"], ["इनाम", "rewards"], ["गिफ्ट कार्ड", "gift card"],
+  ["लॉयल्टी एक्स", "loyaltyx"], ["लॉयल्टी", "loyalty"],
+  ["यूपीआई", "upi"], ["कैशबैक", "cashback"], ["पेआउट", "payout"],
+  ["पेमेंट", "payment"], ["बिल पेमेंट", "bill payments"], ["रिचार्ज", "recharge"],
+  ["वेयरहाउस", "warehouse"], ["इन्वेंटरी", "inventory"],
+  ["ऑर्डर", "order"], ["स्कीम", "scheme"], ["ऑफर", "offers"],
+  ["प्राइसिंग", "pricing"], ["इंसेंटिव", "incentive"],
+  ["सेल्स फोर्स", "sales force"], ["टारगेट", "target"],
+  ["करंट अकाउंट", "current account"], ["बैंक अकाउंट", "current account"],
+  ["डॉक्यूमेंटेशन", "docs"], ["एपीआई", "api"], ["इंटीग्रेशन", "integration"],
+  ["सिरीपे", "siripay"], ["सिरी पे", "siripay"],
+  ["डेमो", "demo"], ["संपर्क", "contact"],
+  ["रिवार्ड", "reward"], ["पैसे", "payout"], ["प्रोडक्ट", "product"],
+  ["reward x", "rewardx"], ["loyalty x", "loyaltyx"],
+  ["siripay", "siripay"],
+];
+const normalize = (text: string) => {
+  let value = text.toLowerCase().normalize("NFKD");
+  for (const [term, replacement] of SEARCH_SYNONYMS) value = value.split(term).join(" " + replacement + " ");
+  return value.replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
+};
 const stop = new Set(["the", "a", "an", "i", "is", "are", "me", "my", "in", "on", "how", "what", "where", "do", "does", "can", "you", "for", "to", "of", "and", "about", "batao", "ka", "ki", "hai", "kya", "mujhe", "ke", "mein", "bhi"]);
 const words = (q: string) => normalize(q).split(" ").filter((s) => s.length > 1 && !stop.has(s));
 
@@ -181,7 +204,7 @@ export default function SiteSearchAssistant() {
   const recognitionRef = useRef<BrowserRecognition | null>(null);
   const voiceEnabledRef = useRef(false);
   const languageRef = useRef<Language>("hinglish");
-  const loadedRef = useRef(false);
+  const [hydrated, setHydrated] = useState(false);
   const searchInput = useRef<HTMLInputElement>(null);
   const chatEnd = useRef<HTMLDivElement>(null);
   const results = useMemo(() => findPages(query, 10), [query]);
@@ -212,7 +235,7 @@ export default function SiteSearchAssistant() {
     } catch {
       // Storage may be blocked by the browser.
     } finally {
-      loadedRef.current = true;
+      setHydrated(true);
     }
     const w = window as SpeechWindow;
     setSpeechAvailable(Boolean(w.SpeechRecognition || w.webkitSpeechRecognition));
@@ -224,10 +247,10 @@ export default function SiteSearchAssistant() {
 
   useEffect(() => {
     languageRef.current = language;
-    if (loadedRef.current) {
+    if (hydrated) {
       try { window.localStorage.setItem(LANGUAGE_KEY, language); } catch {}
     }
-  }, [language]);
+  }, [language, hydrated]);
 
   useEffect(() => {
     voiceEnabledRef.current = voiceEnabled;
@@ -238,14 +261,14 @@ export default function SiteSearchAssistant() {
       window.speechSynthesis?.cancel();
       setSpeaking(false);
     }
-  }, [voiceEnabled]);
+  }, [voiceEnabled, hydrated]);
 
   useEffect(() => {
-    if (!loadedRef.current) return;
+    if (!hydrated) return;
     try {
       window.localStorage.setItem(CHAT_KEY, JSON.stringify(messages.slice(-30).map(({role, text}) => ({role, text}))));
     } catch {}
-  }, [messages]);
+  }, [messages, hydrated]);
 
   function speak(text: string, code: Language = languageRef.current) {
     if (!("speechSynthesis" in window)) {
@@ -471,7 +494,7 @@ export default function SiteSearchAssistant() {
                     onClick={toggleMicrophone}
                     aria-label={listening ? "Stop listening" : "Speak your question"}
                     aria-pressed={listening}
-                    title={listening ? "Listening — tap to stop" : "Speak in your selected language"}
+                    title={!speechAvailable ? "Voice recognition may be unsupported in this browser" : listening ? "Listening — tap to stop" : "Speak in your selected language"}
                     className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-line/20 transition ${listening ? "animate-pulse border-red-400 bg-red-500/15 text-red-500" : "bg-base text-fg hover:border-acc"}`}
                   >
                     {listening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
