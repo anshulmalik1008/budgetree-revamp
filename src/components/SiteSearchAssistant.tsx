@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Bot, Command, CornerDownLeft, ExternalLink, MessageCircle, Search, Send, Sparkles, X } from "lucide-react";
+import { ArrowRight, Bot, Command, CornerDownLeft, ExternalLink, Search, Send, Sparkles, X, Mic, MicOff, Volume2, VolumeX, Trash2 } from "lucide-react";
 import { products as suiteProducts } from "@/data/suiteProducts";
 import { SERVICES } from "@/data/services";
 import { POSTS } from "@/data/blog";
@@ -115,6 +115,35 @@ function findPages(query: string, max = 8) {
     .map((r) => r.entry);
 }
 
+type Language = "en" | "hi" | "hinglish";
+const CHAT_KEY = "bt-assistant-chat-v1";
+const LANGUAGE_KEY = "bt-assistant-language-v1";
+const VOICE_KEY = "bt-assistant-voice-v1";
+const WELCOME: Message = { role: "assistant", text: "Namaste! Ask about Budgetree products and services. You can speak in Hindi, English or Hinglish." };
+type SpeechResultEvent = { resultIndex: number; results: ArrayLike<{ isFinal: boolean; 0: { transcript: string } }> };
+type BrowserRecognition = {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  onresult: ((event: SpeechResultEvent) => void) | null;
+  onerror: ((event: { error: string }) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+};
+type SpeechWindow = Window & {
+  SpeechRecognition?: new () => BrowserRecognition;
+  webkitSpeechRecognition?: new () => BrowserRecognition;
+};
+const LANGUAGES: { code: Language; label: string }[] = [
+  { code: "en", label: "English" },
+  { code: "hi", label: "हिन्दी" },
+  { code: "hinglish", label: "Hinglish" },
+];
+const languageToRecognition = (language: Language) => language === "en" ? "en-IN" : "hi-IN";
+const languageToSpeech = (language: Language) => language === "hi" ? "hi-IN" : "en-IN";
+
 type Message = { role: "user" | "assistant"; text: string; links?: Entry[] };
 const suggested = ["What is RewardX?", "Current Account", "Warehouse Management", "Book a demo"];
 
@@ -142,12 +171,169 @@ export default function SiteSearchAssistant() {
   const [chatOpen, setChatOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [question, setQuestion] = useState("");
-  const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", text: "Hi! I can help you find Budgetree products, services, docs, and information from this website. What would you like to know?" },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([WELCOME]);
+  const [language, setLanguage] = useState<Language>("hinglish");
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
+  const [speechError, setSpeechError] = useState("");
+  const [speechAvailable, setSpeechAvailable] = useState(false);
+  const recognitionRef = useRef<BrowserRecognition | null>(null);
+  const voiceEnabledRef = useRef(false);
+  const languageRef = useRef<Language>("hinglish");
+  const loadedRef = useRef(false);
   const searchInput = useRef<HTMLInputElement>(null);
   const chatEnd = useRef<HTMLDivElement>(null);
   const results = useMemo(() => findPages(query, 10), [query]);
+
+  // Keep chat history on this device. No chat transcript is uploaded for memory.
+  useEffect(() => {
+    try {
+      const savedLanguage = window.localStorage.getItem(LANGUAGE_KEY);
+      if (savedLanguage === "en" || savedLanguage === "hi" || savedLanguage === "hinglish") {
+        setLanguage(savedLanguage);
+        languageRef.current = savedLanguage;
+      }
+      const savedVoice = window.localStorage.getItem(VOICE_KEY) === "true";
+      setVoiceEnabled(savedVoice);
+      voiceEnabledRef.current = savedVoice;
+      const history = window.localStorage.getItem(CHAT_KEY);
+      if (history) {
+        const parsed: unknown = JSON.parse(history);
+        if (Array.isArray(parsed)) {
+          const valid = parsed.filter((item): item is Message =>
+            !!item && typeof item === "object" &&
+            (item.role === "user" || item.role === "assistant") &&
+            typeof item.text === "string"
+          ).slice(-30).map(({ role, text }) => ({ role, text: text.slice(0, 1200) }));
+          if (valid.length) setMessages(valid);
+        }
+      }
+    } catch {
+      // Storage may be blocked by the browser.
+    } finally {
+      loadedRef.current = true;
+    }
+    const w = window as SpeechWindow;
+    setSpeechAvailable(Boolean(w.SpeechRecognition || w.webkitSpeechRecognition));
+    return () => {
+      recognitionRef.current?.abort();
+      window.speechSynthesis?.cancel();
+    };
+  }, []);
+
+  useEffect(() => {
+    languageRef.current = language;
+    if (loadedRef.current) {
+      try { window.localStorage.setItem(LANGUAGE_KEY, language); } catch {}
+    }
+  }, [language]);
+
+  useEffect(() => {
+    voiceEnabledRef.current = voiceEnabled;
+    if (loadedRef.current) {
+      try { window.localStorage.setItem(VOICE_KEY, String(voiceEnabled)); } catch {}
+    }
+    if (!voiceEnabled) {
+      window.speechSynthesis?.cancel();
+      setSpeaking(false);
+    }
+  }, [voiceEnabled]);
+
+  useEffect(() => {
+    if (!loadedRef.current) return;
+    try {
+      window.localStorage.setItem(CHAT_KEY, JSON.stringify(messages.slice(-30).map(({role, text}) => ({role, text}))));
+    } catch {}
+  }, [messages]);
+
+  function speak(text: string, code: Language = languageRef.current) {
+    if (!("speechSynthesis" in window)) {
+      setSpeechError("Voice playback is unavailable in this browser.");
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text.slice(0, 700));
+    utterance.lang = languageToSpeech(code);
+    utterance.rate = code === "hi" ? 0.92 : 0.98;
+    utterance.pitch = 1;
+    const voices = window.speechSynthesis.getVoices();
+    utterance.voice = voices.find((voice) => voice.lang.toLowerCase() === utterance.lang.toLowerCase()) ||
+      voices.find((voice) => voice.lang.toLowerCase().startsWith(code === "hi" ? "hi" : "en")) || null;
+    utterance.onstart = () => setSpeaking(true);
+    utterance.onend = () => setSpeaking(false);
+    utterance.onerror = () => setSpeaking(false);
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function stopSpeech() {
+    window.speechSynthesis?.cancel();
+    setSpeaking(false);
+  }
+
+  function toggleMicrophone() {
+    if (listening) {
+      recognitionRef.current?.stop();
+      setListening(false);
+      return;
+    }
+    const w = window as SpeechWindow;
+    const Recognition = w.SpeechRecognition || w.webkitSpeechRecognition;
+    if (!Recognition) {
+      setSpeechError("Microphone speech recognition is not supported here. Try Chrome or Edge and allow microphone access.");
+      return;
+    }
+    stopSpeech();
+    setSpeechError("");
+    try {
+      const recog = new Recognition();
+      recognitionRef.current = recog;
+      recog.lang = languageToRecognition(languageRef.current);
+      recog.continuous = false;
+      recog.interimResults = false;
+      recog.onresult = (event) => {
+        const transcript = Array.from(event.results).map((result) => result[0]?.transcript || "").join(" ").trim();
+        if (transcript) {
+          setQuestion(transcript);
+          ask(transcript, true);
+        }
+      };
+      recog.onerror = (event) => {
+        setListening(false);
+        if (event.error !== "aborted" && event.error !== "no-speech") {
+          setSpeechError(event.error === "not-allowed" ? "Microphone permission denied. Allow microphone access in your browser." : "Could not recognize speech. Please try again.");
+        }
+      };
+      recog.onend = () => setListening(false);
+      recog.start();
+      setListening(true);
+      // Mic interaction enables spoken responses. The setting persists on this device.
+      setVoiceEnabled(true);
+      voiceEnabledRef.current = true;
+    } catch {
+      setListening(false);
+      setSpeechError("Unable to start microphone. Check your browser permission.");
+    }
+  }
+
+  function clearMemory() {
+    stopSpeech();
+    recognitionRef.current?.abort();
+    setListening(false);
+    setMessages([WELCOME]);
+    setQuestion("");
+    try { window.localStorage.removeItem(CHAT_KEY); } catch {}
+  }
+
+  function answerFor(item: Entry, lang: Language, others: number): string {
+    if (lang === "hi") {
+      return `${item.title} — ${item.description} ${others > 0 ? "इससे जुड़े अन्य पेज भी नीचे दिए हैं।" : "अधिक जानकारी के लिए नीचे दिए लिंक पर जाएँ।"}`;
+    }
+    if (lang === "hinglish") {
+      return `${item.title} — ${item.description} ${others > 0 ? "Related pages bhi neeche mil jayenge." : "Aur details ke liye neeche wala page open karo."}`;
+    }
+    return `${item.title}: ${item.description}${others > 0 ? " You can also explore related pages below." : " Open the page below for more information."}`;
+  }
 
   useEffect(() => {
     const openSearch = () => { setChatOpen(false); setSearchOpen(true); };
@@ -176,20 +362,21 @@ export default function SiteSearchAssistant() {
     chatEnd.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [messages, chatOpen]);
 
-  function ask(text: string) {
+  function ask(text: string, fromVoice = false) {
     const q = text.trim();
     if (!q) return;
     const matches = findPages(q, 3);
-    let answer: string;
-    if (!matches.length) {
-      answer = "I couldn't find an exact answer in the published website content. Try a product name or contact the Budgetree team for help.";
-    } else {
-      const item = matches[0];
-      answer = item.title + ": " + item.description;
-      if (matches.length > 1) answer += " You can also explore these related pages below.";
-    }
-    setMessages((prev) => [...prev, { role: "user", text: q }, { role: "assistant", text: answer, links: matches }]);
+    const lang = languageRef.current;
+    const answer = matches.length
+      ? answerFor(matches[0], lang, matches.length - 1)
+      : lang === "hi"
+        ? "मुझे वेबसाइट की जानकारी में इसका जवाब नहीं मिला। प्रोडक्ट का नाम पूछें या Budgetree टीम से संपर्क करें।"
+        : lang === "hinglish"
+          ? "Iska exact jawab website data mein nahi mila. Product ka naam poochho ya Budgetree team ko contact karo."
+          : "I couldn't find an exact answer in the published website content. Please try a product name or contact Budgetree.";
+    setMessages((prev) => [...prev, { role: "user", text: q }, { role: "assistant", text: answer, links: matches }].slice(-30));
     setQuestion("");
+    if (voiceEnabledRef.current || fromVoice) speak(answer, lang);
   }
 
   function submitQuestion(e: FormEvent<HTMLFormElement>) {
@@ -218,6 +405,38 @@ export default function SiteSearchAssistant() {
                 </div>
                 <button aria-label="Close assistant" onClick={() => setChatOpen(false)} className="rounded-full p-2 hover:bg-coal/10"><X className="h-5 w-5" /></button>
               </header>
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/10 bg-raise px-3 py-2">
+                <label className="flex items-center gap-1 text-[11px] font-semibold text-fg/70">
+                  Language
+                  <select
+                    value={language}
+                    onChange={(e) => { setLanguage(e.target.value as Language); stopSpeech(); }}
+                    aria-label="Assistant language"
+                    className="rounded-lg border border-line/20 bg-base px-2 py-1.5 text-xs font-semibold text-fg outline-none focus:border-acc"
+                  >
+                    {LANGUAGES.map((option) => <option key={option.code} value={option.code}>{option.label}</option>)}
+                  </select>
+                </label>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setVoiceEnabled((enabled) => !enabled)}
+                    aria-label={voiceEnabled ? "Turn voice responses off" : "Turn voice responses on"}
+                    title={voiceEnabled ? "Voice replies on" : "Voice replies off"}
+                    className="rounded-lg border border-line/20 p-2 text-fg hover:bg-line/10"
+                  >
+                    {voiceEnabled ? <Volume2 className="h-4 w-4 text-acc" /> : <VolumeX className="h-4 w-4" />}
+                  </button>
+                  {speaking && <button onClick={stopSpeech} type="button" className="rounded-lg px-2 py-1 text-[11px] font-bold text-acc">Stop</button>}
+                  <button
+                    type="button"
+                    onClick={clearMemory}
+                    title="Clear saved conversation on this device"
+                    aria-label="Clear chat memory"
+                    className="rounded-lg border border-line/20 p-2 text-fg/60 hover:bg-line/10 hover:text-fg"
+                  ><Trash2 className="h-4 w-4" /></button>
+                </div>
+              </div>
               <div className="flex-1 space-y-3 overflow-y-auto px-4 py-5">
                 {messages.map((m, i) => (
                   <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
@@ -247,10 +466,23 @@ export default function SiteSearchAssistant() {
                   <input aria-label="Ask about Budgetree" value={question} onChange={(e) => setQuestion(e.target.value)}
                     maxLength={250} placeholder="Ask about a product or service..."
                     className="min-w-0 flex-1 rounded-xl border border-line/20 bg-base px-3 py-3 text-sm text-fg outline-none placeholder:text-fg/45 focus:border-acc" />
+                  <button
+                    type="button"
+                    onClick={toggleMicrophone}
+                    aria-label={listening ? "Stop listening" : "Speak your question"}
+                    aria-pressed={listening}
+                    title={listening ? "Listening — tap to stop" : "Speak in your selected language"}
+                    className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-line/20 transition ${listening ? "animate-pulse border-red-400 bg-red-500/15 text-red-500" : "bg-base text-fg hover:border-acc"}`}
+                  >
+                    {listening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+                  </button>
                   <button type="submit" disabled={!question.trim()} aria-label="Send question"
                     className="grid h-11 w-11 place-items-center rounded-xl bg-volt text-coal disabled:opacity-40"><Send className="h-4 w-4" /></button>
                 </form>
-                <p className="mt-2 text-center text-[10px] text-fg/45">Search-based assistant · Not live human support or generative AI</p>
+                {speechError && <p role="alert" className="mt-2 text-xs text-red-400">{speechError}</p>}
+                {listening && <p role="status" className="mt-2 text-center text-xs font-bold text-acc">Listening... speak now</p>}
+                <p className="mt-2 text-center text-[10px] text-fg/45">Chat history saved in this browser · Clear with trash icon</p>
+                <p className="mt-1 text-center text-[10px] text-fg/45">Voice uses browser speech services and may need internet. Search-based answers, not generative AI.</p>
               </div>
             </motion.section>
           )}
