@@ -109,8 +109,6 @@ export default function SiteSearchAssistant() {
   const [voiceName, setVoiceName] = useState("");
   const [warning, setWarning] = useState("");
   const [ready, setReady] = useState(false);
-  const [leadSent, setLeadSent] = useState(false);
-  const [leadBusy, setLeadBusy] = useState(false);
   const [lead, setLead] = useState({ name: "", phone: "", email: "", requirement: "", consent: false });
   const recognition = useRef<SpeechEngine | null>(null);
   const msgBottom = useRef<HTMLDivElement>(null);
@@ -262,22 +260,28 @@ export default function SiteSearchAssistant() {
   }
   async function submitLead(event: FormEvent) {
     event.preventDefault();
-    if (!lead.consent || leadBusy) return;
-    setLeadBusy(true);
-    try {
-      const response = await fetch("/api/assistant/lead", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...lead, source: "chat", page: location.pathname,
-          transcript: messages.slice(-12).map((m) => ({ role: m.role, content: m.text }))
-        })
-      });
-      if (!response.ok) throw new Error("Not saved");
-      const data = await response.json() as { stored?: boolean };
-      if (data.stored) { setLeadSent(true); setWarning(""); }
-      else setWarning("Form received but not saved. Please email sales@budgetree.in directly.");
-    } catch { setWarning("Lead form isn't configured for delivery yet. Email sales@budgetree.in or use the Contact page."); }
-    finally { setLeadBusy(false); }
+    if (!lead.consent) return;
+    if (!lead.name.trim() || !lead.phone.trim() || !lead.requirement.trim()) {
+      setWarning("Please enter your name, phone number and requirement.");
+      return;
+    }
+    // Avoid pretending data was saved: without a connected notification or
+    // storage provider a serverless contact form cannot guarantee lead delivery.
+    // A pre-addressed email uses the visitor's own mail client instead.
+    const subject = "Tara callback request — " + lead.name.trim();
+    const body = [
+      "New Budgetree enquiry from Tara",
+      "Name: " + lead.name.trim(),
+      "Phone: " + lead.phone.trim(),
+      "Email: " + (lead.email.trim() || "Not provided"),
+      "Requirement: " + lead.requirement.trim(),
+      "Page: " + window.location.href,
+      "Visitor consent: Yes",
+    ].join("\n");
+    const url = "mailto:sales@budgetree.in?subject=" +
+      encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+    window.location.href = url;
+    setWarning("Your email application should open with the enquiry. Please press Send there to contact the Budgetree team. Nothing has been submitted automatically.");
   }
 
   const feminine = useMemo(() => selectVoice(voices, lang), [voices, lang]);
@@ -426,9 +430,6 @@ export default function SiteSearchAssistant() {
                   <a href="mailto:sales@budgetree.in" className="flex items-center gap-2 rounded-xl bg-white/10 p-3 text-xs"><Mail className="h-4 w-4 text-[#CDFB47]" />Email sales</a>
                   <a href="tel:+919193911100" className="flex items-center gap-2 rounded-xl bg-white/10 p-3 text-xs"><Phone className="h-4 w-4 text-[#CDFB47]" />Call team</a>
                 </div>
-                {leadSent ? (
-                  <div className="rounded-2xl border border-[#8CF0B3]/20 bg-[#8CF0B3]/10 p-4 text-sm text-[#8CF0B3]"><Check className="mb-2 h-5 w-5" />Lead saved. Our team will follow up.</div>
-                ) : (
                   <form onSubmit={(event) => { void submitLead(event); }} className="space-y-3">
                     <input required placeholder="Your name" value={lead.name} onChange={(e) => setLead((v) => ({ ...v, name: e.target.value }))}
                       className="w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-sm outline-none" />
@@ -442,10 +443,9 @@ export default function SiteSearchAssistant() {
                       <input type="checkbox" checked={lead.consent} onChange={(e) => setLead((v) => ({ ...v, consent: e.target.checked }))} required />
                       I agree to be contacted regarding my enquiry.
                     </label>
-                    <button type="submit" disabled={leadBusy || !lead.consent}
-                      className="w-full rounded-xl bg-[#CDFB47] px-4 py-3 text-sm font-bold text-[#0C1712] disabled:opacity-50">{leadBusy ? "Submitting…" : "Request a callback"}</button>
+                    <button type="submit" disabled={!lead.consent}
+                      className="w-full rounded-xl bg-[#CDFB47] px-4 py-3 text-sm font-bold text-[#0C1712] disabled:opacity-50">Open email enquiry</button>
                   </form>
-                )}
                 {warning && <p className="text-xs text-[#FFC24B]">{warning}</p>}
                 <p className="flex items-center gap-1 text-[11px] text-white/40"><ShieldCheck className="h-3 w-3" /> Never share OTPs, bank passwords or card details.</p>
               </div>
