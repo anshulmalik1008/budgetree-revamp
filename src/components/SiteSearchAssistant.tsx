@@ -115,6 +115,9 @@ export default function SiteSearchAssistant() {
   const input = useRef<HTMLTextAreaElement>(null);
   const searchInput = useRef<HTMLInputElement>(null);
   const activeRequest = useRef<AbortController | null>(null);
+  const remoteAudio = useRef<HTMLAudioElement | null>(null);
+  const remoteAudioUrl = useRef<string | null>(null);
+  const voiceGeneration = useRef(0);
   const voiceRef = useRef({ lang: "hinglish" as Language, talk: true, voiceName: "" });
   const results = useMemo(() => findPages(search), [search]);
 
@@ -168,37 +171,104 @@ export default function SiteSearchAssistant() {
   useEffect(() => { if (searchOpen) searchInput.current?.focus(); }, [searchOpen]);
 
   function stopAudio() {
+    voiceGeneration.current++;
     window.speechSynthesis?.cancel();
+    const audio = remoteAudio.current;
+    if (audio) {
+      audio.pause();
+      audio.src = "";
+      remoteAudio.current = null;
+    }
+    if (remoteAudioUrl.current) {
+      URL.revokeObjectURL(remoteAudioUrl.current);
+      remoteAudioUrl.current = null;
+    }
     setSpeaking(false);
   }
-  function speak(text: string) {
-    if (!voiceRef.current.talk) return;
+
+  function speakWithBrowser(text: string) {
     const engine = window.speechSynthesis;
-    if (!engine) { setWarning("Browser does not support speech playback."); return; }
-    engine.cancel();
+    if (!engine) {
+      setWarning("Speech playback is unavailable here. Text answers are working.");
+      return;
+    }
     const female = selectVoice(engine.getVoices(), voiceRef.current.lang);
-    const chosen = female.find((v) => v.name === voiceRef.current.voiceName) || female[0];
-    if (!chosen) {
-      setWarning("Indian female voice unavailable on this device. Text replies work. To enable voice, install Lekha (Hindi) or another named female system voice.");
+    const selected = female.find((v) => v.name === voiceRef.current.voiceName) || female[0];
+    if (!selected) {
+      setWarning("Server female voice is not configured and no female system voice was found. Text replies still work. Azure Speech F0 supports Swara and Neerja voices.");
       return;
     }
     setWarning("");
-    const u = new SpeechSynthesisUtterance(text.slice(0, 950));
-    u.voice = chosen; u.lang = chosen.lang; u.rate = 0.97;
-    u.onstart = () => setSpeaking(true);
-    u.onend = () => setSpeaking(false);
-    u.onerror = (event) => {
+    const utterance = new SpeechSynthesisUtterance(text.slice(0, 1100));
+    utterance.voice = selected;
+    utterance.lang = selected.lang;
+    utterance.rate = 0.97;
+    utterance.onstart = () => setSpeaking(true);
+    utterance.onend = () => setSpeaking(false);
+    utterance.onerror = (event) => {
       setSpeaking(false);
-      if (event.error !== "canceled" && event.error !== "interrupted") setWarning("Speech playback failed on this browser. Try another available female voice.");
+      if (event.error !== "canceled" && event.error !== "interrupted") {
+        setWarning("Selected female voice did not play. Try another voice or enable server speech.");
+      }
     };
-    engine.speak(u);
+    engine.speak(utterance);
     if (engine.paused) engine.resume();
+  }
+
+  async function speak(text: string) {
+    if (!voiceRef.current.talk || !text.trim()) return;
+    stopAudio();
+    const generation = voiceGeneration.current;
+    try {
+      // Azure F0, if configured by the site owner, produces the same Indian female
+      // neural voice on every device. No client-side service key is needed.
+      const controller = new AbortController();
+      const timer = window.setTimeout(() => controller.abort(), 15000);
+      let response: Response;
+      try {
+        response = await fetch("/api/assistant/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: text.slice(0, 1200), language: voiceRef.current.lang }),
+          signal: controller.signal
+        });
+      } finally { window.clearTimeout(timer); }
+      if (generation !== voiceGeneration.current) return;
+      if (response.ok && response.headers.get("content-type")?.includes("audio/")) {
+        const audioBlob = await response.blob();
+        if (generation !== voiceGeneration.current) return;
+        const url = URL.createObjectURL(audioBlob);
+        remoteAudioUrl.current = url;
+        const audio = new Audio(url);
+        remoteAudio.current = audio;
+        audio.onended = () => {
+          setSpeaking(false);
+          if (remoteAudioUrl.current === url) {
+            URL.revokeObjectURL(url);
+            remoteAudioUrl.current = null;
+            remoteAudio.current = null;
+          }
+        };
+        audio.onerror = () => {
+          if (generation !== voiceGeneration.current) return;
+          stopAudio();
+          speakWithBrowser(text);
+        };
+        setWarning("");
+        await audio.play();
+        setSpeaking(true);
+        return;
+      }
+    } catch {
+      // Free browser female voices remain available when Azure isn't set up.
+    }
+    if (generation === voiceGeneration.current) speakWithBrowser(text);
   }
 
   async function ask(raw: string) {
     const text = raw.trim().slice(0, 500);
     if (!text || busy) return;
-    stopAudio(); setWarning(""); setQuestion(""); setMode("chat"); setOpen(true); setBusy(true);
+    stopAudio(); setWarning(""); setQuestion(""); setMode((prev) => prev === "voice" ? prev : "chat"); setOpen(true); setBusy(true);
     const history = messages.slice(-8).map((m) => ({ role: m.role, text: m.text }));
     setMessages((prev) => [...prev, { role: "user" as const, text }].slice(-30));
     const controller = new AbortController();
