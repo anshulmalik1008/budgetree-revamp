@@ -2,720 +2,493 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Bot, Command, CornerDownLeft, ExternalLink, Search, Send, Sparkles, X, Mic, MicOff, Volume2, VolumeX, Trash2 } from "lucide-react";
-import { products as suiteProducts } from "@/data/suiteProducts";
+import {
+  ArrowRight, AudioLines, Bot, Check, ChevronLeft, ExternalLink, Gift,
+  Headphones, Mail, Mic, MicOff, Phone, Search, Send, ShieldCheck,
+  Sparkles, Trash2, Volume2, VolumeX, X
+} from "lucide-react";
+import { PRODUCTS } from "@/data/products";
+import { products as SUITE } from "@/data/suiteProducts";
 import { SERVICES } from "@/data/services";
 import { POSTS } from "@/data/blog";
 import { LEGAL } from "@/data/legal";
 
-type Entry = {
-  title: string;
-  href: string;
-  category: string;
-  description: string;
-  body?: string;
-  keywords?: string;
-};
-
-const mainPages: Entry[] = [
-  { title: "Home", href: "/", category: "Page", description: "Budgetree — rewards, loyalty, payouts and business management.", keywords: "home overview budgetree" },
-  { title: "RewardX", href: "/products/rewardx", category: "Product", description: "Employee and customer rewards, digital gifting, milestone recognition and automated reward delivery.", keywords: "reward recognition gift cards employee customer" },
-  { title: "LoyaltyX", href: "/products/loyaltyx", category: "Product", description: "Customer loyalty programs, reward points, tiers, redemption and white-label engagement.", keywords: "loyalty points redemption retention" },
-  { title: "UPI Rewards", href: "/products/upi-rewards", category: "Product", description: "UPI cashback and cash-token rewards for customers and campaigns.", keywords: "upi cash token cashback qr" },
-  { title: "Payouts", href: "/products/payouts", category: "Product", description: "Single and bulk payout solutions for businesses.", keywords: "disbursement transfer payments bulk" },
-  { title: "Bill Payments", href: "/products/bill-payments", category: "Product", description: "Bill payment and utility services for businesses and customers.", keywords: "bill utility recharge bbps" },
-  { title: "Why Budgetree", href: "/#why", category: "Section", description: "How Budgetree helps businesses run rewards, loyalty and engagement." },
-  { title: "Management Suite", href: "/#management-suite", category: "Section", description: "Nine modules for warehouse, sales, orders, inventory, products, targets, promotions, pricing and incentives." },
-  { title: "SiriPay", href: "https://siripay.co/", category: "Marketplace", description: "Gift cards, shopping, food, travel and experiences at SiriPay.", keywords: "gift card brands discount siripay" },
-  { title: "About Us", href: "/about", category: "Company", description: "Learn about Budgetree and its rewards and engagement platforms." },
-  { title: "Solutions", href: "/solutions", category: "Company", description: "Business solutions for rewards, channel partners, customers and employees." },
-  { title: "Pricing", href: "/pricing", category: "Company", description: "Explore pricing and contact Budgetree for a plan." },
-  { title: "Book a Demo", href: "/demo", category: "Action", description: "Schedule a product walkthrough with the Budgetree team.", keywords: "sales meeting trial book call" },
-  { title: "Contact", href: "/contact", category: "Action", description: "Contact the Budgetree team for support, integrations and business enquiries.", keywords: "support phone email help" },
-  { title: "News", href: "/news-page", category: "Company", description: "Budgetree announcements and company news." },
-  { title: "Blog", href: "/blog", category: "Insights", description: "Articles on rewards, loyalty, payouts, fintech and digital gifting." },
-  { title: "Neo Plus — Current Account", href: "/neo-plus/current-account", category: "Neo Plus", description: "Explore business current account enquiries and onboarding.", keywords: "banking gst pan account" },
-  { title: "Neo Plus — Payouts", href: "/neo-plus/payouts", category: "Neo Plus", description: "Explore business payouts and payment management." },
-  { title: "Neo Plus — Payout Links", href: "/neo-plus/payout-links", category: "Neo Plus", description: "Payout links for business payment workflows." },
-  { title: "Developer Docs", href: "/developers/docs", category: "Developers", description: "Integration and developer documentation." },
-  { title: "Integration Guide", href: "/developers/integration", category: "Developers", description: "Developer integration steps and technical guidance." },
-  { title: "API Reference", href: "/developers/api-reference", category: "Developers", description: "Developer API reference and endpoints." },
-];
-
-const INDEX: Entry[] = [
-  ...mainPages,
-  ...suiteProducts.map((p) => ({
-    title: p.name,
-    href: "/products/suite/" + p.slug,
-    category: "Management Suite",
-    description: p.description || p.tagline,
-    body: [
-      p.tagline,
-      ...p.features.map((f) => f.title + ": " + f.text),
-      ...p.faqs.map((f) => f.q + " " + f.a),
-      ...p.benefits,
-    ].join(" "),
-    keywords: p.short + " " + p.category,
-  })),
-  ...SERVICES.map((s) => ({
-    title: s.name,
-    href: "/services/" + s.slug,
-    category: "Service",
-    description: s.desc,
-    body: [s.tagline, ...s.features.map((f) => f.title + ": " + f.desc)].join(" "),
-  })),
-  ...POSTS.map((p) => ({
-    title: p.title,
-    href: "/blog/" + p.slug,
-    category: "Blog",
-    description: p.excerpt,
-    body: p.content.map((s) => (s.h || "") + " " + s.p).join(" "),
-    keywords: p.category,
-  })),
-  ...LEGAL.map((p) => ({
-    title: p.title,
-    href: "/legal/" + p.slug,
-    category: "Legal",
-    description: p.intro,
-    body: p.sections.map((s) => s.h + " " + s.body.join(" ")).join(" "),
-  })),
-];
-
-// Map common Hindi and Hinglish product terms to searchable website vocabulary.
-const SEARCH_SYNONYMS: Array<[string, string]> = [
-  ["रिवार्ड एक्स", "rewardx"], ["रिवॉर्ड एक्स", "rewardx"], ["रिवॉर्ड्स", "rewards"],
-  ["रिवॉर्ड", "reward"], ["इनाम", "rewards"], ["गिफ्ट कार्ड", "gift card"],
-  ["लॉयल्टी एक्स", "loyaltyx"], ["लॉयल्टी", "loyalty"],
-  ["यूपीआई", "upi"], ["कैशबैक", "cashback"], ["पेआउट", "payout"],
-  ["पेमेंट", "payment"], ["बिल पेमेंट", "bill payments"], ["रिचार्ज", "recharge"],
-  ["वेयरहाउस", "warehouse"], ["इन्वेंटरी", "inventory"],
-  ["ऑर्डर", "order"], ["स्कीम", "scheme"], ["ऑफर", "offers"],
-  ["प्राइसिंग", "pricing"], ["इंसेंटिव", "incentive"],
-  ["सेल्स फोर्स", "sales force"], ["टारगेट", "target"],
-  ["करंट अकाउंट", "current account"], ["बैंक अकाउंट", "current account"],
-  ["डॉक्यूमेंटेशन", "docs"], ["एपीआई", "api"], ["इंटीग्रेशन", "integration"],
-  ["सिरीपे", "siripay"], ["सिरी पे", "siripay"],
-  ["डेमो", "demo"], ["संपर्क", "contact"],
-  ["रिवार्ड", "reward"], ["पैसे", "payout"], ["प्रोडक्ट", "product"],
-  ["reward x", "rewardx"], ["loyalty x", "loyaltyx"],
-  ["siripay", "siripay"],
-];
-const normalize = (text: string) => {
-  let value = text.toLowerCase().normalize("NFKD");
-  for (const [term, replacement] of SEARCH_SYNONYMS) value = value.split(term).join(" " + replacement + " ");
-  return value.replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
-};
-const stop = new Set(["the", "a", "an", "i", "is", "are", "me", "my", "in", "on", "how", "what", "where", "do", "does", "can", "you", "for", "to", "of", "and", "about", "batao", "ka", "ki", "hai", "kya", "mujhe", "ke", "mein", "bhi"]);
-const words = (q: string) => normalize(q).split(" ").filter((s) => s.length > 1 && !stop.has(s));
-
-function relevance(item: Entry, query: string) {
-  const q = normalize(query);
-  if (!q) return 0;
-  const title = normalize(item.title);
-  const desc = normalize(item.description);
-  const keys = normalize(item.keywords || "");
-  const body = normalize(item.body || "");
-  const tokens = words(query);
-  if (!tokens.length) return 0;
-  let score = title === q ? 80 : title.includes(q) ? 45 : 0;
-  if (keys.includes(q)) score += 16;
-  if (desc.includes(q)) score += 13;
-  for (const t of tokens) {
-    if (title.includes(t)) score += 12;
-    if (keys.includes(t)) score += 7;
-    if (desc.includes(t)) score += 4;
-    if (body.includes(t)) score += 1;
-  }
-  return score;
-}
-
-function findPages(query: string, max = 8) {
-  if (!query.trim()) return INDEX.slice(1, 7);
-  return INDEX.map((entry) => ({ entry, score: relevance(entry, query) }))
-    .filter((r) => r.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, max)
-    .map((r) => r.entry);
-}
-
 type Language = "en" | "hi" | "hinglish";
-const CHAT_KEY = "bt-assistant-chat-v1";
-const LANGUAGE_KEY = "bt-assistant-language-v1";
-const VOICE_KEY = "bt-assistant-voice-v1";
-const WELCOME: Message = { role: "assistant", text: "Namaste! Ask about Budgetree products and services. You can speak in Hindi, English or Hinglish." };
-type SpeechResultEvent = { resultIndex: number; results: ArrayLike<{ isFinal: boolean; 0: { transcript: string } }> };
-type BrowserRecognition = {
-  lang: string;
-  interimResults: boolean;
-  continuous: boolean;
-  onresult: ((event: SpeechResultEvent) => void) | null;
+type ChatMessage = { role: "user" | "assistant"; text: string; links?: PageLink[] };
+type PageLink = { title: string; href: string; category?: string };
+type Mode = "chat" | "voice" | "contact";
+type SpeechEvent = { results: ArrayLike<{ 0: { transcript: string } }> };
+type SpeechEngine = {
+  lang: string; continuous: boolean; interimResults: boolean;
+  onresult: ((event: SpeechEvent) => void) | null;
   onerror: ((event: { error: string }) => void) | null;
   onend: (() => void) | null;
-  start: () => void;
-  stop: () => void;
-  abort: () => void;
+  start(): void; stop(): void; abort(): void;
 };
-type SpeechWindow = Window & {
-  SpeechRecognition?: new () => BrowserRecognition;
-  webkitSpeechRecognition?: new () => BrowserRecognition;
+type SpeechBrowser = Window & {
+  SpeechRecognition?: new () => SpeechEngine;
+  webkitSpeechRecognition?: new () => SpeechEngine;
 };
-const LANGUAGES: { code: Language; label: string }[] = [
-  { code: "en", label: "English" },
-  { code: "hi", label: "हिन्दी" },
-  { code: "hinglish", label: "Hinglish" },
-];
-const languageToRecognition = (language: Language) => language === "hi" ? "hi-IN" : "en-IN";
-const languageToSpeech = (language: Language) => language === "en" ? "en-IN" : "hi-IN";
-const VOICE_NAME_KEY = "bt-assistant-female-voice-v1";
 
-// The Web Speech API does not expose voice gender. Match explicitly named
-// female-sounding voices, preferring Indian locales. A few browsers offer
-// Google Hindi/Indian voices under generic names; don't assume their gender.
-// Users can preview the named options rather than being forced onto male TTS.
-const INDIAN_FEMALE_NAMES = [
-  "lekha", "kalpana", "swara", "heera", "neerja", "raveena",
-  "veena", "aditi", "kajal", "priya", "sangeeta",
+const CHATS_KEY = "budgetree-tara-conversation-v1";
+const PREF_KEY = "budgetree-tara-language-v1";
+const VOICE_KEY = "budgetree-tara-voice-v1";
+const FEMALE_VOICES = [
+  "lekha", "kalpana", "swara", "heera", "neerja", "raveena", "veena",
+  "aditi", "samantha", "ava", "victoria", "karen", "moira", "fiona", "zira", "jenny"
 ];
-const OTHER_FEMALE_NAMES = [
-  "samantha", "ava", "victoria", "karen", "moira",
-  "fiona", "allison", "susan", "zira", "hazel", "aria", "jenny",
+const WELCOME: ChatMessage = {
+  role: "assistant",
+  text: "Namaste! Main Tara, Budgetree ki virtual assistant. Aap Hindi, English ya Hinglish mein rewards, loyalty, payouts, business solutions aur integrations ke baare mein pooch sakte hain."
+};
+const SUGGEST = ["Budgetree kya karti hai?", "RewardX kya hai?", "LoyaltyX vs RewardX", "All Management Suite products"];
+const PAGES: PageLink[] = [
+  { title: "Budgetree", href: "/", category: "Company" },
+  { title: "About Budgetree", href: "/about", category: "Company" },
+  { title: "Book a Demo", href: "/demo", category: "Contact" },
+  { title: "Contact us", href: "/contact", category: "Contact" },
+  { title: "Our Solutions", href: "/solutions", category: "Solutions" },
+  { title: "Pricing", href: "/pricing", category: "Pricing" },
+  { title: "SiriPay gift cards", href: "https://siripay.co/", category: "Marketplace" },
+  { title: "Neo Plus Current Account", href: "/neo-plus/current-account", category: "Banking" },
+  { title: "Neo Plus Payouts", href: "/neo-plus/payouts", category: "Banking" },
+  { title: "Neo Plus Payout Links", href: "/neo-plus/payout-links", category: "Banking" },
+  { title: "Developer Docs", href: "/developers/docs", category: "Developer" },
+  { title: "Integration", href: "/developers/integration", category: "Developer" },
+  { title: "API Reference", href: "/developers/api-reference", category: "Developer" },
+  ...PRODUCTS.map((p) => ({ title: p.name, href: "/products/" + p.slug, category: "Products" })),
+  ...SUITE.map((p) => ({ title: p.name, href: "/products/suite/" + p.slug, category: "Management Suite" })),
+  ...SERVICES.map((p) => ({ title: p.name, href: "/services/" + p.slug, category: "Services" })),
+  ...POSTS.map((p) => ({ title: p.title, href: "/blog/" + p.slug, category: "Blog" })),
+  ...LEGAL.map((p) => ({ title: p.title, href: "/legal/" + p.slug, category: "Legal" })),
 ];
-function namedFemaleVoices(voices: SpeechSynthesisVoice[], language: Language) {
-  const hints = [...INDIAN_FEMALE_NAMES, ...OTHER_FEMALE_NAMES];
-  const candidates = voices.filter((voice) => {
+const normalize = (s: string) => s.toLowerCase()
+  .replace(/रिवार्ड|रिवॉर्ड/g, "reward").replace(/लॉयल्टी/g, "loyalty")
+  .replace(/यूपीआई/g, "upi").replace(/सिरीपे/g, "siripay")
+  .replace(/गिफ्ट कार्ड/g, "gift card").replace(/बैंक/g, "bank")
+  .replace(/[^a-z0-9]+/g, " ").trim();
+function findPages(q: string): PageLink[] {
+  const tokens = normalize(q).split(" ").filter((t) => t.length > 1);
+  if (!tokens.length) return PAGES.slice(0, 5);
+  return PAGES.map((page) => {
+    const title = normalize(page.title), category = normalize(page.category || "");
+    const score = title.includes(normalize(q)) ? 20 : tokens.reduce((n, t) => n + (title.includes(t) ? 5 : 0) + (category.includes(t) ? 2 : 0), 0);
+    return { page, score };
+  }).filter((entry) => entry.score > 0).sort((a, b) => b.score - a.score).slice(0, 9).map((entry) => entry.page);
+}
+function selectVoice(voices: SpeechSynthesisVoice[], lang: Language) {
+  return voices.filter((voice) => {
     const name = voice.name.toLowerCase();
-    return hints.some((hint) => name === hint || name.startsWith(hint + " ") ||
-      name.endsWith(" " + hint) || name.includes(" " + hint + " "));
-  });
-  const preferredLocale = language === "hi" ? "hi" : "en";
-  return candidates.sort((a, b) => {
+    return FEMALE_VOICES.some((v) => name === v || name.startsWith(v + " ") || name.endsWith(" " + v) || name.includes(" " + v + " "));
+  }).sort((a, b) => {
     const rank = (v: SpeechSynthesisVoice) => {
       const name = v.name.toLowerCase();
-      const indian = INDIAN_FEMALE_NAMES.some((hint) => name.includes(hint));
+      const indian = FEMALE_VOICES.slice(0, 8).some((x) => name.includes(x));
       const locale = v.lang.toLowerCase();
       return (indian ? 0 : 100) +
-        (locale.startsWith(preferredLocale) ? 0 : 15) +
-        (locale.includes("-in") ? 0 : 5);
+        (locale.startsWith(lang === "hi" ? "hi" : "en") ? 0 : 30) +
+        (locale.includes("-in") ? 0 : 10);
     };
     return rank(a) - rank(b);
   });
 }
 
-type Message = { role: "user" | "assistant"; text: string; links?: Entry[] };
-const suggested = ["What is RewardX?", "Current Account", "Warehouse Management", "Book a demo"];
-
-function SearchResult({ item, onSelect }: { item: Entry; onSelect: () => void }) {
-  const external = item.href.startsWith("http");
-  return (
-    <a
-      href={item.href}
-      target={external ? "_blank" : undefined}
-      rel={external ? "noopener noreferrer" : undefined}
-      onClick={onSelect}
-      className="group flex items-center justify-between gap-3 rounded-2xl px-4 py-3 transition hover:bg-line/10"
-    >
-      <div className="min-w-0">
-        <div className="truncate text-sm font-bold text-fg">{item.title}</div>
-        <div className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-fg/60">{item.description}</div>
-      </div>
-      <ArrowRight className="h-4 w-4 shrink-0 text-acc transition group-hover:translate-x-1" />
-    </a>
-  );
-}
-
 export default function SiteSearchAssistant() {
+  const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [chatOpen, setChatOpen] = useState(false);
-  const [query, setQuery] = useState("");
+  const [mode, setMode] = useState<Mode>("chat");
+  const [search, setSearch] = useState("");
   const [question, setQuestion] = useState("");
-  const [messages, setMessages] = useState<Message[]>([WELCOME]);
-  const [language, setLanguage] = useState<Language>("hinglish");
-  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [lang, setLang] = useState<Language>("hinglish");
+  const [messages, setMessages] = useState<ChatMessage[]>([WELCOME]);
+  const [talk, setTalk] = useState(true);
+  const [busy, setBusy] = useState(false);
   const [listening, setListening] = useState(false);
   const [speaking, setSpeaking] = useState(false);
-  const [speechError, setSpeechError] = useState("");
-  const [answering, setAnswering] = useState(false);
-  const [answerMode, setAnswerMode] = useState<"ai" | "knowledge">("knowledge");
-  const [speechAvailable, setSpeechAvailable] = useState(false);
-  const [installedVoices, setInstalledVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const [chosenVoice, setChosenVoice] = useState("");
-  const recognitionRef = useRef<BrowserRecognition | null>(null);
-  const voiceEnabledRef = useRef(false);
-  const languageRef = useRef<Language>("hinglish");
-  const [hydrated, setHydrated] = useState(false);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [voiceName, setVoiceName] = useState("");
+  const [warning, setWarning] = useState("");
+  const [ready, setReady] = useState(false);
+  const [leadSent, setLeadSent] = useState(false);
+  const [leadBusy, setLeadBusy] = useState(false);
+  const [lead, setLead] = useState({ name: "", phone: "", email: "", requirement: "", consent: false });
+  const recognition = useRef<SpeechEngine | null>(null);
+  const msgBottom = useRef<HTMLDivElement>(null);
+  const input = useRef<HTMLTextAreaElement>(null);
   const searchInput = useRef<HTMLInputElement>(null);
-  const chatEnd = useRef<HTMLDivElement>(null);
-  const results = useMemo(() => findPages(query, 10), [query]);
+  const activeRequest = useRef<AbortController | null>(null);
+  const voiceRef = useRef({ lang: "hinglish" as Language, talk: true, voiceName: "" });
+  const results = useMemo(() => findPages(search), [search]);
 
-  // Keep chat history on this device. No chat transcript is uploaded for memory.
   useEffect(() => {
     try {
-      const savedLanguage = window.localStorage.getItem(LANGUAGE_KEY);
-      if (savedLanguage === "en" || savedLanguage === "hi" || savedLanguage === "hinglish") {
-        setLanguage(savedLanguage);
-        languageRef.current = savedLanguage;
-      }
-      const savedVoice = window.localStorage.getItem(VOICE_KEY) === "true";
-      setVoiceEnabled(savedVoice);
-      voiceEnabledRef.current = savedVoice;
-      const history = window.localStorage.getItem(CHAT_KEY);
-      if (history) {
-        const parsed: unknown = JSON.parse(history);
+      const saved = localStorage.getItem(CHATS_KEY);
+      if (saved) {
+        const parsed: unknown = JSON.parse(saved);
         if (Array.isArray(parsed)) {
-          const valid = parsed.filter((item): item is Message =>
-            !!item && typeof item === "object" &&
-            (item.role === "user" || item.role === "assistant") &&
-            typeof item.text === "string"
-          ).slice(-30).map(({ role, text }) => ({ role, text: text.slice(0, 1200) }));
-          if (valid.length) setMessages(valid);
+          const filtered = parsed.filter((m): m is ChatMessage =>
+            m && (m.role === "assistant" || m.role === "user") && typeof m.text === "string"
+          ).slice(-30).map((m) => ({ role: m.role, text: m.text.slice(0, 3500) }));
+          if (filtered.length) setMessages(filtered);
         }
       }
-    } catch {
-      // Storage may be blocked by the browser.
-    } finally {
-      setHydrated(true);
-    }
-    const w = window as SpeechWindow;
-    setSpeechAvailable(Boolean(w.SpeechRecognition || w.webkitSpeechRecognition));
-    try { setChosenVoice(window.localStorage.getItem(VOICE_NAME_KEY) || ""); } catch {}
-    const speech = window.speechSynthesis;
-    const refresh = () => setInstalledVoices(speech ? speech.getVoices() : []);
-    refresh();
-    speech?.addEventListener?.("voiceschanged", refresh);
+      const previous = localStorage.getItem(PREF_KEY);
+      if (previous === "hi" || previous === "en" || previous === "hinglish") setLang(previous);
+      const previousVoice = localStorage.getItem(VOICE_KEY);
+      if (previousVoice) setVoiceName(previousVoice);
+    } catch { /* browsing in private mode */ }
+    const update = () => setVoices(window.speechSynthesis?.getVoices() || []);
+    update();
+    window.speechSynthesis?.addEventListener?.("voiceschanged", update);
+    setReady(true);
     return () => {
-      speech?.removeEventListener?.("voiceschanged", refresh);
-      recognitionRef.current?.abort();
-      speech?.cancel();
+      recognition.current?.abort();
+      window.speechSynthesis?.cancel();
+      window.speechSynthesis?.removeEventListener?.("voiceschanged", update);
     };
   }, []);
-
+  useEffect(() => { voiceRef.current = { lang, talk, voiceName }; }, [lang, talk, voiceName]);
   useEffect(() => {
-    languageRef.current = language;
-    if (hydrated) {
-      try { window.localStorage.setItem(LANGUAGE_KEY, language); } catch {}
-    }
-  }, [language, hydrated]);
-
-  useEffect(() => {
-    voiceEnabledRef.current = voiceEnabled;
-    if (hydrated) {
-      try { window.localStorage.setItem(VOICE_KEY, String(voiceEnabled)); } catch {}
-    }
-    if (!voiceEnabled) {
-      window.speechSynthesis?.cancel();
-      setSpeaking(false);
-    }
-  }, [voiceEnabled, hydrated]);
-
-  useEffect(() => {
-    if (!hydrated) return;
+    if (!ready) return;
     try {
-      window.localStorage.setItem(CHAT_KEY, JSON.stringify(messages.slice(-30).map(({role, text}) => ({role, text}))));
-    } catch {}
-  }, [messages, hydrated]);
-
-  function speak(text: string, code: Language = languageRef.current) {
-    if (typeof window === "undefined" || !window.speechSynthesis) {
-      setSpeechError("Voice is not supported in this browser.");
-      return;
-    }
-    const engine = window.speechSynthesis;
-    engine.cancel();
-    const options = namedFemaleVoices(engine.getVoices(), code);
-    const selected = options.find((voice) => voice.name === chosenVoice) || options[0];
-    if (!selected) {
-      setSpeaking(false);
-      setSpeechError("No named female voice found on this device. On Mac, add Lekha (Hindi) or Samantha (English) in System Settings → Accessibility → Spoken Content, then reopen the browser.");
-      return;
-    }
-    setSpeechError("");
-    const utterance = new SpeechSynthesisUtterance(text.slice(0, 1000));
-    utterance.voice = selected;
-    utterance.lang = selected.lang;
-    utterance.rate = 0.95;
-    utterance.pitch = 1;
-    utterance.onstart = () => setSpeaking(true);
-    utterance.onend = () => setSpeaking(false);
-    utterance.onerror = (event) => {
-      setSpeaking(false);
-      // The browser reports "canceled"/"interrupted" when a new answer stops
-      // the previous answer; these aren't voice-availability failures.
-      if (event.error === "canceled" || event.error === "interrupted") return;
-      setSpeechError(
-        "Speech playback failed (" + event.error + "). Try another voice from the selector or download a system voice. Your text answers still work."
-      );
+      localStorage.setItem(CHATS_KEY, JSON.stringify(messages.slice(-30).map((m) => ({ role: m.role, text: m.text }))));
+      localStorage.setItem(PREF_KEY, lang);
+      localStorage.setItem(VOICE_KEY, voiceName);
+    } catch { /* storage unavailable */ }
+  }, [messages, lang, voiceName, ready]);
+  useEffect(() => { if (open && mode === "chat") msgBottom.current?.scrollIntoView({ block: "nearest", behavior: "smooth" }); }, [messages, open, mode, busy]);
+  useEffect(() => {
+    const onSearch = () => { setSearchOpen(true); setOpen(false); };
+    const key = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); onSearch(); }
+      if (e.key === "Escape") { setOpen(false); setSearchOpen(false); stopAudio(); }
     };
-    engine.speak(utterance);
-    // Some browsers remain paused after tab switching.
-    if (engine.paused) engine.resume();
-  }
+    window.addEventListener("bt-open-search", onSearch);
+    window.addEventListener("keydown", key);
+    return () => { window.removeEventListener("bt-open-search", onSearch); window.removeEventListener("keydown", key); };
+  }, []);
+  useEffect(() => { if (searchOpen) searchInput.current?.focus(); }, [searchOpen]);
 
-  function stopSpeech() {
+  function stopAudio() {
     window.speechSynthesis?.cancel();
     setSpeaking(false);
   }
-
-  function toggleMicrophone() {
-    if (listening) {
-      recognitionRef.current?.stop();
-      setListening(false);
+  function speak(text: string) {
+    if (!voiceRef.current.talk) return;
+    const engine = window.speechSynthesis;
+    if (!engine) { setWarning("Browser does not support speech playback."); return; }
+    engine.cancel();
+    const female = selectVoice(engine.getVoices(), voiceRef.current.lang);
+    const chosen = female.find((v) => v.name === voiceRef.current.voiceName) || female[0];
+    if (!chosen) {
+      setWarning("Indian female voice unavailable on this device. Text replies work. To enable voice, install Lekha (Hindi) or another named female system voice.");
       return;
     }
-    const w = window as SpeechWindow;
-    const Recognition = w.SpeechRecognition || w.webkitSpeechRecognition;
-    if (!Recognition) {
-      setSpeechError("Microphone speech recognition is not supported here. Try Chrome or Edge and allow microphone access.");
-      return;
-    }
-    stopSpeech();
-    setSpeechError("");
-    try {
-      const recog = new Recognition();
-      recognitionRef.current = recog;
-      recog.lang = languageToRecognition(languageRef.current);
-      recog.continuous = false;
-      recog.interimResults = false;
-      recog.onresult = (event) => {
-        const transcript = Array.from(event.results).map((result) => result[0]?.transcript || "").join(" ").trim();
-        if (transcript) {
-          setQuestion(transcript);
-          ask(transcript, true);
-        }
-      };
-      recog.onerror = (event) => {
-        setListening(false);
-        if (event.error !== "aborted" && event.error !== "no-speech") {
-          setSpeechError(event.error === "not-allowed" ? "Microphone permission denied. Allow microphone access in your browser." : "Could not recognize speech. Please try again.");
-        }
-      };
-      recog.onend = () => setListening(false);
-      recog.start();
-      setListening(true);
-      // Mic interaction enables spoken responses. The setting persists on this device.
-      setVoiceEnabled(true);
-      voiceEnabledRef.current = true;
-    } catch {
-      setListening(false);
-      setSpeechError("Unable to start microphone. Check your browser permission.");
-    }
-  }
-
-  function clearMemory() {
-    stopSpeech();
-    recognitionRef.current?.abort();
-    setListening(false);
-    setMessages([WELCOME]);
-    setQuestion("");
-    try { window.localStorage.removeItem(CHAT_KEY); } catch {}
-  }
-
-  function answerFor(item: Entry, lang: Language, others: number): string {
-    if (lang === "hi") {
-      return `${item.title} — ${item.description} ${others > 0 ? "इससे जुड़े अन्य पेज भी नीचे दिए हैं।" : "अधिक जानकारी के लिए नीचे दिए लिंक पर जाएँ।"}`;
-    }
-    if (lang === "hinglish") {
-      return `${item.title} — ${item.description} ${others > 0 ? "Related pages bhi neeche mil jayenge." : "Aur details ke liye neeche wala page open karo."}`;
-    }
-    return `${item.title}: ${item.description}${others > 0 ? " You can also explore related pages below." : " Open the page below for more information."}`;
-  }
-
-  useEffect(() => {
-    const openSearch = () => { setChatOpen(false); setSearchOpen(true); };
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        openSearch();
-      }
-      if (e.key === "Escape") {
-        setSearchOpen(false);
-        setChatOpen(false);
-      }
+    setWarning("");
+    const u = new SpeechSynthesisUtterance(text.slice(0, 950));
+    u.voice = chosen; u.lang = chosen.lang; u.rate = 0.97;
+    u.onstart = () => setSpeaking(true);
+    u.onend = () => setSpeaking(false);
+    u.onerror = (event) => {
+      setSpeaking(false);
+      if (event.error !== "canceled" && event.error !== "interrupted") setWarning("Speech playback failed on this browser. Try another available female voice.");
     };
-    window.addEventListener("bt-open-search", openSearch);
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("bt-open-search", openSearch);
-      window.removeEventListener("keydown", onKey);
-    };
-  }, []);
+    engine.speak(u);
+    if (engine.paused) engine.resume();
+  }
 
-  useEffect(() => {
-    if (searchOpen) searchInput.current?.focus();
-  }, [searchOpen]);
-  useEffect(() => {
-    chatEnd.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }, [messages, chatOpen]);
-
-  async function ask(text: string, fromVoice = false) {
-    const q = text.trim().slice(0, 600);
-    if (!q || answering) return;
-    const lang = languageRef.current;
-    const context = messages.slice(-8).map(({ role, text }) => ({ role, text }));
-    setAnswering(true);
-    setSpeechError("");
-    setQuestion("");
-    setMessages((previous) => [...previous, { role: "user" as const, text: q }].slice(-30));
-
-    let answer = "";
-    let related: Entry[] = [];
-    let mode: "ai" | "knowledge" = "knowledge";
+  async function ask(raw: string) {
+    const text = raw.trim().slice(0, 500);
+    if (!text || busy) return;
+    stopAudio(); setWarning(""); setQuestion(""); setMode("chat"); setOpen(true); setBusy(true);
+    const history = messages.slice(-8).map((m) => ({ role: m.role, text: m.text }));
+    setMessages((prev) => [...prev, { role: "user" as const, text }].slice(-30));
+    const controller = new AbortController();
+    activeRequest.current = controller;
+    let answer = "", links: PageLink[] = [];
     try {
-      const controller = new AbortController();
-      const timeout = window.setTimeout(() => controller.abort(), 19000);
+      const timer = setTimeout(() => controller.abort(), 21000);
       let response: Response;
       try {
         response = await fetch("/api/assistant", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: q, language: lang, history: context }),
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text, language: voiceRef.current.lang, history }),
           signal: controller.signal,
         });
-      } finally { window.clearTimeout(timeout); }
-      const result = await response.json() as {
-        answer?: string; error?: string;
-        links?: Array<{ title: string; href: string; category?: string }>;
-        mode?: "ai" | "knowledge";
-      };
-      if (!response.ok || !result.answer) throw new Error(result.error || "Assistant is temporarily unavailable.");
-      answer = result.answer;
-      mode = result.mode === "ai" ? "ai" : "knowledge";
-      related = (result.links || []).filter((link) => typeof link.href === "string" &&
-        (link.href.startsWith("/") || link.href === "https://siripay.co/"))
-        .map((link) => ({
-          title: link.title, href: link.href,
-          category: link.category || "Website", description: "Open this page for details",
-        }));
+      } finally { clearTimeout(timer); }
+      const json = await response.json() as { answer?: string; links?: PageLink[]; error?: string };
+      if (!response.ok || !json.answer) throw new Error(json.error || "Unavailable");
+      answer = json.answer;
+      links = (json.links || []).filter((p) => p.href?.startsWith("/") || p.href === "https://siripay.co/").slice(0, 4);
     } catch {
-      const matches = findPages(q, 3);
-      related = matches;
-      answer = matches.length
-        ? matches.map((item) => item.title + ": " + item.description).join("\n\n") +
-          (lang === "hi" ? "\n\nअधिक जानकारी के लिए संबंधित पेज खोलें।" :
-            lang === "hinglish" ? "\n\nAur details ke liye related page open karein." :
-            "\n\nOpen a related page to read more.")
-        : lang === "hi"
-          ? "अभी जवाब नहीं मिल रहा है। कृपया थोड़ी देर में कोशिश करें या Budgetree टीम से संपर्क करें।"
-          : lang === "hinglish"
-            ? "Abhi complete answer available nahi hai. Thodi der baad try karein ya Budgetree team se contact karein."
-            : "I couldn't access the full answer just now. Try again or contact the Budgetree team.";
-    } finally {
-      setAnswering(false);
+      links = findPages(text).slice(0, 3);
+      answer = links.length ? links.map((p) => p.title + " — " + p.href).join("\n") +
+        "\n\nYeh relevant website pages hain. Inhe open karke full details dekhein." :
+        "Abhi is sawaal ka verified answer nahi mil paaya. Aap Budgetree team ko contact kar sakte hain.";
     }
-    setAnswerMode(mode);
-    setMessages((previous) => [
-      ...previous,
-      { role: "assistant" as const, text: answer, links: related },
-    ].slice(-30));
-    if (voiceEnabledRef.current || fromVoice) speak(answer, lang);
+    if (activeRequest.current === controller) activeRequest.current = null;
+    setMessages((prev) => [...prev, { role: "assistant" as const, text: answer, links }].slice(-30));
+    setBusy(false);
+    speak(answer);
   }
 
-  function submitQuestion(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    ask(question);
+  function toggleMic() {
+    if (listening) { recognition.current?.stop(); setListening(false); return; }
+    const w = window as SpeechBrowser;
+    const Engine = w.SpeechRecognition || w.webkitSpeechRecognition;
+    if (!Engine) { setWarning("Speech recognition is not supported. Open Chrome/Edge and allow microphone permission."); return; }
+    stopAudio(); setWarning("");
+    try {
+      const rec = new Engine(); recognition.current = rec;
+      rec.lang = lang === "hi" ? "hi-IN" : "en-IN";
+      rec.continuous = false; rec.interimResults = false;
+      rec.onresult = (event) => {
+        const speech = Array.from(event.results).map((r) => r[0]?.transcript || "").join(" ").trim();
+        if (speech) { setListening(false); void ask(speech); }
+      };
+      rec.onerror = (event) => {
+        setListening(false);
+        if (event.error !== "aborted" && event.error !== "no-speech") setWarning("Microphone error: " + event.error + ". Check browser permissions.");
+      };
+      rec.onend = () => setListening(false);
+      rec.start(); setListening(true);
+    } catch { setWarning("Couldn't start microphone. Check browser permissions."); setListening(false); }
   }
+
+  function resetChat() {
+    stopAudio(); activeRequest.current?.abort(); recognition.current?.abort();
+    setBusy(false); setListening(false); setMessages([WELCOME]);
+    try { localStorage.removeItem(CHATS_KEY); } catch {}
+  }
+  async function submitLead(event: FormEvent) {
+    event.preventDefault();
+    if (!lead.consent || leadBusy) return;
+    setLeadBusy(true);
+    try {
+      const response = await fetch("/api/assistant/lead", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...lead, source: "chat", page: location.pathname,
+          transcript: messages.slice(-12).map((m) => ({ role: m.role, content: m.text }))
+        })
+      });
+      if (!response.ok) throw new Error("Not saved");
+      const data = await response.json() as { stored?: boolean };
+      if (data.stored) { setLeadSent(true); setWarning(""); }
+      else setWarning("Form received but not saved. Please email sales@budgetree.in directly.");
+    } catch { setWarning("Lead form isn't configured for delivery yet. Email sales@budgetree.in or use the Contact page."); }
+    finally { setLeadBusy(false); }
+  }
+
+  const feminine = useMemo(() => selectVoice(voices, lang), [voices, lang]);
+  const panelStyles = "fixed bottom-[92px] right-3 z-[90] flex h-[min(680px,calc(100dvh-110px))] w-[min(415px,calc(100vw-24px))] flex-col overflow-hidden rounded-[26px] border border-[#CFFB47]/25 bg-[#0C1712]/95 text-[#F5F6EF] shadow-[0_24px_85px_rgba(0,0,0,.4)] backdrop-blur-2xl sm:right-6";
 
   return (
     <>
-      {/* Floating assistant lives on the left so BackToTop stays accessible on the right. */}
-      <div className="fixed bottom-5 left-4 z-[75] sm:bottom-6 sm:left-6">
-        <AnimatePresence>
-          {chatOpen && (
-            <motion.section
-              initial={{ opacity: 0, y: 26, scale: 0.94 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 18, scale: 0.96 }}
-              transition={{ type: "spring", stiffness: 230, damping: 22 }}
-              aria-label="Budgetree website assistant"
-              className="mb-3 flex h-[min(620px,75dvh)] w-[min(390px,calc(100vw-32px))] flex-col overflow-hidden rounded-[26px] border border-line/20 bg-raise text-fg shadow-[0_28px_85px_rgba(0,0,0,.35)]"
-            >
-              <header className="flex items-center justify-between bg-volt px-4 py-4 text-coal">
-                <div className="flex items-center gap-2.5">
-                  <span className="grid h-10 w-10 place-items-center rounded-2xl bg-coal text-volt"><Bot className="h-5 w-5" /></span>
-                  <div><div className="text-sm font-extrabold">Budgetree Assistant</div><div className="text-[11px] font-medium text-coal/70">Detailed product guidance · Hindi / English / Hinglish</div></div>
+      <AnimatePresence>
+        {open && (
+          <motion.section
+            key="tara-panel" initial={{ opacity: 0, scale: 0.92, y: 25 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.92, y: 20 }}
+            transition={{ type: "spring", stiffness: 260, damping: 24 }}
+            className={panelStyles} role="dialog" aria-label="Tara Budgetree Assistant"
+          >
+            <div className="pointer-events-none absolute -right-16 -top-24 h-60 w-60 rounded-full bg-[#CDFB47]/10 blur-[60px]" />
+            <header className="relative z-10 flex items-center gap-3 border-b border-white/10 p-4">
+              <div className="grid h-11 w-11 place-items-center rounded-full bg-gradient-to-br from-[#CDFB47] via-[#83F0B5] to-[#C9B8FF] text-[#08140D] shadow-[0_0_25px_rgba(205,251,71,.22)]">
+                <Sparkles className="h-6 w-6" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-[17px] font-bold tracking-tight">Tara <span className="text-[#CDFB47]">AI</span></div>
+                <div className="flex items-center gap-2 text-[11px] text-white/60">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#8CF0B3]" /> Budgetree's digital assistant
                 </div>
-                <button aria-label="Close assistant" onClick={() => setChatOpen(false)} className="rounded-full p-2 hover:bg-coal/10"><X className="h-5 w-5" /></button>
-              </header>
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/10 bg-raise px-3 py-2">
-                <label className="flex items-center gap-1 text-[11px] font-semibold text-fg/70">
-                  Language
-                  <select
-                    value={language}
-                    onChange={(e) => { setLanguage(e.target.value as Language); stopSpeech(); }}
-                    aria-label="Assistant language"
-                    className="rounded-lg border border-line/20 bg-base px-2 py-1.5 text-xs font-semibold text-fg outline-none focus:border-acc"
-                  >
-                    {LANGUAGES.map((option) => <option key={option.code} value={option.code}>{option.label}</option>)}
+              </div>
+              <button type="button" onClick={() => setMode("contact")} aria-label="Talk to team"
+                className="rounded-xl p-2 text-white/70 hover:bg-white/10"><Headphones className="h-5 w-5" /></button>
+              <button type="button" onClick={resetChat} aria-label="Reset conversation"
+                className="rounded-xl p-2 text-white/70 hover:bg-white/10"><Trash2 className="h-4 w-4" /></button>
+              <button type="button" onClick={() => { setOpen(false); recognition.current?.abort(); stopAudio(); }} aria-label="Close Tara"
+                className="rounded-xl p-2 text-white/70 hover:bg-white/10"><X className="h-5 w-5" /></button>
+            </header>
+
+            {mode === "chat" && (
+              <>
+                <div className="relative flex items-center justify-between gap-2 border-b border-white/10 px-4 py-2.5">
+                  <div className="flex flex-wrap gap-1">
+                    {([{ k: "hinglish", t: "Hinglish" }, { k: "hi", t: "हिन्दी" }, { k: "en", t: "English" }] as const).map((option) => (
+                      <button key={option.k} type="button" onClick={() => { setLang(option.k); stopAudio(); }}
+                        className={"rounded-full px-2.5 py-1 text-[11px] font-semibold transition " +
+                          (lang === option.k ? "bg-[#CDFB47] text-[#10170B]" : "bg-white/10 text-white/65 hover:bg-white/20")}>
+                        {option.t}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button type="button" title={talk ? "Mute replies" : "Enable voice replies"} aria-label="Toggle voice"
+                      onClick={() => { setTalk(!talk); stopAudio(); }} className="rounded-lg p-2 text-[#CDFB47] hover:bg-white/10">
+                      {talk ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                    </button>
+                    <button type="button" title="Voice conversation" onClick={() => setMode("voice")}
+                      className="rounded-lg p-2 text-[#CDFB47] hover:bg-white/10"><AudioLines className="h-4 w-4" /></button>
+                  </div>
+                </div>
+                <div className="flex-1 space-y-3 overflow-y-auto p-4">
+                  {messages.map((m, i) => (
+                    <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                      className={m.role === "user" ? "ml-9 rounded-2xl rounded-br-sm bg-[#CDFB47] px-4 py-3 text-[13px] leading-relaxed text-[#11190A]" :
+                        "mr-6 rounded-2xl rounded-bl-sm border border-white/10 bg-white/[.06] px-4 py-3 text-[13px] leading-relaxed text-white/90"}>
+                      <p className="whitespace-pre-wrap">{m.text}</p>
+                      {m.links && m.links.length > 0 && (
+                        <div className="mt-3 space-y-1 border-t border-white/10 pt-2">
+                          {m.links.map((p) => <a key={p.href} href={p.href} target={p.href.startsWith("http") ? "_blank" : undefined}
+                            rel={p.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                            className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-[11px] font-semibold text-[#CDFB47] hover:bg-white/10">
+                            {p.title} <ExternalLink className="h-3.5 w-3.5" />
+                          </a>)}
+                        </div>
+                      )}
+                    </motion.div>
+                  ))}
+                  {messages.length === 1 && <div className="flex flex-wrap gap-2 py-2">
+                    {SUGGEST.map((q) => <button key={q} type="button" onClick={() => void ask(q)}
+                      className="rounded-full border border-[#CDFB47]/30 bg-[#CDFB47]/5 px-3 py-2 text-[11px] text-white/85 hover:bg-[#CDFB47]/15">{q}</button>)}
+                  </div>}
+                  {busy && <p className="animate-pulse rounded-xl bg-white/5 p-3 text-xs text-[#CDFB47]">Tara is finding your answer…</p>}
+                  <div ref={msgBottom} />
+                </div>
+                <div className="border-t border-white/10 bg-[#101D16] px-3 py-3">
+                  <form onSubmit={(event) => { event.preventDefault(); void ask(question); }} className="flex items-end gap-2">
+                    <textarea ref={input} value={question} onChange={(event) => setQuestion(event.target.value)}
+                      rows={1} maxLength={500} aria-label="Ask Tara" placeholder="Ask Tara anything about Budgetree…"
+                      onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void ask(question); } }}
+                      className="max-h-24 min-h-11 min-w-0 flex-1 resize-none rounded-2xl border border-white/10 bg-white/[.07] px-3 py-3 text-[13px] text-white outline-none placeholder:text-white/45 focus:border-[#CDFB47]/60" />
+                    <button type="button" onClick={toggleMic} aria-label={listening ? "Stop recording" : "Speak your question"}
+                      className={"grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-white/20 " + (listening ? "animate-pulse bg-red-500/25 text-red-300" : "text-[#CDFB47]")}>
+                      {listening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+                    </button>
+                    <button type="submit" disabled={busy || !question.trim()} aria-label="Send message"
+                      className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[#CDFB47] text-[#0A170E] disabled:opacity-40">
+                      <Send className="h-5 w-5" />
+                    </button>
+                  </form>
+                  {warning && <p role="alert" className="mt-2 text-[11px] leading-relaxed text-[#FFC24B]">{warning}</p>}
+                  {listening && <p role="status" className="mt-2 animate-pulse text-xs text-[#8CF0B3]">Listening…</p>}
+                  <div className="mt-2 flex items-center justify-between text-[10px] text-white/40">
+                    <span>Budgetree website knowledge</span><span>Voice · Hindi · English · Hinglish</span>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {mode === "voice" && (
+              <div className="flex flex-1 flex-col items-center justify-center gap-5 bg-[radial-gradient(ellipse_at_top,#203D2A,#0C1511_70%)] p-6 text-center">
+                <button type="button" onClick={() => { setMode("chat"); recognition.current?.abort(); setListening(false); stopAudio(); }}
+                  className="absolute left-4 top-[83px] flex items-center gap-1 text-xs text-white/60"><ChevronLeft className="h-4 w-4" />Back</button>
+                <motion.button type="button" onClick={toggleMic} aria-label={listening ? "Stop listening" : "Talk to Tara"}
+                  animate={{ scale: listening ? [1, 1.08, 1] : 1, rotate: speaking ? 360 : 0 }}
+                  transition={{ repeat: listening || speaking ? Infinity : 0, duration: speaking ? 9 : 1.8 }}
+                  className="relative grid h-36 w-36 place-items-center rounded-full bg-[conic-gradient(#CDFB47,#8CF0B3,#9FD8FF,#C9B8FF,#CDFB47)] shadow-[0_0_70px_rgba(205,251,71,.3)]">
+                  <span className="absolute inset-2 rounded-full bg-[#10231B]" />
+                  {listening ? <Mic className="relative h-12 w-12 text-[#CDFB47]" /> :
+                    <AudioLines className="relative h-12 w-12 text-[#CDFB47]" />}
+                </motion.button>
+                <h3 className="text-2xl font-bold">{listening ? "I'm listening…" : speaking ? "Tara is speaking…" : "Talk with Tara"}</h3>
+                <p className="max-w-xs text-sm leading-relaxed text-white/60">Ask your Budgetree questions in Hindi, English or Hinglish. Tap the orb to speak.</p>
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  {(["hinglish", "hi", "en"] as Language[]).map((value) =>
+                    <button type="button" key={value} onClick={() => setLang(value)}
+                      className={"rounded-full px-3 py-1.5 text-xs " + (lang === value ? "bg-[#CDFB47] text-[#10170A]" : "bg-white/10 text-white")}>
+                      {value === "hi" ? "हिन्दी" : value === "en" ? "English" : "Hinglish"}
+                    </button>)}
+                </div>
+                <label className="w-full max-w-[290px] text-left text-xs text-white/65">
+                  Female voice
+                  <select value={feminine.some((v) => v.name === voiceName) ? voiceName : ""}
+                    onChange={(event) => { setVoiceName(event.target.value); stopAudio(); }}
+                    className="mt-2 w-full rounded-xl border border-white/15 bg-[#17251D] px-3 py-2.5 text-xs text-white">
+                    <option value="">Auto (Indian female first)</option>
+                    {feminine.map((v) => <option key={v.voiceURI} value={v.name}>{v.name} · {v.lang}</option>)}
                   </select>
                 </label>
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => setVoiceEnabled((enabled) => !enabled)}
-                    aria-label={voiceEnabled ? "Turn voice responses off" : "Turn voice responses on"}
-                    title={voiceEnabled ? "Voice replies on" : "Voice replies off"}
-                    className="rounded-lg border border-line/20 p-2 text-fg hover:bg-line/10"
-                  >
-                    {voiceEnabled ? <Volume2 className="h-4 w-4 text-acc" /> : <VolumeX className="h-4 w-4" />}
-                  </button>
-                  {speaking && <button onClick={stopSpeech} type="button" className="rounded-lg px-2 py-1 text-[11px] font-bold text-acc">Stop</button>}
-                  <button
-                    type="button"
-                    onClick={clearMemory}
-                    title="Clear saved conversation on this device"
-                    aria-label="Clear chat memory"
-                    className="rounded-lg border border-line/20 p-2 text-fg/60 hover:bg-line/10 hover:text-fg"
-                  ><Trash2 className="h-4 w-4" /></button>
-                </div>
+                <button type="button" onClick={() => speak(lang === "hi" ? "नमस्ते, मैं तारा हूँ, आपकी बजट्री असिस्टेंट।" : "Namaste, I'm Tara, your Budgetree assistant.")}
+                  className="rounded-full border border-[#CDFB47]/50 px-5 py-2 text-xs font-bold text-[#CDFB47]">Test female voice</button>
+                {warning && <p role="alert" className="text-xs leading-relaxed text-[#FFC24B]">{warning}</p>}
               </div>
-              {voiceEnabled && (
-                <div className="border-b border-line/10 bg-raise px-3 py-2">
-                  <label className="flex items-center gap-2 text-xs font-semibold text-fg/75">
-                    Indian female voice
-                    <select
-                      aria-label="Select female voice"
-                      value={namedFemaleVoices(installedVoices, language).some((v) => v.name === chosenVoice) ? chosenVoice : ""}
-                      onChange={(event) => {
-                        const name = event.target.value;
-                        setChosenVoice(name);
-                        stopSpeech();
-                        try { window.localStorage.setItem(VOICE_NAME_KEY, name); } catch {}
-                      }}
-                      className="min-w-0 flex-1 rounded-lg border border-line/20 bg-base px-2 py-2 text-xs text-fg"
-                    >
-                      <option value="">Auto (Indian female first)</option>
-                      {namedFemaleVoices(installedVoices, language).map((voice) => (
-                        <option key={voice.voiceURI} value={voice.name}>{voice.name} · {voice.lang}</option>
-                      ))}
-                    </select>
-                    <button
-                      type="button"
-                      onClick={() => speak(language === "hi" ? "नमस्ते, मैं बजट्री की आपकी वॉयस असिस्टेंट हूँ।" : "Namaste! I'm your Budgetree voice assistant.", language)}
-                      className="shrink-0 rounded-lg border border-acc/40 px-2.5 py-2 text-[11px] font-bold text-acc hover:bg-acc/10"
-                    >
-                      Test
-                    </button>
-                  </label>
-                  {namedFemaleVoices(installedVoices, language).length === 0 && (
-                    <p className="mt-2 text-[11px] text-amber-500">No named female voice available. On Mac, download Lekha (Hindi) or Samantha (English) from System Settings → Accessibility → Spoken Content. An Indian accent is not available on every device.</p>
-                  )}
-                </div>
-              )}
-              <div className="flex-1 space-y-3 overflow-y-auto px-4 py-5">
-                {messages.map((m, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                    className={m.role === "user" ? "ml-8 rounded-2xl rounded-br-md bg-volt p-3 text-sm text-coal" : "mr-5 rounded-2xl rounded-bl-md border border-line/10 bg-base p-3 text-sm leading-relaxed text-fg"}>
-                    <p className="whitespace-pre-line">{m.text}</p>
-                    {m.links && m.links.length > 0 && (
-                      <div className="mt-3 flex flex-col gap-1 border-t border-line/10 pt-2">
-                        {m.links.map((item) => (
-                          <a key={item.href} href={item.href}
-                            target={item.href.startsWith("http") ? "_blank" : undefined}
-                            rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                            className="flex items-center justify-between gap-2 rounded-lg px-2 py-2 text-xs font-semibold text-acc hover:bg-line/10">
-                            {item.title} <ExternalLink className="h-3.5 w-3.5 shrink-0" />
-                          </a>
-                        ))}
-                      </div>
-                    )}
-                  </motion.div>
-                ))}
-                {answering && <div role="status" className="mr-10 animate-pulse rounded-2xl border border-acc/20 bg-base p-3 text-sm text-fg/70">Checking Budgetree website information…</div>}
-                {messages.length === 1 && <div className="flex flex-wrap gap-2">
-                  {suggested.map((item) => <button key={item} type="button" onClick={() => ask(item)} className="rounded-full border border-acc/30 px-3 py-2 text-xs font-medium text-fg/80 hover:bg-acc/10">{item}</button>)}
-                </div>}
-                <div ref={chatEnd} />
-              </div>
-              <div className="border-t border-line/10 bg-raise p-3">
-                <form onSubmit={submitQuestion} className="flex items-center gap-2">
-                  <input aria-label="Ask about Budgetree" value={question} onChange={(e) => setQuestion(e.target.value)}
-                    maxLength={250} placeholder="Ask about a product or service..."
-                    className="min-w-0 flex-1 rounded-xl border border-line/20 bg-base px-3 py-3 text-sm text-fg outline-none placeholder:text-fg/45 focus:border-acc" />
-                  <button
-                    type="button"
-                    onClick={toggleMicrophone}
-                    aria-label={listening ? "Stop listening" : "Speak your question"}
-                    aria-pressed={listening}
-                    title={!speechAvailable ? "Voice recognition may be unsupported in this browser" : listening ? "Listening — tap to stop" : "Speak in your selected language"}
-                    className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-line/20 transition ${listening ? "animate-pulse border-red-400 bg-red-500/15 text-red-500" : "bg-base text-fg hover:border-acc"}`}
-                  >
-                    {listening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
-                  </button>
-                  <button type="submit" disabled={!question.trim() || answering} aria-label="Send question"
-                    className="grid h-11 w-11 place-items-center rounded-xl bg-volt text-coal disabled:opacity-40"><Send className="h-4 w-4" /></button>
-                </form>
-                {speechError && <p role="alert" className="mt-2 text-xs text-red-400">{speechError}</p>}
-                {listening && <p role="status" className="mt-2 text-center text-xs font-bold text-acc">Listening... speak now</p>}
-                <p className="mt-2 text-center text-[10px] text-fg/45">Chat history saved in this browser · Clear with trash icon</p>
-                <p className="mt-1 text-center text-[10px] text-fg/45">Voice uses a selected named female voice; accent depends on installed voices · {answerMode === "ai" ? "AI-powered answers" : "Grounded website answers"}</p>
-              </div>
-            </motion.section>
-          )}
-        </AnimatePresence>
-        <motion.button
-          type="button"
-          aria-label={chatOpen ? "Close Budgetree assistant" : "Open Budgetree assistant"}
-          aria-expanded={chatOpen}
-          onClick={() => { setChatOpen((v) => !v); setSearchOpen(false); }}
-          whileHover={{ scale: 1.06 }}
-          whileTap={{ scale: 0.96 }}
-          className="group flex items-center gap-2 rounded-full border border-volt/40 bg-coal px-4 py-3 text-sm font-bold text-white shadow-[0_10px_35px_rgba(0,0,0,.27)]"
-        >
-          <span className="relative grid h-8 w-8 place-items-center rounded-full bg-volt text-coal">
-            {chatOpen ? <X className="h-4 w-4" /> : <Bot className="h-5 w-5" />}
-            {!chatOpen && <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-coal bg-green-400" />}
-          </span>
-          <span>{chatOpen ? "Close" : "Ask Budgetree"}</span>
-          {!chatOpen && <Sparkles className="h-4 w-4 text-volt" />}
-        </motion.button>
-      </div>
+            )}
 
-      {/* Universal website search */}
+            {mode === "contact" && (
+              <div className="flex-1 space-y-4 overflow-y-auto p-5">
+                <button type="button" onClick={() => setMode("chat")} className="flex items-center gap-1 text-xs text-white/60"><ChevronLeft className="h-4 w-4" />Back to Tara</button>
+                <h3 className="text-2xl font-bold">Let's connect you.</h3>
+                <p className="text-sm text-white/60">A product demo, integration or business enquiry? Contact our team directly.</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <a href="mailto:sales@budgetree.in" className="flex items-center gap-2 rounded-xl bg-white/10 p-3 text-xs"><Mail className="h-4 w-4 text-[#CDFB47]" />Email sales</a>
+                  <a href="tel:+919193911100" className="flex items-center gap-2 rounded-xl bg-white/10 p-3 text-xs"><Phone className="h-4 w-4 text-[#CDFB47]" />Call team</a>
+                </div>
+                {leadSent ? (
+                  <div className="rounded-2xl border border-[#8CF0B3]/20 bg-[#8CF0B3]/10 p-4 text-sm text-[#8CF0B3]"><Check className="mb-2 h-5 w-5" />Lead saved. Our team will follow up.</div>
+                ) : (
+                  <form onSubmit={(event) => { void submitLead(event); }} className="space-y-3">
+                    <input required placeholder="Your name" value={lead.name} onChange={(e) => setLead((v) => ({ ...v, name: e.target.value }))}
+                      className="w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-sm outline-none" />
+                    <input required inputMode="tel" placeholder="Phone number" value={lead.phone} onChange={(e) => setLead((v) => ({ ...v, phone: e.target.value }))}
+                      className="w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-sm outline-none" />
+                    <input type="email" placeholder="Work email" value={lead.email} onChange={(e) => setLead((v) => ({ ...v, email: e.target.value }))}
+                      className="w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-sm outline-none" />
+                    <textarea required placeholder="What do you need?" value={lead.requirement} onChange={(e) => setLead((v) => ({ ...v, requirement: e.target.value }))}
+                      className="h-20 w-full resize-none rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-sm outline-none" />
+                    <label className="flex gap-2 text-[11px] leading-relaxed text-white/60">
+                      <input type="checkbox" checked={lead.consent} onChange={(e) => setLead((v) => ({ ...v, consent: e.target.checked }))} required />
+                      I agree to be contacted regarding my enquiry.
+                    </label>
+                    <button type="submit" disabled={leadBusy || !lead.consent}
+                      className="w-full rounded-xl bg-[#CDFB47] px-4 py-3 text-sm font-bold text-[#0C1712] disabled:opacity-50">{leadBusy ? "Submitting…" : "Request a callback"}</button>
+                  </form>
+                )}
+                {warning && <p className="text-xs text-[#FFC24B]">{warning}</p>}
+                <p className="flex items-center gap-1 text-[11px] text-white/40"><ShieldCheck className="h-3 w-3" /> Never share OTPs, bank passwords or card details.</p>
+              </div>
+            )}
+          </motion.section>
+        )}
+      </AnimatePresence>
+
+      <motion.button type="button" onClick={() => { setOpen((v) => !v); setSearchOpen(false); if (open) stopAudio(); }}
+        whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.95 }}
+        className="fixed bottom-[18px] right-3 z-[90] flex items-center gap-2.5 rounded-full border border-[#CDFB47]/30 bg-[#0E1B14]/95 px-3 py-2.5 text-white shadow-[0_12px_35px_rgba(0,0,0,.35)] backdrop-blur-xl sm:right-6"
+        aria-label={open ? "Close Tara assistant" : "Open Tara assistant"}>
+        <span className="relative grid h-10 w-10 place-items-center rounded-full bg-[conic-gradient(#CDFB47,#8CF0B3,#9FD8FF,#C9B8FF,#CDFB47)]">
+          <span className="absolute inset-[3px] rounded-full bg-[#15251D]" />
+          {open ? <X className="relative h-5 w-5 text-[#CDFB47]" /> : <Sparkles className="relative h-5 w-5 text-[#CDFB47]" />}
+        </span>
+        <span className="pr-2 text-left"><strong className="block text-sm leading-tight">Tara AI</strong><small className="block text-[10px] text-white/60">Ask Budgetree</small></span>
+      </motion.button>
+
       <AnimatePresence>
         {searchOpen && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex justify-center bg-black/75 px-3 pt-[10dvh] backdrop-blur-md sm:pt-[14dvh]"
-            onMouseDown={(e) => { if (e.target === e.currentTarget) setSearchOpen(false); }}
-          >
-            <motion.div
-              role="dialog" aria-modal="true" aria-label="Search Budgetree website"
-              initial={{ y: -18, opacity: 0, scale: 0.97 }}
-              animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ y: -10, opacity: 0, scale: 0.97 }}
-              className="h-fit max-h-[75dvh] w-full max-w-2xl overflow-hidden rounded-3xl border border-line/20 bg-raise shadow-2xl"
-            >
-              <div className="flex items-center gap-3 border-b border-line/10 px-5 py-4">
-                <Search className="h-5 w-5 shrink-0 text-acc" />
-                <input ref={searchInput} value={query} onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search products, services, docs, blog..."
-                  aria-label="Search all Budgetree pages"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && results[0]) {
-                      window.location.href = results[0].href;
-                      setSearchOpen(false);
-                    }
-                  }}
-                  className="min-w-0 flex-1 bg-transparent text-base text-fg outline-none placeholder:text-fg/40"
-                />
-                <kbd className="hidden items-center gap-1 rounded-md bg-line/10 px-2 py-1 text-xs text-fg/50 sm:inline-flex"><Command className="h-3 w-3" />K</kbd>
-                <button type="button" aria-label="Close search" onClick={() => setSearchOpen(false)} className="rounded-lg p-2 text-fg/70 hover:bg-line/10"><X className="h-5 w-5" /></button>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[120] flex justify-center bg-black/75 px-3 pt-[12vh] backdrop-blur-sm"
+            onMouseDown={(event) => { if (event.target === event.currentTarget) setSearchOpen(false); }}>
+            <motion.div role="dialog" aria-modal="true" aria-label="Search Budgetree"
+              initial={{ y: -15, scale: 0.97 }} animate={{ y: 0, scale: 1 }} exit={{ y: -10, opacity: 0 }}
+              className="h-fit max-h-[72dvh] w-full max-w-xl overflow-hidden rounded-3xl border border-white/15 bg-[#111B15] text-white shadow-2xl">
+              <div className="flex items-center gap-3 border-b border-white/10 p-4">
+                <Search className="h-5 w-5 text-[#CDFB47]" />
+                <input ref={searchInput} placeholder="Search products, services, articles…" value={search} onChange={(event) => setSearch(event.target.value)}
+                  onKeyDown={(event) => { if (event.key === "Enter" && results[0]) window.location.href = results[0].href; }}
+                  className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-white/40" />
+                <button onClick={() => setSearchOpen(false)} aria-label="Close search"><X className="h-5 w-5" /></button>
               </div>
-              <div className="max-h-[min(60dvh,560px)] overflow-y-auto px-2 py-3">
-                <p className="px-4 pb-2 text-[10px] font-bold uppercase tracking-widest text-fg/45">{query.trim() ? results.length + " matching pages" : "Explore Budgetree"}</p>
-                {results.length ? results.map((item) => (
-                  <SearchResult key={item.href} item={item} onSelect={() => setSearchOpen(false)} />
-                )) : (
-                  <div className="p-8 text-center">
-                    <Search className="mx-auto h-8 w-8 text-fg/30" />
-                    <p className="mt-3 font-semibold text-fg">No matching pages</p>
-                    <p className="mt-2 text-sm text-fg/60">Try a product, service, or another keyword.</p>
-                    <a href="/contact" className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-acc">Contact our team <ArrowRight className="h-4 w-4" /></a>
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center justify-between border-t border-line/10 px-5 py-3 text-xs text-fg/50">
-                <span>Searches published site content</span>
-                <span className="hidden items-center gap-1 sm:flex"><CornerDownLeft className="h-3.5 w-3.5" /> Open first result</span>
+              <div className="max-h-[55dvh] space-y-1 overflow-y-auto p-2">
+                {results.length ? results.map((page) => (
+                  <a key={page.href} href={page.href} target={page.href.startsWith("http") ? "_blank" : undefined}
+                    rel={page.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                    className="flex items-center justify-between gap-2 rounded-2xl px-4 py-3 hover:bg-white/10">
+                    <span><span className="block text-sm font-semibold">{page.title}</span><small className="text-xs text-white/50">{page.category}</small></span>
+                    <ArrowRight className="h-4 w-4 text-[#CDFB47]" />
+                  </a>
+                )) : <p className="p-8 text-center text-sm text-white/60">No matching pages. Try another keyword.</p>}
               </div>
             </motion.div>
           </motion.div>
