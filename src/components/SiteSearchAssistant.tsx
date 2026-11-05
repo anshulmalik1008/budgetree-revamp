@@ -164,7 +164,7 @@ const LANGUAGES: { code: Language; label: string }[] = [
   { code: "hi", label: "हिन्दी" },
   { code: "hinglish", label: "Hinglish" },
 ];
-const languageToRecognition = (language: Language) => language === "en" ? "en-IN" : "hi-IN";
+const languageToRecognition = (language: Language) => language === "hi" ? "hi-IN" : "en-IN";
 const languageToSpeech = (language: Language) => language === "hi" ? "hi-IN" : "en-IN";
 
 type Message = { role: "user" | "assistant"; text: string; links?: Entry[] };
@@ -200,6 +200,8 @@ export default function SiteSearchAssistant() {
   const [listening, setListening] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [speechError, setSpeechError] = useState("");
+  const [answering, setAnswering] = useState(false);
+  const [answerMode, setAnswerMode] = useState<"ai" | "knowledge">("knowledge");
   const [speechAvailable, setSpeechAvailable] = useState(false);
   const recognitionRef = useRef<BrowserRecognition | null>(null);
   const voiceEnabledRef = useRef(false);
@@ -281,8 +283,22 @@ export default function SiteSearchAssistant() {
     utterance.rate = code === "hi" ? 0.92 : 0.98;
     utterance.pitch = 1;
     const voices = window.speechSynthesis.getVoices();
-    utterance.voice = voices.find((voice) => voice.lang.toLowerCase() === utterance.lang.toLowerCase()) ||
-      voices.find((voice) => voice.lang.toLowerCase().startsWith(code === "hi" ? "hi" : "en")) || null;
+    // SpeechSynthesisVoice does not expose a gender property. Prefer known
+    // feminine-sounding installed voices, then fall back to a locale match.
+    const preferredNames = code === "hi"
+      ? ["swara", "heera", "neerja", "kalpana", "veena", "raveena", "female"]
+      : ["neerja", "raveena", "samantha", "zira", "ava", "victoria", "karen", "hazel", "female", "swara"];
+    const preferred = voices
+      .filter((v) => v.lang.toLowerCase().startsWith(code === "hi" ? "hi" : "en"))
+      .sort((a, b) => {
+        const rank = (name: string) => {
+          const found = preferredNames.findIndex((hint) => name.toLowerCase().includes(hint));
+          return found < 0 ? 999 : found;
+        };
+        return rank(a.name) - rank(b.name);
+      });
+    utterance.voice = preferred[0] || voices.find((v) =>
+      v.lang.toLowerCase().startsWith(code === "hi" ? "hi" : "en")) || null;
     utterance.onstart = () => setSpeaking(true);
     utterance.onend = () => setSpeaking(false);
     utterance.onerror = () => setSpeaking(false);
@@ -385,20 +401,66 @@ export default function SiteSearchAssistant() {
     chatEnd.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [messages, chatOpen]);
 
-  function ask(text: string, fromVoice = false) {
-    const q = text.trim();
-    if (!q) return;
-    const matches = findPages(q, 3);
+  async function ask(text: string, fromVoice = false) {
+    const q = text.trim().slice(0, 600);
+    if (!q || answering) return;
     const lang = languageRef.current;
-    const answer = matches.length
-      ? answerFor(matches[0], lang, matches.length - 1)
-      : lang === "hi"
-        ? "मुझे वेबसाइट की जानकारी में इसका जवाब नहीं मिला। प्रोडक्ट का नाम पूछें या Budgetree टीम से संपर्क करें।"
-        : lang === "hinglish"
-          ? "Iska exact jawab website data mein nahi mila. Product ka naam poochho ya Budgetree team ko contact karo."
-          : "I couldn't find an exact answer in the published website content. Please try a product name or contact Budgetree.";
-    setMessages((prev) => [...prev, { role: "user" as const, text: q }, { role: "assistant" as const, text: answer, links: matches }].slice(-30));
+    const context = messages.slice(-8).map(({ role, text }) => ({ role, text }));
+    setAnswering(true);
+    setSpeechError("");
     setQuestion("");
+    setMessages((previous) => [...previous, { role: "user" as const, text: q }].slice(-30));
+
+    let answer = "";
+    let related: Entry[] = [];
+    let mode: "ai" | "knowledge" = "knowledge";
+    try {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 19000);
+      let response: Response;
+      try {
+        response = await fetch("/api/assistant", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: q, language: lang, history: context }),
+          signal: controller.signal,
+        });
+      } finally { window.clearTimeout(timeout); }
+      const result = await response.json() as {
+        answer?: string; error?: string;
+        links?: Array<{ title: string; href: string; category?: string }>;
+        mode?: "ai" | "knowledge";
+      };
+      if (!response.ok || !result.answer) throw new Error(result.error || "Assistant is temporarily unavailable.");
+      answer = result.answer;
+      mode = result.mode === "ai" ? "ai" : "knowledge";
+      related = (result.links || []).filter((link) => typeof link.href === "string" &&
+        (link.href.startsWith("/") || link.href === "https://siripay.co/"))
+        .map((link) => ({
+          title: link.title, href: link.href,
+          category: link.category || "Website", description: "Open this page for details",
+        }));
+    } catch {
+      const matches = findPages(q, 3);
+      related = matches;
+      answer = matches.length
+        ? matches.map((item) => item.title + ": " + item.description).join("\n\n") +
+          (lang === "hi" ? "\n\nअधिक जानकारी के लिए संबंधित पेज खोलें।" :
+            lang === "hinglish" ? "\n\nAur details ke liye related page open karein." :
+            "\n\nOpen a related page to read more.")
+        : lang === "hi"
+          ? "अभी जवाब नहीं मिल रहा है। कृपया थोड़ी देर में कोशिश करें या Budgetree टीम से संपर्क करें।"
+          : lang === "hinglish"
+            ? "Abhi complete answer available nahi hai. Thodi der baad try karein ya Budgetree team se contact karein."
+            : "I couldn't access the full answer just now. Try again or contact the Budgetree team.";
+    } finally {
+      setAnswering(false);
+    }
+    setAnswerMode(mode);
+    setMessages((previous) => [
+      ...previous,
+      { role: "assistant" as const, text: answer, links: related },
+    ].slice(-30));
     if (voiceEnabledRef.current || fromVoice) speak(answer, lang);
   }
 
@@ -424,7 +486,7 @@ export default function SiteSearchAssistant() {
               <header className="flex items-center justify-between bg-volt px-4 py-4 text-coal">
                 <div className="flex items-center gap-2.5">
                   <span className="grid h-10 w-10 place-items-center rounded-2xl bg-coal text-volt"><Bot className="h-5 w-5" /></span>
-                  <div><div className="text-sm font-extrabold">Budgetree Assistant</div><div className="text-[11px] font-medium text-coal/70">Website knowledge · Instant answers</div></div>
+                  <div><div className="text-sm font-extrabold">Budgetree Assistant</div><div className="text-[11px] font-medium text-coal/70">Detailed product guidance · Hindi / English / Hinglish</div></div>
                 </div>
                 <button aria-label="Close assistant" onClick={() => setChatOpen(false)} className="rounded-full p-2 hover:bg-coal/10"><X className="h-5 w-5" /></button>
               </header>
@@ -464,7 +526,7 @@ export default function SiteSearchAssistant() {
                 {messages.map((m, i) => (
                   <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                     className={m.role === "user" ? "ml-8 rounded-2xl rounded-br-md bg-volt p-3 text-sm text-coal" : "mr-5 rounded-2xl rounded-bl-md border border-line/10 bg-base p-3 text-sm leading-relaxed text-fg"}>
-                    <p>{m.text}</p>
+                    <p className="whitespace-pre-line">{m.text}</p>
                     {m.links && m.links.length > 0 && (
                       <div className="mt-3 flex flex-col gap-1 border-t border-line/10 pt-2">
                         {m.links.map((item) => (
@@ -479,6 +541,7 @@ export default function SiteSearchAssistant() {
                     )}
                   </motion.div>
                 ))}
+                {answering && <div role="status" className="mr-10 animate-pulse rounded-2xl border border-acc/20 bg-base p-3 text-sm text-fg/70">Checking Budgetree website information…</div>}
                 {messages.length === 1 && <div className="flex flex-wrap gap-2">
                   {suggested.map((item) => <button key={item} type="button" onClick={() => ask(item)} className="rounded-full border border-acc/30 px-3 py-2 text-xs font-medium text-fg/80 hover:bg-acc/10">{item}</button>)}
                 </div>}
@@ -499,13 +562,13 @@ export default function SiteSearchAssistant() {
                   >
                     {listening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
                   </button>
-                  <button type="submit" disabled={!question.trim()} aria-label="Send question"
+                  <button type="submit" disabled={!question.trim() || answering} aria-label="Send question"
                     className="grid h-11 w-11 place-items-center rounded-xl bg-volt text-coal disabled:opacity-40"><Send className="h-4 w-4" /></button>
                 </form>
                 {speechError && <p role="alert" className="mt-2 text-xs text-red-400">{speechError}</p>}
                 {listening && <p role="status" className="mt-2 text-center text-xs font-bold text-acc">Listening... speak now</p>}
                 <p className="mt-2 text-center text-[10px] text-fg/45">Chat history saved in this browser · Clear with trash icon</p>
-                <p className="mt-1 text-center text-[10px] text-fg/45">Voice uses browser speech services and may need internet. Search-based answers, not generative AI.</p>
+                <p className="mt-1 text-center text-[10px] text-fg/45">Voice uses your browser · Female voice preferred when available · {answerMode === "ai" ? "AI-powered answers" : "Grounded website answers"}</p>
               </div>
             </motion.section>
           )}
