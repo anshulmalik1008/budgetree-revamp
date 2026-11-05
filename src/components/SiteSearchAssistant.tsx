@@ -254,7 +254,7 @@ export default function SiteSearchAssistant() {
 
   useEffect(() => {
     voiceEnabledRef.current = voiceEnabled;
-    if (loadedRef.current) {
+    if (hydrated) {
       try { window.localStorage.setItem(VOICE_KEY, String(voiceEnabled)); } catch {}
     }
     if (!voiceEnabled) {
