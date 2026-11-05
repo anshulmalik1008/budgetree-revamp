@@ -397,7 +397,7 @@ export default function SiteSearchAssistant() {
         : lang === "hinglish"
           ? "Iska exact jawab website data mein nahi mila. Product ka naam poochho ya Budgetree team ko contact karo."
           : "I couldn't find an exact answer in the published website content. Please try a product name or contact Budgetree.";
-    setMessages((prev) => [...prev, { role: "user", text: q }, { role: "assistant", text: answer, links: matches }].slice(-30));
+    setMessages((prev) => [...prev, { role: "user" as const, text: q }, { role: "assistant" as const, text: answer, links: matches }].slice(-30));
     setQuestion("");
     if (voiceEnabledRef.current || fromVoice) speak(answer, lang);
   }
