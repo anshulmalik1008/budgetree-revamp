@@ -21,6 +21,7 @@ import {
   Trophy,
   Menu,
   Receipt,
+  Search,
   Sparkles,
   Wallet,
   X,
@@ -221,6 +222,16 @@ export default function Navbar() {
             </div>
 
             <div className="hidden items-center gap-2 lg:flex">
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new Event("bt-open-search"))}
+                aria-label="Search the entire website"
+                title="Search website (⌘K / Ctrl+K)"
+                className="group flex items-center gap-1.5 rounded-full border border-line/15 px-3 py-2.5 text-fg/75 transition hover:border-acc/60 hover:bg-line/10 hover:text-fg"
+              >
+                <Search className="h-4 w-4 transition-transform group-hover:scale-110" />
+                <span className="hidden text-xs font-semibold xl:inline">Search</span>
+              </button>
               <ThemeToggle />
               <a
                 href="/pricing"
@@ -246,6 +257,14 @@ export default function Navbar() {
             </div>
 
             <div className="flex items-center gap-2 lg:hidden">
+              <button
+                type="button"
+                onClick={() => { setOpen(false); window.dispatchEvent(new Event("bt-open-search")); }}
+                aria-label="Search the entire website"
+                className="grid h-10 w-10 place-items-center rounded-full border border-line/15 text-fg"
+              >
+                <Search className="h-5 w-5" />
+              </button>
               <ThemeToggle />
               <button
                 onClick={() => setOpen(!open)}
