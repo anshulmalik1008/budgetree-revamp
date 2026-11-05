@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { POST as knowledgeAnswer } from "../route";
+import { saveChat } from "@/lib/taraStore";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -69,6 +70,8 @@ export async function POST(req: NextRequest) {
     if (!parsed || typeof parsed !== "object") throw new Error("Empty answer");
     const { answer } = parsed as { answer?: string };
     if (!answer) throw new Error("Empty answer");
+    await saveChat(typeof data.sid === "string" ? data.sid : "", last.content, answer,
+      typeof data.page === "string" ? data.page : "");
     const encoder = new TextEncoder();
     const output = new ReadableStream({
       start(controller) {
