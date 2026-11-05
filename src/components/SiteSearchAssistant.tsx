@@ -167,38 +167,38 @@ const LANGUAGES: { code: Language; label: string }[] = [
 const languageToRecognition = (language: Language) => language === "hi" ? "hi-IN" : "en-IN";
 const languageToSpeech = (language: Language) => language === "en" ? "en-IN" : "hi-IN";
 const VOICE_NAME_KEY = "bt-assistant-female-voice-v1";
-// Browser APIs do not report gender. Use known Indian female voice names only.
-// Do not let the browser silently substitute its default (often male) voice.
-// Named voices on popular browsers/OSes. No browser API can certify gender,
-// so only these explicitly curated voices are enabled. Never use a generic fallback.
-const VERIFIED_FEMALE_VOICES: Record<Language, string[]> = {
-  hi: ["lekha", "kalpana", "swara", "heera"],
-  en: ["raveena", "neerja", "veena", "aditi"],
-  hinglish: ["lekha", "raveena", "neerja", "veena", "kalpana", "swara"],
-};
-function availableFemaleVoices(voices: SpeechSynthesisVoice[], language: Language) {
-  const names = VERIFIED_FEMALE_VOICES[language];
-  return voices
-    .filter((voice) => {
-      const name = voice.name.toLowerCase().trim();
-      const locale = voice.lang.toLowerCase();
-      // Only use an explicitly named Indian female voice; generic Google,
-      // Microsoft, Android or "Hindi" voices can be male.
-      const matched = names.some((known) =>
-        name === known || name.startsWith(known + " ") ||
-        name.includes(" " + known + " ") || name.endsWith(" " + known));
-      return matched && (locale.startsWith("hi") || locale.startsWith("en"));
-    })
-    .sort((a, b) => {
-      const score = (voice: SpeechSynthesisVoice) => {
-        const voiceName = voice.name.toLowerCase();
-        const selected = names.findIndex((name) => voiceName.includes(name));
-        const locale = voice.lang.toLowerCase();
-        return (selected < 0 ? 1000 : selected * 10) +
-          (locale.includes("-in") ? 0 : 5);
-      };
-      return score(a) - score(b);
-    });
+
+// The Web Speech API does not expose voice gender. Match explicitly named
+// female-sounding voices, preferring Indian locales. A few browsers offer
+// Google Hindi/Indian voices under generic names; don't assume their gender.
+// Users can preview the named options rather than being forced onto male TTS.
+const INDIAN_FEMALE_NAMES = [
+  "lekha", "kalpana", "swara", "heera", "neerja", "raveena",
+  "veena", "aditi", "kajal", "priya", "sangeeta",
+];
+const OTHER_FEMALE_NAMES = [
+  "samantha", "ava", "victoria", "karen", "moira",
+  "fiona", "allison", "susan", "zira", "hazel", "aria", "jenny",
+];
+function namedFemaleVoices(voices: SpeechSynthesisVoice[], language: Language) {
+  const hints = [...INDIAN_FEMALE_NAMES, ...OTHER_FEMALE_NAMES];
+  const candidates = voices.filter((voice) => {
+    const name = voice.name.toLowerCase();
+    return hints.some((hint) => name === hint || name.startsWith(hint + " ") ||
+      name.endsWith(" " + hint) || name.includes(" " + hint + " "));
+  });
+  const preferredLocale = language === "hi" ? "hi" : "en";
+  return candidates.sort((a, b) => {
+    const rank = (v: SpeechSynthesisVoice) => {
+      const name = v.name.toLowerCase();
+      const indian = INDIAN_FEMALE_NAMES.some((hint) => name.includes(hint));
+      const locale = v.lang.toLowerCase();
+      return (indian ? 0 : 100) +
+        (locale.startsWith(preferredLocale) ? 0 : 15) +
+        (locale.includes("-in") ? 0 : 5);
+    };
+    return rank(a) - rank(b);
+  });
 }
 
 type Message = { role: "user" | "assistant"; text: string; links?: Entry[] };
@@ -315,34 +315,39 @@ export default function SiteSearchAssistant() {
   }, [messages, hydrated]);
 
   function speak(text: string, code: Language = languageRef.current) {
-    if (!("speechSynthesis" in window)) {
-      setSpeechError("Your browser does not support voice playback.");
+    if (typeof window === "undefined" || !window.speechSynthesis) {
+      setSpeechError("Voice is not supported in this browser.");
       return;
     }
     const engine = window.speechSynthesis;
     engine.cancel();
-    const options = availableFemaleVoices(engine.getVoices(), code);
-    const selected = options.find((v) => v.name === chosenVoice) || options[0];
+    const options = namedFemaleVoices(engine.getVoices(), code);
+    const selected = options.find((voice) => voice.name === chosenVoice) || options[0];
     if (!selected) {
       setSpeaking(false);
-      setSpeechError(
-        "Indian female voice is not installed. On Mac: System Settings → Accessibility → Spoken Content → System Voice → Manage Voices → Hindi → Lekha. Download it free, reopen the page and press Test. Male voice is blocked."
-      );
+      setSpeechError("No named female voice found on this device. On Mac, add Lekha (Hindi) or Samantha (English) in System Settings → Accessibility → Spoken Content, then reopen the browser.");
       return;
     }
-    const utterance = new SpeechSynthesisUtterance(text.slice(0, 1050));
+    setSpeechError("");
+    const utterance = new SpeechSynthesisUtterance(text.slice(0, 1000));
     utterance.voice = selected;
     utterance.lang = selected.lang;
     utterance.rate = 0.95;
     utterance.pitch = 1;
-    setSpeechError("");
     utterance.onstart = () => setSpeaking(true);
     utterance.onend = () => setSpeaking(false);
-    utterance.onerror = () => {
+    utterance.onerror = (event) => {
       setSpeaking(false);
-      setSpeechError("Voice playback failed. Check that the selected Indian female voice is installed and try Test again.");
+      // The browser reports "canceled"/"interrupted" when a new answer stops
+      // the previous answer; these aren't voice-availability failures.
+      if (event.error === "canceled" || event.error === "interrupted") return;
+      setSpeechError(
+        "Speech playback failed (" + event.error + "). Try another voice from the selector or download a system voice. Your text answers still work."
+      );
     };
     engine.speak(utterance);
+    // Some browsers remain paused after tab switching.
+    if (engine.paused) engine.resume();
   }
 
   function stopSpeech() {
@@ -567,8 +572,8 @@ export default function SiteSearchAssistant() {
                   <label className="flex items-center gap-2 text-xs font-semibold text-fg/75">
                     Indian female voice
                     <select
-                      aria-label="Select Indian female voice"
-                      value={availableFemaleVoices(installedVoices, language).some((v) => v.name === chosenVoice) ? chosenVoice : ""}
+                      aria-label="Select female voice"
+                      value={namedFemaleVoices(installedVoices, language).some((v) => v.name === chosenVoice) ? chosenVoice : ""}
                       onChange={(event) => {
                         const name = event.target.value;
                         setChosenVoice(name);
@@ -577,9 +582,9 @@ export default function SiteSearchAssistant() {
                       }}
                       className="min-w-0 flex-1 rounded-lg border border-line/20 bg-base px-2 py-2 text-xs text-fg"
                     >
-                      <option value="">Automatic female</option>
-                      {availableFemaleVoices(installedVoices, language).map((voice) => (
-                        <option key={voice.voiceURI} value={voice.name}>{voice.name}</option>
+                      <option value="">Auto (Indian female first)</option>
+                      {namedFemaleVoices(installedVoices, language).map((voice) => (
+                        <option key={voice.voiceURI} value={voice.name}>{voice.name} · {voice.lang}</option>
                       ))}
                     </select>
                     <button
@@ -590,8 +595,8 @@ export default function SiteSearchAssistant() {
                       Test
                     </button>
                   </label>
-                  {availableFemaleVoices(installedVoices, language).length === 0 && (
-                    <p className="mt-2 text-[11px] text-amber-500">Indian female voice not found. On Mac, install Hindi → Lekha in System Settings → Accessibility → Spoken Content → System Voice. No male fallback.</p>
+                  {namedFemaleVoices(installedVoices, language).length === 0 && (
+                    <p className="mt-2 text-[11px] text-amber-500">No named female voice available. On Mac, download Lekha (Hindi) or Samantha (English) from System Settings → Accessibility → Spoken Content. An Indian accent is not available on every device.</p>
                   )}
                 </div>
               )}
@@ -641,7 +646,7 @@ export default function SiteSearchAssistant() {
                 {speechError && <p role="alert" className="mt-2 text-xs text-red-400">{speechError}</p>}
                 {listening && <p role="status" className="mt-2 text-center text-xs font-bold text-acc">Listening... speak now</p>}
                 <p className="mt-2 text-center text-[10px] text-fg/45">Chat history saved in this browser · Clear with trash icon</p>
-                <p className="mt-1 text-center text-[10px] text-fg/45">Voice uses installed Indian female voices only · {answerMode === "ai" ? "AI-powered answers" : "Grounded website answers"}</p>
+                <p className="mt-1 text-center text-[10px] text-fg/45">Voice uses a selected named female voice; accent depends on installed voices · {answerMode === "ai" ? "AI-powered answers" : "Grounded website answers"}</p>
               </div>
             </motion.section>
           )}
