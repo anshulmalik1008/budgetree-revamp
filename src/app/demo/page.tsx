@@ -267,24 +267,22 @@ export default function DemoPage() {
                     </h1>
                   </Reveal>
                   <Reveal delay={0.1}>
-                    
-<ul className="mt-7 space-y-3">
-  {[
-    "Live walkthrough of RewardX, LoyaltyX & payouts",
-    "ROI estimate built from your team size",
-    "Answers on compliance, TDS & security",
-    "Zero pressure — no 47-email follow-up sequence",
-  ].map((t) => (
-    <li
-      key={t}
-      className="flex items-start gap-2.5 text-sm leading-relaxed text-fg/85 sm:text-base"
-    >
-      <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" />
-      <span>{t}</span>
-    </li>
-  ))}
-</ul>
-
+                    <ul className="demo-benefits mt-7 grid gap-3 sm:grid-cols-2" aria-label="What you get in your demo">
+                      {[
+                        "Live product walkthrough",
+                        "Personalized ROI overview",
+                        "Security & compliance Q&A",
+                        "No-pressure consultation",
+                      ].map((t) => (
+                        <li
+                          key={t}
+                          className="demo-benefit-item flex min-h-[64px] items-center gap-3 rounded-2xl border border-line/15 bg-raise/65 px-4 py-3"
+                        >
+                          <BadgeCheck className="demo-benefit-icon h-5 w-5 shrink-0" aria-hidden="true" />
+                          <span className="demo-benefit-text text-sm font-semibold leading-snug">{t}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </Reveal>
                   <Reveal delay={0.15}>
                     <div className="relative mt-8 overflow-hidden rounded-3xl border border-line/10">
