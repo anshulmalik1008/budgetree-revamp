@@ -60,7 +60,7 @@
 }
 .root.light{
   --glass:rgba(244,240,230,.78);--glass-2:rgba(255,255,255,.62);--line:rgba(30,53,39,.16);--line-2:rgba(7,12,10,.08);
-  --fg:#0C1512;--muted:rgba(12,21,18,.62);--user-bg:var(--fern);--user-fg:var(--acc);--btn-bg:var(--fern);--btn-fg:var(--acc);--link:var(--fern);
+  --fg:#111D17;--muted:rgba(17,29,23,.79);--user-bg:#1E3527;--user-fg:#FFFFFF;--btn-bg:#1E3527;--btn-fg:#FFFFFF;--link:#24592A;
   --field:rgba(255,255,255,.8);--danger:#9a5b00;
   --shadow:0 24px 60px rgba(30,53,39,.22),0 1px 0 rgba(255,255,255,.7) inset;
   --voice-bg:radial-gradient(120% 80% at 50% 0%,#FFFFFF,#F4F0E6 70%);
@@ -125,6 +125,15 @@ a{color:var(--link)}
 .bubble ul,.bubble ol{padding-left:18px}.bubble li+li{margin-top:3px}
 .bubble a{text-decoration:underline;text-underline-offset:2px}
 .root.light .bubble a{font-weight:600}
+.root.light .panel{background:rgba(255,255,255,.97)}
+.root.light .launcher{background:rgba(255,255,255,.97);color:var(--fg)}
+.root.light .head,.root.light .who,.root.light .msgs,.root.light .welcome,.root.light .card,.root.light .compose,.root.light .voice,.root.light .vcap,.root.light .vstate{color:var(--fg)}
+.root.light .bot .bubble{background:#F1F4ED;color:#14241B;border-color:#CBD7CA}
+.root.light .user .bubble{background:#1E3527;color:#FFFFFF}
+.root.light .chip,.root.light .opt,.root.light .vcta{background:#F6F8F2;color:#17281C}
+.root.light .lang button.on,.root.light .btn:not(.ghost),.root.light .send{background:#1E3527;color:#FFFFFF}
+.root.light textarea.in,.root.light .card input,.root.light .card textarea{color:#14241B}
+.root.light .foot,.root.light .notice,.root.light .vhint{color:#4C5C51}
 .bubble strong{font-weight:650}
 .bubble.err{border-color:rgba(255,194,75,.45)}
 .typing{display:inline-flex;gap:4px;padding:4px 0}
@@ -612,7 +621,7 @@ textarea.in::placeholder{color:var(--muted)}
       '<div class="foot">AI answers can be imperfect - our team confirms every commercial detail.</div></div>' +
       '<div class="voice closed st-idle" aria-label="Voice conversation">' +
       '<div class="vtop"><button class="ib v-back" aria-label="Back to chat">' + I.back + "</button>" +
-      '<div class="lang" role="group" aria-label="Speaking language"><button data-l="en-IN">English</button><button data-l="hi-IN">हिंदी</button></div>' +
+      '<div class="lang" role="group" aria-label="Speaking language"><button data-l="en-IN">English</button><button data-l="hi-IN">Hindi</button></div>' +
       '<span style="width:36px"></span></div>' +
       '<div class="stage"><button class="big" aria-label="Tap to talk or interrupt"><span class="glow"></span><span class="core"></span><span class="shine"></span><span class="ring"></span></button>' +
       '<div class="vstate" aria-live="polite">Tap to talk</div><div class="vcap"></div></div>' +
@@ -695,10 +704,10 @@ textarea.in::placeholder{color:var(--muted)}
   function renderWelcome() {
     var w = document.createElement("div");
     w.className = "welcome";
-    var chips = ["UPI Cash Tokens kya hain?", "Pricing plans batao", "Dealer loyalty program", "Diwali corporate gifting", "Book a demo"];
+    var chips = ["What are UPI Cash Tokens?", "Explain pricing plans", "Dealer loyalty program", "Diwali corporate gifting", "Book a demo"];
     var priv = R.privacyUrl ? ' <a href="' + esc(R.privacyUrl) + '" target="_blank" rel="noopener">Privacy Policy</a>' : "";
     w.innerHTML = "<h3>Hi, I'm " + esc(R.name) + " 👋<br>Your <em>Budgetree</em> guide.</h3>" +
-      "<p>Ask me about rewards, loyalty, UPI payouts, gifting - or anything else. English, Hindi ya Hinglish, jo aapko pasand ho.</p>" +
+      "<p>Ask me about rewards, loyalty, UPI payouts, gifting - or anything else. Choose English or Hindi for voice conversations.</p>" +
       '<div class="chips">' + chips.map(function (c) { return '<button class="chip">' + esc(c) + "</button>"; }).join("") + "</div>" +
       (voiceSupported() ? '<button class="vcta"><span class="orb sm"></span><span><b>Talk to ' + esc(R.name) + '</b><small>Hands-free voice conversation</small></span></button>' : "") +
       '<div class="notice">Chats are saved to improve our service and processed by our AI provider. Please don\'t share passwords, OTPs or bank details.' + priv + "</div>";
@@ -790,7 +799,7 @@ textarea.in::placeholder{color:var(--muted)}
       }
       if (ctrl !== chatCtrl && chatCtrl !== null) return;
       chatCtrl = null;
-      var msg = (e && e.userMsg) || "Sorry, abhi connect nahi ho pa rahi. Thodi der mein try karein ya " + (R.email || "sales@budgetree.in") + " par likhein.";
+      var msg = (e && e.userMsg) || "Sorry, I couldn't connect right now. Please try again shortly or email " + (R.email || "sales@budgetree.in") + " for assistance.";
       if (full.trim()) { history.push({ role: "assistant", content: full }); saveHistory(); }
       else { bubble.innerHTML = md(msg); bubble.classList.add("err"); history.pop(); saveHistory(); }
       setBusy(false);
@@ -807,18 +816,18 @@ textarea.in::placeholder{color:var(--muted)}
   /* ---------------------------- lead form ---------------------------- */
   function showLeadForm(source) {
     var card = addCard(
-      "<h4>Team se baat karein</h4><div class=\"sub\">Details dijiye - hamari team 1 business day ke andar aapse contact karegi.</div>" +
+      "<h4>Talk to our team</h4><div class=\"sub\">Share your enquiry and our team will contact you after receiving it.</div>" +
       '<form novalidate>' +
-      '<input name="name" autocomplete="name" placeholder="Naam *" maxlength="80">' +
+      '<input name="name" autocomplete="name" placeholder="Full name *" maxlength="80">' +
       '<div class="two"><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Phone / WhatsApp" maxlength="20">' +
       '<input name="email" type="email" autocomplete="email" placeholder="Email" maxlength="120"></div>' +
       '<input name="company" autocomplete="organization" placeholder="Company" maxlength="120">' +
-      '<textarea name="need" placeholder="Kya chahiye? (e.g. 500 dealers ke liye loyalty program)" maxlength="600"></textarea>' +
+      '<textarea name="need" placeholder="What do you need? (e.g. a loyalty program for 500 dealers)" maxlength="600"></textarea>' +
       '<input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">' +
-      '<label class="consent"><input type="checkbox" name="consent"><span>Main Budgetree ko is enquiry ke baare mein call / WhatsApp / email karne ki permission deta / deti hoon.' +
+      '<label class="consent"><input type="checkbox" name="consent"><span>I agree that Budgetree may contact me about this enquiry by phone, WhatsApp or email.' +
       (R.privacyUrl ? ' <a href="' + esc(R.privacyUrl) + '" target="_blank" rel="noopener">Privacy Policy</a>' : "") + "</span></label>" +
       '<div class="ferr" role="alert"></div>' +
-      '<div class="acts"><button class="btn" type="submit">' + I.form + 'Submit</button><button class="btn ghost later" type="button">Baad mein</button></div></form>'
+      '<div class="acts"><button class="btn" type="submit">' + I.form + 'Submit</button><button class="btn ghost later" type="button">Maybe later</button></div></form>'
     );
     var form = card.querySelector("form"), ferr = card.querySelector(".ferr"), btn = form.querySelector("button[type=submit]");
     var F = function (n) { return form.querySelector('[name="' + n + '"]'); };
@@ -837,25 +846,25 @@ textarea.in::placeholder{color:var(--muted)}
         transcript: history.slice(-10),
       };
       var errs = {};
-      if (data.name.length < 2) errs.name = "Naam likhiye";
+      if (data.name.length < 2) errs.name = "Please enter your name";
       var digits = data.phone.replace(/\D/g, "");
-      if (data.phone && (digits.length < 10 || digits.length > 13)) errs.phone = "Sahi phone number likhiye";
-      if (data.email && !/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(data.email)) errs.email = "Sahi email likhiye";
-      if (!data.phone && !data.email) errs.phone = "Phone ya email mein se ek zaroori hai";
-      if (!data.consent) errs.consent = "Contact karne ki permission tick karein";
+      if (data.phone && (digits.length < 10 || digits.length > 13)) errs.phone = "Please enter a valid phone number";
+      if (data.email && !/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(data.email)) errs.email = "Please enter a valid email address";
+      if (!data.phone && !data.email) errs.phone = "Please provide a phone number or an email address";
+      if (!data.consent) errs.consent = "Please agree to be contacted";
       if (showErrs(errs)) return;
-      btn.disabled = true; btn.lastChild.textContent = "Bhej rahe hain…";
+      btn.disabled = true; btn.lastChild.textContent = "Submitting…";
       fetch(CFG.api + "/lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) })
         .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { status: r.status, j: j }; }); })
         .then(function (res) {
           if (res.status === 200 && res.j.ok) {
             leadDone = true; ses.set("lead_done", true);
-            card.innerHTML = "<h4>Thank you, " + esc(data.name.split(" ")[0]) + "! 🎉</h4><div class=\"sub\" style=\"margin:4px 0 0\">Aapki request mil gayi hai. Hamari team 1 business day ke andar " + (data.phone ? "aapko call / WhatsApp" : "aapko email") + " karegi.</div>" + contactButtons(true);
+            card.innerHTML = "<h4>Thank you, " + esc(data.name.split(" ")[0]) + "! 🎉</h4><div class=\"sub\" style=\"margin:4px 0 0\">Your enquiry has been received. Our team will use " + (data.phone ? "your phone or WhatsApp number" : "your email address") + " to contact you.</div>" + contactButtons(true);
             scrollDown();
           } else if (res.status === 422 && res.j.fields) { showErrs(res.j.fields); btn.disabled = false; btn.lastChild.textContent = "Submit"; }
-          else { ferr.textContent = (res.j && res.j.message) || "Submit nahi ho paya. Dobara try karein ya " + (R.email || "sales@budgetree.in") + " par likhein."; btn.disabled = false; btn.lastChild.textContent = "Submit"; }
+          else { ferr.textContent = (res.j && res.j.message) || "We couldn't submit your request. Please try again or email " + (R.email || "sales@budgetree.in") + " for assistance."; btn.disabled = false; btn.lastChild.textContent = "Submit"; }
         })
-        .catch(function () { ferr.textContent = "Network issue - dobara try karein."; btn.disabled = false; btn.lastChild.textContent = "Submit"; });
+        .catch(function () { ferr.textContent = "Network error. Please try again."; btn.disabled = false; btn.lastChild.textContent = "Submit"; });
     };
     function showErrs(errs) {
       var keys = Object.keys(errs);
@@ -937,9 +946,9 @@ textarea.in::placeholder{color:var(--muted)}
   }
   var FALLBACK_ERRS = { network: 1, "service-not-allowed": 1, "language-not-supported": 1, "audio-capture": 1, "start-failed": 1 };
   function micErrorText(code) {
-    if (code === "not-allowed") return "Mic ki permission allow karein (address bar mein mic icon), phir dobara try karein.";
-    if (code === "stt-failed") return "Awaz samajh nahi paayi - dobara boliye.";
-    return "Is browser mein mic nahi chal raha. Chrome, Edge ya Safari try karein, ya type karein.";
+    if (code === "not-allowed") return "Please allow microphone access in your browser and try again.";
+    if (code === "stt-failed") return "I couldn't understand the audio. Please try speaking again.";
+    return "Microphone input is unavailable in this browser. Try Chrome, Edge or Safari, or type your question.";
   }
 
   /* chat-box dictation */
@@ -1002,7 +1011,7 @@ textarea.in::placeholder{color:var(--muted)}
           if (t) { emptyTurns = 0; send(t, { voice: true }); }
           else if (tapped) { setVState("idle"); vcap.textContent = ""; }
           else if (++emptyTurns < 3) setTimeout(function () { if (inVoice && !busy && !speaker.playing) listen(); }, 120);
-          else { setVState("idle"); vcap.textContent = lang === "hi-IN" ? "मैं यहीं हूँ - बोलने के लिए orb tap करें।" : "I'm here - tap the orb when you want to talk."; }
+          else { setVState("idle"); vcap.textContent = lang === "hi-IN" ? "I'm here. Tap the orb whenever you want to speak." : "I'm here - tap the orb when you want to talk."; }
         },
         error: function (code) {
           if (!inVoice) return;
@@ -1031,7 +1040,7 @@ textarea.in::placeholder{color:var(--muted)}
     inVoice = true; emptyTurns = 0;
     speaker.unlock();
     voiceEl.classList.remove("closed");
-    vcap.innerHTML = '<span class="you">' + (lang === "hi-IN" ? "बोलिए, मैं सुन रही हूँ…" : "Go ahead, I'm listening…") + "</span>";
+    vcap.innerHTML = '<span class="you">' + (lang === "hi-IN" ? "Go ahead, I'm listening…" : "Go ahead, I'm listening…") + "</span>";
     paintLang(); paintMute();
     cancelAnimationFrame(lvlRaf); animateLevel();
     listen();
