@@ -889,8 +889,8 @@ textarea.in::placeholder{color:var(--muted)}
   }
 
   function showHandoff() {
-    var card = addCard("<h4>Hamari team se baat karein</h4><div class=\"sub\">Jo aapke liye aasaan ho, chuniye.</div>" +
-      '<div class="opts"><button class="opt o-form">' + I.form + "<span>" + (leadDone ? "Ek aur request bhejein" : "Callback request") + "<small>Form bhariye, team aapko contact karegi</small></span></button></div>" +
+    var card = addCard("<h4>Speak with our team</h4><div class=\"sub\">Choose the contact option that works best for you.</div>" +
+      '<div class="opts"><button class="opt o-form">' + I.form + "<span>" + (leadDone ? "Send another request" : "Callback request") + "<small>Complete the form to request a callback</small></span></button></div>" +
       contactButtons(true));
     card.querySelector(".o-form").onclick = function () { card.parentNode.remove(); showLeadForm("chat"); };
   }
@@ -989,7 +989,7 @@ textarea.in::placeholder{color:var(--muted)}
   function setVState(s) {
     voiceEl.className = "voice st-" + s + (inVoice ? "" : " closed");
     vstate.textContent = s === "speaking" ? R.name + " is speaking" : STATE_TXT[s];
-    vhint.textContent = s === "speaking" ? (R.bargeIn && !IS_MOBILE && HAS_GUM && !muted ? "Bolkar ya orb tap karke beech mein rok sakte hain" : "Tap the orb to interrupt") : s === "listening" ? "Boliye - rukte hi main jawab dungi" : "";
+    vhint.textContent = s === "speaking" ? (R.bargeIn && !IS_MOBILE && HAS_GUM && !muted ? "Speak or tap the orb to interrupt" : "Tap the orb to interrupt") : s === "listening" ? "Speak now. I will reply when you finish." : "";
   }
   function listen() {
     if (!inVoice) return;
