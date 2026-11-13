@@ -1,16 +1,23 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, ArrowUpRight, CalendarDays, Clock3 } from "lucide-react";
+import { ArrowRight, ArrowUpRight, CalendarDays, Clock3, Search } from "lucide-react";
 import { useState } from "react";
 import { CATEGORIES, POSTS } from "@/data/blog";
 import { EASE, Reveal, SectionTag, cn } from "@/components/ui";
 
 export default function BlogPage() {
   const [cat, setCat] = useState("All");
-  const filtered = cat === "All" ? POSTS : POSTS.filter((p) => p.category === cat);
-  const featured = filtered[0];
-  const gridPosts = cat === "All" ? filtered.slice(1) : filtered;
+  const [query, setQuery] = useState("");
+  const sorted = [...POSTS].sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+  const filtered = sorted.filter((p) => (cat === "All" || p.category === cat) &&
+    (!query.trim() || (p.title + " " + p.excerpt + " " + p.category)
+      .toLowerCase().includes(query.trim().toLowerCase())));
+  // Mirror the official Budgetree blog's editorial featured choice while
+  // keeping the newest articles visible in chronological order.
+  const featured = POSTS.find((p) => p.slug === "redemption-portal-loyalty-rewards") || sorted[0];
+  const showFeatured = cat === "All" && !query.trim();
+  const gridPosts = showFeatured ? filtered.filter((p) => p.slug !== featured.slug) : filtered;
 
   return (
     <main className="overflow-hidden">
@@ -39,6 +46,18 @@ export default function BlogPage() {
             Practical perspectives on rewards, loyalty, digital payments and customer engagement — ideas for smarter business growth.
           </motion.p>
 
+          <div className="mt-8 flex max-w-xl items-center gap-3 rounded-2xl border border-line/15 bg-raise px-4 py-3 shadow-sm transition focus-within:border-acc/50">
+            <Search className="h-5 w-5 shrink-0 text-acc" aria-hidden="true" />
+            <input
+              type="search"
+              aria-label="Search Budgetree Insights articles"
+              placeholder="Search articles, rewards, payouts, loyalty..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="min-w-0 flex-1 bg-transparent text-sm text-fg outline-none placeholder:text-fg/45"
+            />
+          </div>
+
           {/* Category filter */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -65,7 +84,7 @@ export default function BlogPage() {
       </section>
 
       {/* Featured */}
-      {cat === "All" && (
+      {showFeatured && (
         <section className="pb-14">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <Reveal>
@@ -115,6 +134,11 @@ export default function BlogPage() {
       <section className="pb-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mb-7 flex flex-wrap items-end justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-acc">Explore the library</p><h2 className="mt-2 font-display text-3xl font-bold text-fg sm:text-4xl">{cat === "All" ? "Latest thinking" : cat}</h2></div><p className="text-sm font-medium text-fg/55">{gridPosts.length} {gridPosts.length === 1 ? "article" : "articles"}</p></div>
+          {gridPosts.length === 0 && (
+            <div className="mb-8 rounded-2xl border border-line/15 bg-raise p-8 text-center text-sm text-fg/65">
+              No matching Insights articles. Try a different search or category.
+            </div>
+          )}
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {gridPosts.map((p, i) => (
               <Reveal key={p.slug} delay={(i % 3) * 0.08}>
