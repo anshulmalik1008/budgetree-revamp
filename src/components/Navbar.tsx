@@ -227,10 +227,11 @@ export default function Navbar() {
                 onClick={() => window.dispatchEvent(new Event("bt-open-search"))}
                 aria-label="Search the entire website"
                 title="Search website (⌘K / Ctrl+K)"
-                className="group flex items-center gap-1.5 rounded-full border border-line/15 px-3 py-2.5 text-fg/75 transition hover:border-acc/60 hover:bg-line/10 hover:text-fg"
+                className="group flex h-11 w-[132px] items-center gap-2 rounded-full border border-line/20 bg-raise/80 px-3 text-fg/75 shadow-sm transition hover:border-acc/60 hover:bg-line/10 hover:text-fg xl:w-[188px] xl:px-4 2xl:w-[220px]"
               >
-                <Search className="h-4 w-4 transition-transform group-hover:scale-110" />
-                <span className="hidden text-xs font-semibold xl:inline">Search</span>
+                <Search className="h-[18px] w-[18px] shrink-0 transition-transform group-hover:scale-110" />
+                <span className="min-w-0 flex-1 truncate text-left text-xs font-semibold">Search website</span>
+                <span className="hidden rounded-md border border-line/15 px-1.5 py-0.5 text-[10px] font-medium opacity-60 2xl:inline">⌘K</span>
               </button>
               <ThemeToggle />
               <a
