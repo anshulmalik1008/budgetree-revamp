@@ -208,3 +208,26 @@ html {
     animation: none !important;
   }
 }
+
+/* Demo benefits: explicitly match the site's html.light theme switch.
+   Never use Tailwind dark: here: the site uses a custom .light class. */
+html:not(.light) .demo-benefit-item {
+  background-color: rgba(255, 255, 255, 0.045);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+html:not(.light) .demo-benefit-text {
+  color: #f4f0e6;
+}
+html:not(.light) .demo-benefit-icon {
+  color: #8cf0b3;
+}
+html.light .demo-benefit-item {
+  background-color: #ffffff;
+  border-color: rgba(11, 15, 14, 0.16);
+}
+html.light .demo-benefit-text {
+  color: #111a13;
+}
+html.light .demo-benefit-icon {
+  color: #28651f;
+}
