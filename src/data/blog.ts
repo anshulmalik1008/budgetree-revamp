@@ -180,6 +180,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "why-budgetree-is-one-of-the-best-loyalty-companies-in-india",
+    sourceUrl: "https://www.budgetree.in/blog/why-budgetree-is-one-of-the-best-loyalty-companies-in-india",
     image: "/images/live/blog-loyalty-best.png",
     title: "Why Budgetree Is One of the Best Loyalty Companies in India",
     category: "Loyalty Programs",
@@ -240,11 +241,12 @@ export const POSTS: Post[] = [
   },
   {
     slug: "budgetree-digital-payments-rewards-loyalty",
+    sourceUrl: "https://budgetree.in/blog/budgetree-digital-payments-rewards-loyalty",
     image: "/images/live/blog-digital.png",
     title: "How Budgetree is Connecting Digital Payments, Rewards & Loyalty for Modern Businesses",
     category: "General",
     date: "Sep 4, 2026",
-    read: "4 min read",
+    read: "5 min read",
     excerpt:
       "Payments are no longer just about moving money. Customers expect every transaction to carry value — and rewards are how modern brands deliver it.",
     accent: "from-mint/80 to-[#0EA472]/60",
@@ -267,6 +269,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "best-payout-apis-in-india-budgetree",
+    sourceUrl: "https://budgetree.in/blog/best-payout-apis-in-india-budgetree",
     image: "/images/live/blog-payout-apis.png",
     title: "Best Payout APIs in India: RazorpayX, SiriPay, Cashfree, Bulkpe, Paytm & Decentro",
     category: "UPI & Payouts",
@@ -294,6 +297,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "what-is-upi-how-unified-payments-interface-works-in-india",
+    sourceUrl: "https://www.budgetree.in/blog/what-is-upi-how-unified-payments-interface-works-in-india",
     image: "/images/live/blog-upi.png",
     title: "What Is UPI? How Unified Payments Interface Works in India",
     category: "UPI & Payouts",
@@ -321,6 +325,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "planning-janmashtami-gifts-for-your-team-supergift-card",
+    sourceUrl: "https://budgetree.in/blog/planning-janmashtami-gifts-for-your-team-supergift-card",
     image: "/images/live/super.jpeg",
     title: "Planning Janmashtami Gifts for Your Team? Here's Why SuperGift Card Wins",
     category: "Corporate Gifting",
@@ -348,8 +353,9 @@ export const POSTS: Post[] = [
   },
   {
     slug: "upi-engage",
+    sourceUrl: "https://www.budgetree.in/blog/upi-engage",
     image: "/images/live/blog-engage.png",
-    title: "UPI Engage: Turning Every UPI Transaction into an Opportunity",
+    title: "UPI Engage: Turning Every UPI Transaction into a Opportunity",
     category: "UPI Engage",
     date: "Sep 2, 2026",
     read: "5 min read",
@@ -375,6 +381,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "how-to-design-a-rewards-program-that-actually-works",
+    sourceUrl: "https://budgetree.in/blog/how-to-design-a-rewards-program-that-actually-works",
     image: "/images/live/blog-rewards.png",
     title: "How to Design a Rewards Program That Actually Works",
     category: "Rewards & Recognition",
@@ -403,6 +410,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "the-future-of-consumer-retailer-loyalty-in-india-is-instant",
+    sourceUrl: "https://www.budgetree.in/blog/the-future-of-consumer-retailer-loyalty-in-india-is-instant",
     image: "/images/live/blog-future.png",
     title: "The Future of Consumer & Retailer Loyalty in India Is Instant",
     category: "Top Loyalty Companies in India",
