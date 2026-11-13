@@ -388,6 +388,37 @@ export default function Hero() {
       onMouseMove={onMouse}
       className="noise relative overflow-hidden pb-20 pt-32 sm:pt-36 lg:pb-24 lg:pt-44"
     >
+      {/* ISO badge: upper-right, immediately below navbar and aligned with Book Demo. */}
+      <div className="pointer-events-none absolute inset-x-0 top-[118px] z-30 mx-auto flex max-w-7xl justify-end px-4 sm:top-[126px] sm:px-6 lg:top-[138px]">
+          {/* ISO certification badge below the hero CTAs. Keep claims aligned with verified certification. */}
+          <motion.div
+            initial={{ opacity: 0, x: -24, y: 12 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.86, ease: EASE }}
+            className="pointer-events-auto flex items-center justify-end"
+          >
+            <motion.div
+              whileHover={{ y: -4, scale: 1.035 }}
+              transition={{ type: "spring", stiffness: 240, damping: 18 }}
+              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-2xl border border-acc/35 bg-raise/95 px-3 py-2 shadow-[0_0_25px_rgba(205,251,71,0.06)] backdrop-blur-md sm:gap-3 sm:px-4"
+            >
+              <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/[0.06] to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
+              <span className="relative grid h-9 w-9 place-items-center rounded-xl border border-acc/25 bg-acc/15 text-acc">
+                <ShieldCheck className="h-5 w-5" strokeWidth={1.8} />
+              </span>
+              <span className="relative flex flex-col">
+                <span className="font-display text-sm font-extrabold uppercase tracking-[0.14em] text-fg">
+                  ISO Certified
+                </span>
+                <span className="mt-0.5 text-[11px] font-medium text-fg/55">
+                  Quality &amp; security commitment
+                </span>
+              </span>
+              <BadgeCheck className="relative ml-1 h-4 w-4 text-acc" />
+            </motion.div>
+          </motion.div>
+      </div>
+
       {/* Backdrop */}
       <div className="pointer-events-none absolute inset-0">
         <div className="dot-grid absolute inset-0 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_35%,black,transparent)]" />
@@ -484,34 +515,6 @@ export default function Hero() {
                 See it in action
               </a>
             </Magnetic>
-          </motion.div>
-
-          {/* ISO certification badge below the hero CTAs. Keep claims aligned with verified certification. */}
-          <motion.div
-            initial={{ opacity: 0, x: -24, y: 12 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.86, ease: EASE }}
-            className="mt-5 flex flex-wrap items-center gap-3"
-          >
-            <motion.div
-              whileHover={{ y: -4, scale: 1.035 }}
-              transition={{ type: "spring", stiffness: 240, damping: 18 }}
-              className="group relative inline-flex items-center gap-3 overflow-hidden rounded-2xl border border-acc/35 bg-acc/[0.065] px-4 py-3 shadow-[0_0_25px_rgba(205,251,71,0.06)] backdrop-blur-md"
-            >
-              <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/[0.06] to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
-              <span className="relative grid h-11 w-11 place-items-center rounded-xl border border-acc/25 bg-acc/15 text-acc">
-                <ShieldCheck className="h-6 w-6" strokeWidth={1.8} />
-              </span>
-              <span className="relative flex flex-col">
-                <span className="font-display text-sm font-extrabold uppercase tracking-[0.14em] text-fg">
-                  ISO Certified
-                </span>
-                <span className="mt-0.5 text-[11px] font-medium text-fg/55">
-                  Quality &amp; security commitment
-                </span>
-              </span>
-              <BadgeCheck className="relative ml-1 h-5 w-5 text-acc" />
-            </motion.div>
           </motion.div>
 
           {/* Live simulator trigger */}
