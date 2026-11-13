@@ -53,31 +53,34 @@ export const POSTS: Post[] = [
   {
     slug: "upi-mdr-2026-explained-guide-for-businesses",
     image: "/images/live/blog-mdr.png",
-    title: "UPI MDR 2026 Explained: The Complete Guide for Merchants and Businesses",
+    title: "UPI MDR in 2026: What Merchants Need to Know",
     category: "UPI & Payouts",
-    date: "Sep 16, 2026",
-    read: "10 min read",
+    date: "Updated Nov 13, 2026",
+    read: "5 min read",
     excerpt:
-      "NPCI's new 0.4% UPI MDR takes effect 15 October 2026 on merchant payments above ₹2,000, capped at ₹300. Consumers and small merchants stay exempt — here's what businesses must know.",
+      "The proposed 0.4% MDR on certain UPI merchant payments was deferred in October 2026. Here is what the announced framework means, which payments remain exempt, and what merchants should monitor.",
     accent: "from-gold/80 to-[#FF8A3D]/60",
     content: [
       {
-        p: "From 15 October 2026, a 0.4% merchant discount rate (MDR) applies to UPI transactions above ₹2,000, capped at ₹300 per transaction. Consumer-to-consumer payments and small merchants remain exempt.",
+        p: "In September 2026, the Government of India and NPCI announced a proposed merchant discount rate (MDR) framework for certain UPI person-to-merchant payments. The implementation originally planned for 15 October 2026 was deferred on 13 October, with a revised date to be notified separately. Businesses should not treat the originally proposed date as the effective date without verifying a newer official notification.",
       },
       {
-        h: "Who actually pays?",
-        p: "The charge lands on merchants receiving large UPI payments — think high-ticket retail, B2B collections and service businesses. For a ₹50,000 invoice, that's the full ₹300 cap; for ₹3,000, it's ₹12.",
+        h: "What the announced framework says",
+        p: "The announced standard MDR is 0.4% on eligible merchant UPI transactions above ₹2,000, with a ₹300 cap for transactions of ₹75,000 and above. The published framework also outlines separate treatment for specified essential sectors and capital-market transactions. These figures describe the announced proposal, not proof that the revised start date has been activated.",
       },
       {
-        h: "What smart businesses are doing",
-        p: "Three moves dominate: routing micro-payments below the ₹2,000 threshold where possible, negotiating blended rates on payout rails, and offsetting the cost by folding UPI cashback into loyalty economics — rewarded customers accept fees far more gracefully.",
+        h: "Which transactions remain outside the standard MDR?",
+        p: "Person-to-person UPI transfers remain free under the announced framework. Person-to-merchant payments up to ₹2,000 remain exempt, and eligible small merchants receiving up to ₹1 lakh per month through the specified P2PM category also remain outside the standard MDR. The charges are designed for the merchant-payment ecosystem, not as an extra fee charged directly to consumers.",
       },
       {
-        h: "The Budgetree angle",
-        p: "Our payouts engine auto-routes each disbursement across UPI, IMPS and wallet rails for the lowest effective cost, and reconciliation shows MDR line-by-line — so finance sees the true cost of every rupee moved.",
+        h: "How to prepare without guessing",
+        p: "Separate P2P transfers from P2M receipts in reporting, review merchant category eligibility, and ask your acquiring bank or payment provider about any applicable charges. Update your reconciliation and pricing assumptions only after confirming the current notification and your provider's contractual terms. Avoid dividing a single legitimate transaction into smaller payments simply to sidestep a threshold.",
+      },
+      {
+        h: "Official guidance and ongoing updates",
+        p: "The Ministry of Finance published an explanatory release on 15 September 2026 (PIB press release 2310586). NPCI announced postponement on 13 October 2026. For the latest effective date and sector-specific conditions, consult NPCI, the Ministry of Finance and your payment-service provider rather than relying on an older article or an announced implementation schedule.",
       },
     ],
-  },
   {
     slug: "budgetree-digital-payments-rewards-loyalty",
     image: "/images/live/blog-digital.png",
