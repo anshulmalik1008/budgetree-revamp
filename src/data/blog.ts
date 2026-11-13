@@ -7,6 +7,7 @@ export type Post = {
   excerpt: string;
   accent: string;
   image: string;
+  sourceUrl?: string;
   content: Array<{ h?: string; p: string }>;
 };
 
@@ -23,7 +24,83 @@ export const CATEGORIES = [
 
 export const POSTS: Post[] = [
   {
+    slug: "enterprise-payouts-india",
+    image: "/images/live/blog-payout-apis.png",
+    sourceUrl: "https://www.budgetree.in/blog/enterprise-payouts-india",
+    title: "Enterprise Payouts in India: A Simple Guide | Budgetree",
+    category: "UPI & Payouts",
+    date: "Oct 9, 2026",
+    read: "15 min read",
+    excerpt: "Budgetree helps businesses automate bulk payouts through UPI, IMPS and NEFT, with live tracking, structured approvals, reconciliation and audit-ready records.",
+    accent: "from-sky/80 to-[#3D7BFF]/60",
+    content: [
+      { p: "Large-scale payouts create operational challenges beyond simply transferring funds. Finance teams must manage correct beneficiary details, approvals, failed transactions and reconciliation across thousands of employees, dealers, retailers, vendors and customers." },
+      { h: "What enterprise payouts involve", p: "An enterprise payout program distributes high volumes of business payments on a recurring basis. These may include dealer incentives, commissions, consumer cashback, reimbursements, vendor settlements and eligible loan disbursements." },
+      { h: "UPI, IMPS and NEFT", p: "UPI is suited to frequent digital rewards and instant transfers, while IMPS supports account-based immediate payments and NEFT supports widely used bank transfer workflows. Businesses select a method according to beneficiary needs, transfer requirements and operational controls." },
+      { h: "An integrated workflow", p: "Budgetree describes a process in which payment data comes from business systems or uploads, incentive rules are applied, authorized staff approve batches, payouts are initiated, and finance monitors statuses and reconciliation reports." },
+      { h: "Scaling without manual errors", p: "The original article covers beneficiary validation, maker-checker approvals, failure monitoring, audit trails, integration with CRM and HRMS, and automated reports. These controls help growing enterprises manage their payout operations more reliably." },
+      { h: "Read the full Budgetree guide", p: "This Insights page summarizes the original 15-minute article. Open the official source for its detailed examples, operational guidance, implementation steps and frequently asked questions." },
+    ],
+  },
+  {
+    slug: "navratri-incentive-scheme",
+    image: "/images/live/blog-rewards.png",
+    sourceUrl: "https://www.budgetree.in/blog/navratri-incentive-scheme",
+    title: "Navratri Incentive Scheme 2026: How to Run a 9-Day Dealer and Sales Scheme People Remember",
+    category: "Rewards & Recognition",
+    date: "Oct 6, 2026",
+    read: "11 min read",
+    excerpt: "A nine-day festive incentive program can motivate dealers and sales teams with clear targets, achievable reward slabs and meaningful recognition.",
+    accent: "from-gold/80 to-[#D89517]/60",
+    content: [
+      { p: "Budgetree's original Navratri guide looks at how businesses can design short festive incentive schemes that encourage their dealer networks and sales teams to focus on shared sales targets." },
+      { h: "Set achievable targets", p: "Use last year's sales as a reference, account for realistic growth, and give participants an attainable first reward level. Higher tiers should provide progressively stronger incentives." },
+      { h: "Plan reward slabs thoughtfully", p: "Digital gift cards can serve lower and middle reward tiers, while appliances, electronics and larger prizes may be more appropriate for major campaign achievements." },
+      { h: "Coordinate delivery across regions", p: "The article explains why managing a geographically dispersed network from one reward partner can simplify communication, dispatch and redemption." },
+      { h: "Build continuity after the festival", p: "A short Navratri campaign can lead into a larger Diwali program. The source also recommends checking applicable tax treatment before launch." },
+      { h: "Read the original article", p: "This is an editorial summary of the Budgetree article, published October 6, 2026. Open the official version for the full 11-minute guide." },
+    ],
+  },
+  {
+    slug: "redemption-portal-loyalty-rewards",
+    image: "/images/live/blog-loyalty-best.png",
+    sourceUrl: "https://www.budgetree.in/blog/redemption-portal-loyalty-rewards",
+    title: "The All-In-One Redemption Portal Loyalty Programs Have Been Missing",
+    category: "Rewards & Recognition",
+    date: "Sep 23, 2026",
+    read: "7 min read",
+    excerpt: "One redemption destination for gift cards, travel, merchandise, digital gold and silver, and eligible transfers — integrated through an API or SDK.",
+    accent: "from-lilac/80 to-[#7C5CFF]/60",
+    content: [
+      { p: "An effective loyalty program needs more than earning points. The actual redemption experience should offer useful rewards and choice, so points feel valuable to recipients." },
+      { h: "One place for different reward categories", p: "Budgetree's original article highlights a redemption portal bringing together more than 350 gift-card brands, digital gold and silver, merchandise, travel options, vehicles and eligible bank transfer rewards." },
+      { h: "Flexible integration", p: "The portal is described as an API- or SDK-integrated offering that businesses can connect to their existing loyalty applications." },
+      { h: "Why reward choice matters", p: "When users can choose a relevant reward rather than a limited fixed catalog, the redemption experience can become more engaging." },
+      { h: "Read the complete guide", p: "This is a concise source-based overview. Visit the original Budgetree post for the full article and detailed reward categories." },
+    ],
+  },
+  {
+    slug: "festive-incentive-schemes-india",
+    image: "/images/live/blog-rewards.png",
+    sourceUrl: "https://www.budgetree.in/blog/festive-incentive-schemes-india",
+    title: "Festive and Incentive Schemes in India: How to Get Every Reward From One Partner",
+    category: "Rewards & Recognition",
+    date: "Sep 19, 2026",
+    read: "16 min read",
+    excerpt: "Design meaningful sales incentive slabs and manage gift cards, appliances, technology and even large prizes through one reward partner.",
+    accent: "from-mint/80 to-[#0EA472]/60",
+    content: [
+      { p: "Running a festive incentive scheme involves more than choosing prizes. Businesses need to define the audience, set achievable targets, plan reward tiers, and make sure prizes reach winners on schedule." },
+      { h: "Reduce reward-vendor complexity", p: "The original Budgetree guide discusses the operational challenge of sourcing digital gift cards, electronics, household appliances and higher-value prizes from multiple vendors." },
+      { h: "Make each slab meaningful", p: "Rewards should feel proportional to the performance required. Early tiers can motivate broad participation while larger prizes recognize outstanding achievements." },
+      { h: "Coordinate delivery and communication", p: "A single partner can simplify logistics, status reporting and participant communication across dealers, distributors and sales teams." },
+      { h: "Read the complete festive planning guide", p: "This page highlights key ideas from Budgetree's September 19, 2026 article. The original contains its full 16-minute discussion." },
+    ],
+  },
+
+  {
     slug: "why-budgetree-is-one-of-the-best-loyalty-companies-in-india",
+    sourceUrl: "https://www.budgetree.in/blog/why-budgetree-is-one-of-the-best-loyalty-companies-in-india",
     image: "/images/live/blog-loyalty-best.png",
     title: "Why Budgetree Is One of the Best Loyalty Companies in India",
     category: "Loyalty Programs",
@@ -52,13 +129,14 @@ export const POSTS: Post[] = [
   },
   {
     slug: "upi-mdr-2026-explained-guide-for-businesses",
+    sourceUrl: "https://www.budgetree.in/blog/upi-mdr-2026-explained-guide-for-businesses",
     image: "/images/live/blog-mdr.png",
-    title: "UPI MDR in 2026: What Merchants Need to Know",
+    title: "UPI MDR 2026 Explained: The Complete Guide for Merchants and Businesses",
     category: "UPI & Payouts",
-    date: "Updated Nov 13, 2026",
+    date: "Sep 16, 2026",
     read: "5 min read",
     excerpt:
-      "The proposed 0.4% MDR on certain UPI merchant payments was deferred in October 2026. Here is what the announced framework means, which payments remain exempt, and what merchants should monitor.",
+      "Budgetree\u2019s September guide to the announced UPI merchant discount-rate framework, thresholds and transaction categories. Confirm current implementation details with official authorities.",
     accent: "from-gold/80 to-[#FF8A3D]/60",
     content: [
       {
@@ -83,6 +161,7 @@ export const POSTS: Post[] = [
     ],
   {
     slug: "budgetree-digital-payments-rewards-loyalty",
+    sourceUrl: "https://www.budgetree.in/blog/budgetree-digital-payments-rewards-loyalty",
     image: "/images/live/blog-digital.png",
     title: "How Budgetree is Connecting Digital Payments, Rewards & Loyalty for Modern Businesses",
     category: "General",
@@ -110,6 +189,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "best-payout-apis-in-india-budgetree",
+    sourceUrl: "https://www.budgetree.in/blog/best-payout-apis-in-india-budgetree",
     image: "/images/live/blog-payout-apis.png",
     title: "Best Payout APIs in India: RazorpayX, SiriPay, Cashfree, Bulkpe, Paytm & Decentro",
     category: "UPI & Payouts",
@@ -137,6 +217,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "what-is-upi-how-unified-payments-interface-works-in-india",
+    sourceUrl: "https://www.budgetree.in/blog/what-is-upi-how-unified-payments-interface-works-in-india",
     image: "/images/live/blog-upi.png",
     title: "What Is UPI? How Unified Payments Interface Works in India",
     category: "UPI & Payouts",
@@ -164,6 +245,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "planning-janmashtami-gifts-for-your-team-supergift-card",
+    sourceUrl: "https://www.budgetree.in/blog/planning-janmashtami-gifts-for-your-team-supergift-card",
     image: "/images/live/super.jpeg",
     title: "Planning Janmashtami Gifts for Your Team? Here's Why SuperGift Card Wins",
     category: "Corporate Gifting",
@@ -191,6 +273,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "upi-engage",
+    sourceUrl: "https://www.budgetree.in/blog/upi-engage",
     image: "/images/live/blog-engage.png",
     title: "UPI Engage: Turning Every UPI Transaction into an Opportunity",
     category: "UPI Engage",
@@ -218,6 +301,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "how-to-design-a-rewards-program-that-actually-works",
+    sourceUrl: "https://www.budgetree.in/blog/how-to-design-a-rewards-program-that-actually-works",
     image: "/images/live/blog-rewards.png",
     title: "How to Design a Rewards Program That Actually Works",
     category: "Rewards & Recognition",
@@ -246,6 +330,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: "the-future-of-consumer-retailer-loyalty-in-india-is-instant",
+    sourceUrl: "https://www.budgetree.in/blog/the-future-of-consumer-retailer-loyalty-in-india-is-instant",
     image: "/images/live/blog-future.png",
     title: "The Future of Consumer & Retailer Loyalty in India Is Instant",
     category: "Top Loyalty Companies in India",
