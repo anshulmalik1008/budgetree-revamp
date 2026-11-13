@@ -86,8 +86,8 @@ const LINKS = [
   { label: "The Advantage", href: "/#why" },
   { label: "Products", href: "/#products", dropdown: true },
   { label: "Impact Hub", href: "/solutions" },
-  { label: "The Pulse", href: "/blog" },
-  { label: "Our DNA", href: "/about" },
+  { label: "Insights", href: "/blog" },
+  { label: "Our Story", href: "/about" },
 ];
 
 const SEARCH_TERMS = [
@@ -195,24 +195,24 @@ export default function Navbar() {
               : "border-b border-transparent bg-transparent"
           )}
         >
-          <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
+          <nav className="mx-auto flex max-w-[1440px] items-center justify-between gap-3 px-4 py-3 sm:px-6 xl:gap-4">
             <a href="/" aria-label="BudgeTree home">
               <Logo />
             </a>
 
             {/* Desktop links */}
-            <div className="hidden items-center gap-0.5 lg:flex">
+            <div className="hidden shrink-0 items-center gap-0.5 xl:flex">
               {LINKS.map((l) =>
                 l.dropdown ? (
                   <div
                     key={l.label}
-                    className="relative"
+                    className="relative shrink-0"
                     onMouseEnter={() => setDrop(true)}
                     onMouseLeave={() => setDrop(false)}
                   >
                     <a
                       href={l.href}
-                      className="rounded-full px-3 py-2 text-sm font-medium text-fg/75 transition hover:bg-line/10 hover:text-fg xl:px-4"
+                      className="inline-flex items-center whitespace-nowrap rounded-full px-2 py-2 text-[13px] font-medium text-fg/75 transition hover:bg-line/10 hover:text-fg 2xl:px-3 2xl:text-sm"
                     >
                       {l.label}
                     </a>
@@ -263,7 +263,7 @@ export default function Navbar() {
                   <a
                     key={l.label}
                     href={l.href}
-                    className="rounded-full px-3 py-2 text-sm font-medium text-fg/75 transition hover:bg-line/10 hover:text-fg xl:px-4"
+                    className="inline-flex items-center whitespace-nowrap rounded-full px-2 py-2 text-[13px] font-medium text-fg/75 transition hover:bg-line/10 hover:text-fg 2xl:px-3 2xl:text-sm"
                   >
                     {l.label}
                   </a>
@@ -271,22 +271,22 @@ export default function Navbar() {
               )}
             </div>
 
-            <div className="hidden items-center gap-2 lg:flex">
+            <div className="hidden shrink-0 items-center gap-1.5 xl:flex 2xl:gap-2">
               <button
                 type="button"
                 onClick={() => window.dispatchEvent(new Event("bt-open-search"))}
                 aria-label="Search the entire website"
                 title="Search website (⌘K / Ctrl+K)"
-                className="group flex h-11 w-[132px] items-center gap-2 rounded-full border border-line/20 bg-raise/80 px-3 text-fg/75 shadow-sm transition hover:border-acc/60 hover:bg-line/10 hover:text-fg xl:w-[216px] xl:px-4 2xl:w-[240px]"
+                className="group flex h-11 w-[158px] shrink-0 items-center gap-1.5 overflow-hidden rounded-full border border-line/20 bg-raise/80 px-3 text-fg/75 shadow-sm transition hover:border-acc/60 hover:bg-line/10 hover:text-fg 2xl:w-[205px] 2xl:gap-2 2xl:px-4"
               >
                 <Search className="h-[18px] w-[18px] shrink-0 transition-transform group-hover:scale-110" />
                 <RotatingSearchText />
-                <span className="hidden rounded-md border border-line/15 px-1.5 py-0.5 text-[10px] font-medium opacity-60 2xl:inline">⌘K</span>
+                <span className="hidden rounded-md border border-line/15 px-1.5 py-0.5 text-[10px] font-medium opacity-60 min-[1600px]:inline">⌘K</span>
               </button>
               <ThemeToggle />
               <a
                 href="/pricing"
-                className="rounded-full px-3 py-2 text-sm font-medium text-fg/75 transition hover:text-fg xl:px-4"
+                className="shrink-0 whitespace-nowrap rounded-full px-2 py-2 text-[13px] font-medium text-fg/75 transition hover:text-fg 2xl:px-3 2xl:text-sm"
               >
                 Pricing
               </a>
@@ -299,7 +299,7 @@ export default function Navbar() {
               <Magnetic strength={0.25}>
                 <a
                   href="/demo"
-                  className="group flex items-center gap-2 rounded-full bg-volt px-5 py-2.5 text-sm font-bold text-coal shadow-glow transition hover:bg-paper"
+                  className="group inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-volt px-4 py-2.5 text-[13px] font-bold text-coal shadow-glow transition hover:bg-paper 2xl:gap-2 2xl:px-5 2xl:text-sm"
                 >
                   Book Demo
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -307,7 +307,7 @@ export default function Navbar() {
               </Magnetic>
             </div>
 
-            <div className="flex items-center gap-2 lg:hidden">
+            <div className="flex items-center gap-2 xl:hidden">
               <button
                 type="button"
                 onClick={() => { setOpen(false); window.dispatchEvent(new Event("bt-open-search")); }}
@@ -337,7 +337,7 @@ export default function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="noise fixed inset-0 z-40 flex flex-col overflow-y-auto bg-raise px-6 pb-10 pt-28 lg:hidden"
+            className="noise fixed inset-0 z-40 flex flex-col overflow-y-auto bg-raise px-6 pb-10 pt-28 xl:hidden"
           >
             <div className="pointer-events-none absolute -right-24 top-1/3 h-72 w-72 rounded-full glow-volt" />
             <div className="mt-auto space-y-1">
