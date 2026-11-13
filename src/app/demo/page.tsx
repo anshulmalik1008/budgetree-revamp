@@ -277,7 +277,7 @@ export default function DemoPage() {
   ].map((t) => (
     <li
       key={t}
-      className="flex items-start gap-2.5 text-sm text-slate-900 dark:text-white sm:text-base"
+      className="flex items-start gap-2.5 text-sm leading-relaxed text-fg/85 sm:text-base"
     >
       <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" />
       <span>{t}</span>
@@ -312,7 +312,7 @@ export default function DemoPage() {
                 <Reveal delay={0.1}>
                   <form
                     onSubmit={submit}
-                    className="rounded-[2rem] border border-line/10 bg-raise p-6 shadow-card sm:p-8"
+                    className="rounded-[2rem] border border-line/15 bg-raise p-6 text-fg shadow-card sm:p-8"
                   >
                     <div className="grid gap-4 sm:grid-cols-2">
                       <label className="relative block">
@@ -363,7 +363,7 @@ export default function DemoPage() {
                       </label>
                     </div>
 
-                    <p className="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-fg/45">
+                    <p className="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-fg/65">
                       I&apos;m interested in
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
@@ -479,7 +479,7 @@ export default function DemoPage() {
                         </>
                       )}
                     </button>
-                    <p className="mt-3 text-center text-xs text-fg/40">
+                    <p className="mt-3 text-center text-xs text-fg/60">
                       No spam, ever. Reschedule anytime from your inbox.
                     </p>
                   </form>
