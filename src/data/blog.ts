@@ -19,6 +19,9 @@ export const CATEGORIES = [
   "Rewards & Recognition",
   "UPI Engage",
   "Top Loyalty Companies in India",
+  "Employee Engagement",
+  "UPI Rewards",
+  "Loyalty",
   "General",
 ];
 
