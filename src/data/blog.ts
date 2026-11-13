@@ -159,6 +159,7 @@ export const POSTS: Post[] = [
         p: "The Ministry of Finance published an explanatory release on 15 September 2026 (PIB press release 2310586). NPCI announced postponement on 13 October 2026. For the latest effective date and sector-specific conditions, consult NPCI, the Ministry of Finance and your payment-service provider rather than relying on an older article or an announced implementation schedule.",
       },
     ],
+  },
   {
     slug: "budgetree-digital-payments-rewards-loyalty",
     sourceUrl: "https://www.budgetree.in/blog/budgetree-digital-payments-rewards-loyalty",
