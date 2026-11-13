@@ -87,6 +87,15 @@ export default function BlogPostPage() {
           </p>
           </div>
 
+          {post.sourceUrl && (
+            <div className="mx-auto mt-8 flex max-w-3xl flex-wrap items-center justify-between gap-4 rounded-2xl border border-line/15 bg-raise px-5 py-4">
+              <p className="text-sm text-fg/65">Editorial overview sourced from the official Budgetree blog.</p>
+              <a href={post.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap text-sm font-bold text-acc transition hover:opacity-75">
+                Read the original article <ArrowRight className="h-4 w-4" />
+              </a>
+            </div>
+          )}
+
           {/* Full image: preserve the artwork's native aspect ratio instead of clipping to a short banner. */}
           <motion.figure
             initial={{ opacity: 0, y: 24 }}
@@ -133,6 +142,11 @@ export default function BlogPostPage() {
                   <p className={`leading-[1.95] text-fg/80 ${i === 0 ? "text-lg" : "text-base sm:text-[17px]"}`}>{block.p}</p>
                 </section>
               ))}
+              {post.sourceUrl && (
+                <a href={post.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-acc/35 bg-acc/10 px-5 py-3 text-sm font-semibold text-acc transition hover:bg-acc/20">
+                  Continue reading on budgetree.in <ArrowRight className="h-4 w-4" />
+                </a>
+              )}
               <div className="rounded-2xl border border-acc/20 bg-acc/[0.06] p-6">
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-acc">Explore further</p>
                 <h3 className="mt-2 font-display text-xl font-bold text-fg">Turn insights into action.</h3>
