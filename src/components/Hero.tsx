@@ -403,18 +403,17 @@ export default function Hero() {
               className="group relative inline-flex items-center gap-2 overflow-hidden rounded-2xl border border-acc/35 bg-raise/95 px-3 py-2 shadow-[0_0_25px_rgba(205,251,71,0.06)] backdrop-blur-md sm:gap-3 sm:px-4"
             >
               <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/[0.06] to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
-              <span className="relative grid h-9 w-9 place-items-center rounded-xl border border-acc/25 bg-acc/15 text-acc">
-                <ShieldCheck className="h-5 w-5" strokeWidth={1.8} />
+              <span className="relative grid h-11 w-[54px] shrink-0 place-items-center overflow-hidden rounded-lg border border-acc/20 bg-white p-0.5">
+                <img src="/images/iso-27001-2022-badge.svg" alt="ISO 27001:2022 artwork" className="h-full w-full object-contain" />
               </span>
               <span className="relative flex flex-col">
                 <span className="font-display text-sm font-extrabold uppercase tracking-[0.14em] text-fg">
-                  ISO Certified
+                  ISO 27001:2022
                 </span>
                 <span className="mt-0.5 text-[11px] font-medium text-fg/55">
-                  Quality &amp; security commitment
+                  Quality &amp; security standard
                 </span>
               </span>
-              <BadgeCheck className="relative ml-1 h-4 w-4 text-acc" />
             </motion.div>
           </motion.div>
       </div>
