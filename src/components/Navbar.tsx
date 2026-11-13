@@ -83,12 +83,62 @@ const SUITE_PRODUCTS = [
 ];
 
 const LINKS = [
-  { label: "Why BudgeTree", href: "/#why" },
+  { label: "The Advantage", href: "/#why" },
   { label: "Products", href: "/#products", dropdown: true },
-  { label: "Solutions", href: "/solutions" },
-  { label: "Blog", href: "/blog" },
-  { label: "About", href: "/about" },
+  { label: "Impact Hub", href: "/solutions" },
+  { label: "The Pulse", href: "/blog" },
+  { label: "Our DNA", href: "/about" },
 ];
+
+const SEARCH_TERMS = [
+  "Rewards",
+  "Loyalty",
+  "Payouts",
+  "Gift Cards",
+  "UPI Cashback",
+  "Management Suite",
+];
+
+function RotatingSearchText() {
+  const [index, setIndex] = useState(0);
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReducedMotion(mq.matches);
+    sync();
+    mq.addEventListener?.("change", sync);
+    return () => mq.removeEventListener?.("change", sync);
+  }, []);
+
+  useEffect(() => {
+    if (reducedMotion) return;
+    const timer = window.setInterval(() => {
+      setIndex((current) => (current + 1) % SEARCH_TERMS.length);
+    }, 2800);
+    return () => window.clearInterval(timer);
+  }, [reducedMotion]);
+
+  return (
+    <span className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden text-left text-xs font-semibold">
+      <span className="shrink-0 text-fg/50">Explore</span>
+      <span className="relative block h-[18px] min-w-0 flex-1 overflow-hidden text-acc">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={reducedMotion ? "static" : index}
+            initial={reducedMotion ? false : { opacity: 0, y: 14, filter: "blur(3px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={reducedMotion ? undefined : { opacity: 0, y: -14, filter: "blur(3px)" }}
+            transition={{ duration: 0.32, ease: "easeInOut" }}
+            className="absolute inset-0 block truncate"
+          >
+            {SEARCH_TERMS[reducedMotion ? 0 : index]}
+          </motion.span>
+        </AnimatePresence>
+      </span>
+    </span>
+  );
+}
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -227,10 +277,10 @@ export default function Navbar() {
                 onClick={() => window.dispatchEvent(new Event("bt-open-search"))}
                 aria-label="Search the entire website"
                 title="Search website (⌘K / Ctrl+K)"
-                className="group flex h-11 w-[132px] items-center gap-2 rounded-full border border-line/20 bg-raise/80 px-3 text-fg/75 shadow-sm transition hover:border-acc/60 hover:bg-line/10 hover:text-fg xl:w-[188px] xl:px-4 2xl:w-[220px]"
+                className="group flex h-11 w-[132px] items-center gap-2 rounded-full border border-line/20 bg-raise/80 px-3 text-fg/75 shadow-sm transition hover:border-acc/60 hover:bg-line/10 hover:text-fg xl:w-[216px] xl:px-4 2xl:w-[240px]"
               >
                 <Search className="h-[18px] w-[18px] shrink-0 transition-transform group-hover:scale-110" />
-                <span className="min-w-0 flex-1 truncate text-left text-xs font-semibold">Search website</span>
+                <RotatingSearchText />
                 <span className="hidden rounded-md border border-line/15 px-1.5 py-0.5 text-[10px] font-medium opacity-60 2xl:inline">⌘K</span>
               </button>
               <ThemeToggle />
